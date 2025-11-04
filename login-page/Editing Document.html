@@ -81,7 +81,16 @@
       gap: 10px;                    /* adds space between icons */
       margin-top: 15px;
     }
-
+	  /* Employee of the Month Banner */
+    .employees-of-the-month {
+      background-color: #d4c8f0; /* light purple bar at the top */
+       width: 100%;
+  	  box-sizing: border-box; /* include padding in the width */
+      margin-top: 30px;          /* adds space above the banner */
+      font-family: 'Brush Script MT', 'Brush Script Std', cursive; /* sets pretty font */
+      font-size: 50px;
+      text-align: center; 
+    }
 	/* Container for photos */
     .my-custom-container {
         margin-top: 30px;  /* Spaces from above */
@@ -117,6 +126,7 @@
     <input type="password" class="form-control" name="Password">
     <!-- Add button to trigger login screen-->
     <button type="button" onclick="ValidateLogin()" class="btn btn-primary">Login</button>
+	</form>
     
   <!-- Section showing company focus areas -->
   <div class="leaders">
@@ -136,7 +146,9 @@
       </div>
     </div>
   </div>
-	  
+  <div class="employees-of-the-month">
+     Employees of the Month!
+  </div>
 	<!-- 5 Photo Display --!> 
   <div class="my-custom-container">
       <div>
