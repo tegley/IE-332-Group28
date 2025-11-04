@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supply Chain Manager Dashboard</title>
+
+  <style>
+    body{
+        background-color: #f8f3dc; /* Light beige */
+        text-align:center;
+        font-family:sans-serif, Arial;
+    }
+
+    h1{
+        background-color: #c8b8f0; /* Light purple */
+        padding: 20px;
+        margin-top: 30px;
+    }
+
+    h2{
+        background-color: #c0bebe; /* Light gray */
+        display: inline-block;
+        padding: 10px 20px;
+        margin-top: 25px;
+    }
+
+    .bubble{
+        display: inline-block;
+        padding: 15px 25px;
+        border-radius: 20px;
+        color: white;
+        font-weight: bold;
+        margin: 25px;
+    }
+    .red{background-color: red;}
+    .blue{background-color: blue;}
+    
+    .button{
+        display: inline-block;
+        background-color: #26b0b9;
+        color: white;
+        padding: 8px 14px;
+        border-radius: 6px;
+        margin-top: 15px;
+        margin-left: -475px;
+        text-decoration: none;
+    }
+
+    .plots{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .plot{
+        margin: 15px;
+        text-align: center;
+    }
+
+    .plot img{
+        width: 150px;
+        height: 200px;
+        background-color: white; /* Placeholder */
+    }
+
+   </style>
+</head>
+<body>
+    <h1>Global Electronics LLC</h1>
+
+    <h2>Supply Chain Manager Dashboard</h2>
+    
+    <div>
+        <span class="bubble red">Alerts</span>
+        <span class="bubble blue">Messages</span>
+    </div>
+
+    <div>
+        <a href="#" class="button">Overview Statistics</a>
+    </div>
+
+    <div class="plots">
+        <div class="plot">
+            <img src="supply_chain_plot1.png" alt="Supply Chain Plot 1">
+            <p>Useful plots 1</p>
+        </div>
+        <div class="plot">
+            <img src="supply_chain_plot2.png" alt="Supply Chain Plot 2">
+            <p>Useful plots 2</p>
+        </div>
+        <div class="plot">
+            <img src="supply_chain_plot3.png" alt="Supply Chain Plot 3">
+            <p>Useful plots 3</p>
+        </div>
+        <div class="plot">
+            <img src="supply_chain_plot4.png" alt="Supply Chain Plot 4">
+            <p>Useful plots 4</p>
+        </div>
+    </div>
+    
+</body>
+</html>
