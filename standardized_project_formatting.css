@@ -1,0 +1,21 @@
+body{
+    background-color: #f8f3dc; /* Light beige */
+    text-align:center;
+    font-family:sans-serif, Arial;
+}
+
+h1{
+    background-color: #0fa3b1; /* Teal bar at the top */
+    padding: 15px;             /* adds space inside the banner */
+    margin-top: 30px;          /* adds space above the banner */
+    font-family: Cambria, serif; /* sets pretty font */
+    font-size: 50px;
+    position: relative;
+}
+
+h2{
+    background-color: #c0bebe; /* Light gray */
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 25px;
+}
