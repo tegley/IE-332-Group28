@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
+        rel="stylesheet">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet">
+    <style>
+    @import "standardized_project_formatting.css";
+    
+    /* Column 1 - Welcome User, Sidebar, & Alerts */
+    /* Welcome User */
+    #welcome-header-text {
+        text-decoration-color: black;
+        font-family: Cambria, serif; /* sets pretty font */
+        background-color: lightblue;      
+    }
+
+    /* Sidebar */
+    #menu-header-text {
+        text-decoration-color: black;
+        font-family: Cambria, serif; /* sets pretty font */
+        text-decoration: underline;
+        background-color: #c0bebe; /* Light gray */
+    }
+
+    .btn-secondary{
+        /*Tight clickable area*/
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        
+        /*Sufficient item spacing*/
+        margin-top: 1.75rem;
+        margin-bottom: 1.75rem;        
+        margin-left: auto;
+        margin-right: auto;
+
+        /*Font size and display*/
+        display: block;
+        font-size: 16px;
+    }
+
+    #vertical-icon-alignment{
+        display: flex;
+        align-items: center; /* Vertical centering of icon and text */
+        justify-content: center;
+    }
+
+    /* Alert Box */
+    #alert-column {
+        /*Column dimensions */
+        width: 250px;
+        height: 300px;
+        float: right;        
+    }
+
+    #alert-header-text {
+        background-color: #c0bebe; /* Light gray */
+        font-family: Cambria, serif; /* sets pretty font */
+        text-decoration: underline;
+        color: black; /* Added for better contrast on darkred */
+        text-align: center; /* Center the text */
+    }
+
+    #alert-box {
+        font-family: Cambria, serif;
+    }
+
+    /* Column 2 - Dasboard Header */
+    #dashboard-header{
+        background-color: #c0bebe; /* Light gray */
+        width: auto;
+        height: auto;
+        font-family: Cambria, serif; /* sets pretty font */
+        font-size: 30px;
+    }
+
+    </style>
+
+</head>
+<body>
+    <!-- Company header -->
+    <h1>Global Electronics LLC</h1>
+
+    <!-- Align 3 items -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header" id="welcome-header-text">Welcome User</div>
+                </div>
+                <!-- Sidebar for navigating various pages -->
+                <div class="card">
+                    <div class="card-header" id="menu-header-text">Menu</div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <a href="#" class="btn btn-secondary btn-sm">
+                                    <i class="fs-3 bi-house"></i> 
+                                    <span class="ms-1 d-none d-sm-inline">Home</span>
+                                </a>
+                            </li>
+                            <li class="list-group-item"> 
+                                <a href="#" class="btn btn-secondary btn-sm">
+                                    <i class="fs-3 bi-exclamation-triangle"></i> 
+                                    <span class="ms-1 d-none d-sm-inline">Disruption Events</span> 
+                                </a>
+                            </li>
+                            <li class="list-group-item"> 
+                                <a href="#" class="btn btn-secondary btn-sm" id="vertical-icon-alignment">
+                                    <i class="fs-3 bi-box-seam"></i>
+                                    <span class="ms-2 d-none d-sm-inline">Transactions</span> 
+                                </a>
+                            </li>
+                            <li class="list-group-item"> 
+                                <a href="logout.php" class="btn btn-secondary btn-sm" id="vertical-icon-alignment">
+                                    <i class="fs-3 bi-box-arrow-left"></i> 
+                                    <span class="ms-2 d-none d-sm-inline">Log Out</span> 
+                                </a>
+                            </li>
+                        </ul>
+                </div>
+                <!-- Alert card -->
+                <div class="card">
+                    <div class="card-header" id="alert-header-text">Alerts</div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">An item</li>
+                        <li class="list-group-item">A second item</li>
+                        <li class="list-group-item">A third item</li>
+                    </ul>
+                </div>
+            </div> <!-- End column 1 -->
+            <div class="col-md-9">           
+                <!-- Dashboard header -->
+                <div class="card" id="dashboard-header">
+                    Supply Chain Manager Dashboard
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
