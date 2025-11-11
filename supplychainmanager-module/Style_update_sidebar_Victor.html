@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+  /* === Major visual theme update === */ 
+  body {
+      background-color: #f5f6f8;  /* CHANGED: from beige (#f8f3dc) → modern neutral gray */
+      color: #333;                /* NEW: darker text color for better readability */
+      text-align: center;
+      font-family: Arial, sans-serif; /* CHANGED: from sans-serif,Cambria → simpler UI font */
+  }
+
+  h1 {
+      background-color: #0f6fab;  /* CHANGED: from teal (#0fa3b1) → ERP-style blue */
+      color: white;               /* NEW: added contrast */
+      padding: 20px 0;            /* CHANGED: taller header for balanced look */
+      margin-top: 20px;           /* CHANGED: less top spacing */
+      font-family: Cambria, serif; /* SAME font, kept brand identity */
+      font-size: 48px;            /* CHANGED: slightly smaller for proportion */
+  }
+
+  #welcome-header-text {
+      background-color: #5cb85c;  /* CHANGED: from lightblue → green success tone */
+      color: white;               /* NEW: improves contrast */
+      padding: 10px;              /* NEW: adds spacing for modern look */
+  }
+
+  #menu-header-text {
+      background-color: #ececec;  /* CHANGED: from #c0bebe → lighter neutral gray */
+      color: #333;                /* NEW: darker text for contrast */
+      padding: 10px;              /* NEW: consistent spacing */
+  }
+
+  .btn-secondary {
+      background-color: #0f6fab;  /* CHANGED: from gray → blue to match header */
+      color: white;               /* NEW: high contrast text */
+      border: none;               /* NEW: removes old button outline */
+      margin: 1.5rem auto;        /* CHANGED: simplified spacing */
+      padding: 0.6rem 0;          /* CHANGED: more clickable padding */
+      border-radius: 5px;         /* NEW: subtle rounded corners */
+      transition: background-color 0.3s, transform 0.2s; /* NEW: hover animation */
+      display: block;
+  }
+
+  .btn-secondary:hover {
+      background-color: #095c8a;  /* NEW: darker hover blue */
+      transform: translateY(-2px); /* NEW: lift-up animation effect */
+  }
+
+  #vertical-icon-alignment {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;                /* CHANGED: replaces ms-1/ms-2 spacing with consistent flex gap */
+  }
+
+  .card {
+      background-color: #fff;     /* CHANGED: from default Bootstrap gray → clean white */
+      border: 1px solid #e0e0e0;  /* NEW: light border for structure */
+      border-radius: 8px;         /* NEW: rounded corners */
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* NEW: subtle shadow for depth */
+      margin-bottom: 20px;        /* NEW: consistent spacing between cards */
+  }
+
+  #alert-header-text {
+      background-color: #d9534f;  /* CHANGED: from gray → red for real “alert” effect */
+      color: white;               /* NEW: readable contrast */
+      padding: 10px;              /* NEW: even padding */
+  }
+
+  #dashboard-header {
+      background-color: #ececec;  /* CHANGED: from #c0bebe → softer gray */
+      color: #222;                /* NEW: darker text */
+      padding: 15px;              /* NEW: adds balance to main panel */
+      border-radius: 6px;         /* NEW: smoother shape */
+      text-align: center;         /* NEW: explicitly centers dashboard text */
+  }
+  </style>
+</head>
+
+<body>
+  <!-- Header banner -->
+  <h1>Global Electronics LLC</h1>
+
+  <div class="container">
+    <div class="row">
+      <!-- Sidebar section -->
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-header" id="welcome-header-text">Welcome User</div>
+        </div>
+        <div class="card">
+          <div class="card-header" id="menu-header-text">Menu</div>
+          <ul class="list-group list-group-flush">
+            <!-- Buttons now have new blue + hover animation -->
+            <li class="list-group-item">
+              <a href="#" class="btn btn-secondary btn-sm"><i class="fs-3 bi-house"></i> <span>Home</span></a>
+            </li>
+            <li class="list-group-item">
+              <a href="#" class="btn btn-secondary btn-sm"><i class="fs-3 bi-exclamation-triangle"></i> <span>Disruption Events</span></a>
+            </li>
+            <li class="list-group-item">
+              <a href="#" class="btn btn-secondary btn-sm" id="vertical-icon-alignment"><i class="fs-3 bi-box-seam"></i> <span>Transactions</span></a>
+            </li>
+            <li class="list-group-item">
+              <a href="logout.php" class="btn btn-secondary btn-sm" id="vertical-icon-alignment"><i class="fs-3 bi-box-arrow-left"></i> <span>Log Out</span></a>
+            </li>
+          </ul>
+        </div>
+        <!-- Alerts now visually red -->
+        <div class="card">
+          <div class="card-header" id="alert-header-text">Alerts</div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">An item</li>
+            <li class="list-group-item">A second item</li>
+            <li class="list-group-item">A third item</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Dashboard section -->
+      <div class="col-md-9">
+        <div class="card" id="dashboard-header">
+          Supply Chain Manager Dashboard
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
