@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
+        rel="stylesheet">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet">
+    <style>
+    @import "standardized_project_formatting.css";
+    
+    /* Column 1 - Welcome User, Sidebar, & Alerts */
+    /* Welcome User */
+    #welcome-header-text {
+        text-decoration-color: white;
+        font-family: Cambria, serif; /* sets pretty font */
+        background-color: #5cb85c;  /* CHANGED: from lightblue → green success tone */
+        padding: 10px;              /* NEW: adds spacing for modern look */
+    }
+
+    /* Sidebar */
+    #menu-header-text {
+        color: #333;                /* NEW: darker text for contrast */
+        font-family: Cambria, serif; /* sets pretty font */
+        text-decoration: underline;
+        background-color: #ececec;  /* CHANGED: from #c0bebe → lighter neutral gray */
+        padding: 10px;
+    }
+
+    .btn-secondary {
+        background-color: #0f6fab;  /* CHANGED: from gray → blue to match header */
+        color: white;               /* NEW: high contrast text */
+        border: none;               /* NEW: removes old button outline */
+        margin: 1.5rem auto;        /* CHANGED: simplified spacing */
+        padding: 0.6rem 0;          /* CHANGED: more clickable padding */
+        border-radius: 5px;         /* NEW: subtle rounded corners */
+        transition: background-color 0.3s, transform 0.2s; /* NEW: hover animation */
+        display: block;
+    }
+
+    .btn-secondary:hover {
+        background-color: #095c8a;  /* NEW: darker hover blue */
+        transform: translateY(-2px); /* NEW: lift-up animation effect */
+    }
+
+    #vertical-icon-alignment{
+        display: flex;
+        align-items: center; /* Vertical centering of icon and text */
+        justify-content: center;
+    }
+
+    /* Alert Box */
+        /*Column dimensions 
+        width: 250px;
+        height: 300px;
+        float: right; */  
+
+    #alert-header-text {
+        font-family: Cambria, serif; /* sets pretty font */
+        text-decoration: underline;
+        text-align: center; /* Center the text */
+        background-color: #d9534f;  /* CHANGED: from gray → red for real “alert” effect */
+        color: white;               /* NEW: readable contrast */
+        padding: 10px;              /* NEW: even padding */
+
+    }
+    </style>
+
+</head>
+<body>
+
+    <div class="card">
+        <div class="card-header" id="welcome-header-text">Welcome!</div>
+    </div>
+    <!-- Sidebar for navigating various pages -->
+    <div class="card">
+        <div class="card-header" id="menu-header-text">Menu</div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <a href="#" class="btn btn-secondary btn-sm">
+                        <i class="fs-3 bi-house"></i> 
+                        <span class="ms-1 d-none d-sm-inline">Home</span>
+                    </a>
+                </li>
+                <li class="list-group-item"> 
+                    <a href="#" class="btn btn-secondary btn-sm">
+                        <i class="fs-3 bi-exclamation-triangle"></i> 
+                        <span class="ms-1 d-none d-sm-inline">Disruption Events</span> 
+                    </a>
+                </li>
+                <li class="list-group-item"> 
+                    <a href="#" class="btn btn-secondary btn-sm" id="vertical-icon-alignment">
+                        <i class="fs-3 bi-box-seam"></i>
+                        <span class="ms-2 d-none d-sm-inline">Transactions</span> 
+                    </a>
+                </li>
+                <li class="list-group-item"> 
+                    <a href="logout.php" class="btn btn-secondary btn-sm" id="vertical-icon-alignment">
+                        <i class="fs-3 bi-box-arrow-left"></i> 
+                        <span class="ms-2 d-none d-sm-inline">Log Out</span> 
+                    </a>
+                </li>
+            </ul>
+    </div>
+    <!-- Alert card -->
+    <div class="card">
+        <div class="card-header" id="alert-header-text">Alerts</div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">An item</li>
+            <li class="list-group-item">A second item</li>
+            <li class="list-group-item">A third item</li>
+        </ul>
+    </div>
+
+
+</body>
+</html>
