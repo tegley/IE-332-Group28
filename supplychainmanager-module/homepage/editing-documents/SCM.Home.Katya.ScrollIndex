@@ -45,7 +45,7 @@
       height: 200px;
       background-color: white;
     }
-    .list-group-flush {
+     #scroll-format {
   		max-height: 250px;         /* set desired height */
   		overflow-x: hidden;        /* hide horizontal scrollbar */
 	}
@@ -69,7 +69,7 @@
       </nav>
     </div>
 
-    <!-- 📊 Main Content Area -->
+    <!-- Main Content Area -->
     <div class="col-9 scrollspy-example">
 
       <!-- 🔹 Section 1: Basic Info -->
@@ -101,7 +101,7 @@
           <div class="col-md-6">
             <h6 class="card-body">Company Depends On</h6>
             <div class="card">
-              <ul class="list-group list-group-flush">
+              <ul class="list-group list-group-flush" id="scroll-format">
                 <li class="list-group-item">Supplier 1</li>
                 <li class="list-group-item">Supplier 2</li>
                 <li class="list-group-item">Supplier 3</li>
@@ -112,7 +112,7 @@
           <div class="col-md-6">
             <h6 class="card-body">Company Is Depended On By</h6>
             <div class="card">
-              <ul class="list-group list-group-flush">
+              <ul class="list-group list-group-flush" id="scroll-format">
                 <li class="list-group-item">Client 1</li>
                 <li class="list-group-item">Client 2</li>
                 <li class="list-group-item">Client 3</li>
@@ -140,7 +140,7 @@
 
         <h5>Products Diversity</h5>
         <div class="card mb-4">
-          <ul class="list-group list-group-flush">
+          <ul class="list-group list-group-flush" id="scroll-format">
             <li class="list-group-item">Product A</li>
             <li class="list-group-item">Product B</li>
             <li class="list-group-item">Product C</li>
@@ -149,7 +149,7 @@
 
         <h5>Products Supplied</h5>
         <div class="card">
-          <ul class="list-group list-group-flush">
+          <ul class="list-group list-group-flush" id="scroll-format">
             <li class="list-group-item">Product X</li>
             <li class="list-group-item">Product Y</li>
             <li class="list-group-item">Product Z</li>
@@ -163,7 +163,7 @@
         <h5>Shipping</h5>
         <div class="card">
         <div class="card-body">
-          <ul class="list-group list-group-flush">
+          <ul class="list-group list-group-flush" id="scroll-format">
           <p> Company's Shipments within Date Range </p>
             <li class="list-group-item">Product X</li>
             <li class="list-group-item">Product Y</li>
@@ -174,7 +174,7 @@
       <h5>Receiving</h5>
         <div class="card">
         <div class="card-body">
-          <ul class="list-group list-group-flush">
+          <ul class="list-group list-group-flush" id="scroll-format">
           <p> Company's Receivings within Date Range </p>
             <li class="list-group-item">Product X</li>
             <li class="list-group-item">Product Y</li>
@@ -185,7 +185,7 @@
       <h5>Adjustments</h5>
         <div class="card">
         <div class="card-body">
-          <ul class="list-group list-group-flush">
+          <ul class="list-group list-group-flush" id="scroll-format">
           <p> Company's Adjustments within Date Range </p>
             <li class="list-group-item">Product X</li>
             <li class="list-group-item">Product Y</li>
@@ -210,8 +210,7 @@
   </div>
 </div>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 
 </body>
 </html>
