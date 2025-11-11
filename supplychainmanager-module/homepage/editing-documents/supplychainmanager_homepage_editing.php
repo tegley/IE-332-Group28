@@ -97,7 +97,7 @@ $user_FullName = $_SESSION['FullName'];
 <!--Integrate JavaScript to incorporate sidebar module -->
 <div id="supplychainmanager_sidebar"></div>
 <script>
-  fetch('supplychainmanager_sidebar_editing_hello.html')
+  fetch('supplychainmanager_sidebar.html')
     .then(response => response.text())
     .then(html => document.getElementById('supplychainmanager_sidebar').innerHTML = html);
 </script>
@@ -172,4 +172,5 @@ function PullFromPHP() {
 
 <!-- This is a single-line comment -->
 </body>
+
 </html>
