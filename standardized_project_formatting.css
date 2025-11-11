@@ -1,20 +1,23 @@
 body{
-    background-color: #f8f3dc; /* Light beige */
-    text-align:center;
-    font-family:sans-serif, Arial;
+    background-color: #f5f6f8;  /* CHANGED: from beige (#f8f3dc) → modern neutral gray */
+    color: #333;                /* NEW: darker text color for better readability */
+    text-align: center;
+    font-family: Arial, sans-serif; /* CHANGED: from sans-serif,Cambria → simpler UI font */
 }
 
 h1{
-    background-color: #0fa3b1; /* Teal bar at the top */
-    padding: 15px;             /* adds space inside the banner */
-    margin-top: 30px;          /* adds space above the banner */
-    font-family: Cambria, serif; /* sets pretty font */
-    font-size: 50px;
+    background-color: #0f6fab;  /* CHANGED: from teal (#0fa3b1) → ERP-style blue */
+    color: white;               /* NEW: added contrast */
+    padding: 20px;            /* CHANGED: taller header for balanced look */
+    margin-top: 20px;           /* CHANGED: less top spacing */
+    font-family: Cambria, serif; /* SAME font, kept brand identity */
+    font-size: 48px;            /* CHANGED: slightly smaller for proportion */
     position: relative;
 }
 
+
 h2{
-    background-color: #c0bebe; /* Light gray */
+    background-color: #a40f0f; /* Light gray */
     display: inline-block;
     padding: 10px 20px;
     margin-top: 25px;
