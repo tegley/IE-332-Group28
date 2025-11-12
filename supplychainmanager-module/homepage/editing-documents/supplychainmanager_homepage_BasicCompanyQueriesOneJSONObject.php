@@ -109,7 +109,7 @@ $tmp = $_GET['q'];
     //Execute the SQL query
     $resultdependsOn = mysqli_query($conn, $dependsOnQuery);
     // Convert the table into individual rows and reformat.
-    $dependedOn = []; //Creating Depends on Array
+    $dependsOn = []; //Creating Depends on Array
     while ($row = mysqli_fetch_array($resultdependsOn, MYSQLI_ASSOC)) {
         $dependsOn[] = $row;
     }
