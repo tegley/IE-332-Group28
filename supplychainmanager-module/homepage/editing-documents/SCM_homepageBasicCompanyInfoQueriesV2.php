@@ -151,7 +151,7 @@ $tmp = explode(',', $tmp);
         ORDER BY a.AdjustmentDate;";
     //  echo $adjustmentsQuery;
     //Execute the SQL query
-    $resultreceivings = mysqli_query($conn, $adjustmentsQuery);
+    $resultadjustments = mysqli_query($conn, $adjustmentsQuery);
     // Convert the table into individual rows and reformat.
     $adjustments = []; //Creating shipping Array
     while ($row = mysqli_fetch_array($resultadjustments, MYSQLI_ASSOC)) {
