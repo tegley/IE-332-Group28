@@ -185,7 +185,7 @@ $tmp = explode(',', $tmp);
     // echo json_encode($totalShipments);
 
 
-    $pastHealthScoresQuery = "SELECT f.HealthScore FROM Company c JOIN FinancialReport f ON c.CompanyID = f.CompanyID WHERE c.CompanyName = '" . $tmp[0] . "' ORDER BY f.RepYear DESC, f.Quarter DESC LIMIT 5;";
+    $pastHealthScoresQuery = "SELECT f.HealthScore, f.Quarter, f.RepYear FROM Company c JOIN FinancialReport f ON c.CompanyID = f.CompanyID WHERE c.CompanyName = '" . $tmp[0] . "' ORDER BY f.RepYear DESC, f.Quarter DESC LIMIT 5;";
     // echo $pastHealthScoresQuery;
     //Execute the SQL query
     $resultspastHealthScores = mysqli_query($conn, $pastHealthScoresQuery);
