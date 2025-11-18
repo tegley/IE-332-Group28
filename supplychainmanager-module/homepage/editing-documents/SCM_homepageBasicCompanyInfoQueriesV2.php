@@ -197,7 +197,7 @@ $tmp = explode(',', $tmp);
     // echo json_encode($pastHealthScores);
 
     $disruptionEventsQuery = "SELECT d.EventID, x.CategoryName, d.EventDate, d.EventRecoveryDate, x.Description FROM DisruptionEvent d JOIN DisruptionCategory x ON d.CategoryID = x.CategoryID JOIN ImpactsCompany i ON d.EventID = i.EventID JOIN Company c ON i.AffectedCompanyID = c.CompanyID
-    WHERE c.CompanyName = '" . $tmp[0] . "' GROUP BY x.CategoryName;";
+    WHERE c.CompanyName = '" . $tmp[0] . "' AND d.EventDate '" . $tmp[3] . "' AND '" . $tmp[4] . "' GROUP BY x.CategoryName;";
     // echo $disruptionEvents;
     //Execute the SQL query
     $resultsdisruptionEvents = mysqli_query($conn, $disruptionEventsQuery);
