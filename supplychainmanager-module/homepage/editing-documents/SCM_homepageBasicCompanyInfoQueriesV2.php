@@ -32,7 +32,7 @@ $tmp = explode(',', $tmp);
     // echo $result[0];
     // echo $result[1];
 
-    $BasicInfoSQL = "SELECT c.CompanyID, c.CompanyName, c.LocationID, c.TierLevel, c.Type, f.HealthScore";
+    $BasicInfoSQL = "SELECT c.CompanyID, c.CompanyName, c.LocationID, c.TierLevel, c.Type, f.HealthScore, l.CountryName, l.City";
 
     if (count($result) == 0) { //Does company exist?
         echo "Company Not Found";
@@ -40,10 +40,10 @@ $tmp = explode(',', $tmp);
         exit;
     }
     if (strcmp($result[0], 'Manufacturer') == 0) {
-        $BasicInfoSQL .= ", m.FactoryCapacity FROM Company c JOIN FinancialReport f ON c.CompanyID = f.CompanyID JOIN Manufacturer m ON c.CompanyID = m.CompanyID WHERE c.CompanyName = '" . $tmp[0] . "' ORDER BY f.RepYear DESC, f.Quarter DESC LIMIT 1;";
+        $BasicInfoSQL .= ", m.FactoryCapacity FROM Company c JOIN FinancialReport f ON c.CompanyID = f.CompanyID JOIN Manufacturer m ON c.CompanyID = m.CompanyID JOIN Location l ON l.LocationID = c.LocationID WHERE c.CompanyName = '" . $tmp[0] . "' ORDER BY f.RepYear DESC, f.Quarter DESC LIMIT 1;";
     }
     else{
-        $BasicInfoSQL .= " FROM Company c JOIN FinancialReport f ON c.CompanyID = f.CompanyID WHERE c.CompanyName = '" . $tmp[0] . "' ORDER BY f.RepYear DESC, f.Quarter DESC LIMIT 1;";
+        $BasicInfoSQL .= " FROM Company c JOIN FinancialReport f ON c.CompanyID = f.CompanyID JOIN Location l ON l.LocationID = c.LocationID WHERE c.CompanyName = '" . $tmp[0] . "' ORDER BY f.RepYear DESC, f.Quarter DESC LIMIT 1;";
     }
 
     $basicCompanyInfo = mysqli_query($conn, $BasicInfoSQL);
