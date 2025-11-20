@@ -64,7 +64,7 @@ $groupState = "";
 
     //Puting shipping query together and generating result
     $shippingQuery = "{$shippingSelect} {$whereStateShip} {$groupState};";
-      echo $shippingQuery;
+     // echo $shippingQuery;
 
     $resultshipping = mysqli_query($conn, $shippingQuery);
     // Convert the table into individual rows and reformat.
@@ -77,7 +77,7 @@ $groupState = "";
     //Putting Receivings query together and generating result
     $receivingsQuery = "{$receivingsSelect} {$whereStateRec} {$groupState};";
 
-     echo $receivingsQuery;
+    // echo $receivingsQuery;
     //Execute the SQL query
     $resultreceivings = mysqli_query($conn, $receivingsQuery);
     // Convert the table into individual rows and reformat.
@@ -89,7 +89,7 @@ $groupState = "";
 
 
     //Putting Adjustments query together and generating result
-    $adjustmentsQuery = "{$adjustmentsSelect} {$whereStateAdj} {$groupState};";
+   // $adjustmentsQuery = "{$adjustmentsSelect} {$whereStateAdj} {$groupState};";
 
     //  echo $adjustmentsQuery;
     //Execute the SQL query
@@ -107,7 +107,7 @@ $groupState = "";
     $orderByState = "ORDER BY c.CompanyName;"; //This will be ordered by company name for neat presentation
 
     $leavingCompanyQuery = "{$leavingCompanySelect} {$whereStateAdj} {$groupState} {$orderByState}";
-     echo $leavingCompanyQuery;
+    // echo $leavingCompanyQuery;
     //Execute the SQL query
     $resultleavingCompany = mysqli_query($conn, $leavingCompanyQuery);
     // Convert the table into individual rows and reformat.
@@ -122,7 +122,7 @@ $groupState = "";
     FROM Receiving r JOIN Company c ON r.ReceiverCompanyID = c.CompanyID LEFT JOIN Location l ON l.LocationID = c.LocationID JOIN InventoryTransaction t ON r.TransactionID = t.TransactionID LEFT JOIN Shipping s ON r.ShipmentID = s.ShipmentID JOIN Product p ON s.ProductID = p.ProductID LEFT JOIN InventoryAdjustment a ON a.TransactionID = r.TransactionID
     ";
     $arrivingCompanyQuery = "{$arrivingCompanySelect} {$whereStateAdj} {$groupState} {$orderByState}";
-     echo $arrivingCompanyQuery;
+    // echo $arrivingCompanyQuery;
     //Execute the SQL query
     $resultarrivingCompany = mysqli_query($conn, $arrivingCompanyQuery);
     // Convert the table into individual rows and reformat.
@@ -136,7 +136,7 @@ $groupState = "";
     $distributorQuery = "SELECT d.CompanyID AS DistributorID, c.CompanyName, COUNT(DISTINCT s.ShipmentID) AS ShipmentVolume, ROUND(((SUM(CASE WHEN s.ActualDate <= s.PromisedDate THEN 1 ELSE 0 END) / COUNT(DISTINCT s.ShipmentID)) * 100), 2) AS OTRate, p.ProductName, p.ProductID
     FROM Distributor d JOIN Company c ON d.CompanyID = c.CompanyID JOIN Shipping s ON s.DistributorID = d.CompanyID JOIN Product p ON s.ProductID = p.ProductID
     GROUP BY d.CompanyID, c.CompanyName;"; //User might choose to instead group by products on the page. Query as is will allow user to see the various products handled
-    echo $distributorQuery;
+   // echo $distributorQuery;
     //Execute the SQL query
     $resultdistributor = mysqli_query($conn, $distributorQuery);
     // Convert the table into individual rows and reformat.
@@ -151,7 +151,7 @@ $groupState = "";
     JOIN Product p ON p.ProductID = s.ProductID JOIN (SELECT d.CompanyID, COUNT(DISTINCT p.productID) AS ProductCount FROM Shipping s JOIN Distributor d ON s.DistributorID = d.CompanyID JOIN Product p ON p.ProductID = s.ProductID 
     GROUP BY d.CompanyID) x ON x.CompanyID = d.CompanyID";
     $productsHandledQuery = "{$productsHandledSelect} GROUP BY p.ProductName, p.ProductID ORDER BY d.CompanyID, c.CompanyName;";
-     echo $productsHandledQuery;
+    // echo $productsHandledQuery;
     //Execute the SQL query
     $resultproductsHandled = mysqli_query($conn, $productsHandledQuery);
     // Convert the table into individual rows and reformat.
@@ -165,7 +165,7 @@ $groupState = "";
     $shipmentsOutstandingSelect = "SELECT d.CompanyID, c.CompanyName, (CASE WHEN s.ActualDate IS NULL THEN 1 ELSE 0 END) AS CurrentlyOut
     FROM Distributor d JOIN Company c ON d.CompanyID = c.CompanyID JOIN Shipping s ON s.DistributorID = d.CompanyID";
     $shipmentsOutstandingQuery = "{$shipmentsOutstandingSelect} {$whereStateShip} {$groupState};"; //Will have same filters as user specified
-     echo $shipmentsOutstandingQuery;
+    // echo $shipmentsOutstandingQuery;
     //Execute the SQL query
     $resultshipmentsOutstanding = mysqli_query($conn, $shipmentsOutstandingQuery);
     // Convert the table into individual rows and reformat.
@@ -180,7 +180,7 @@ $groupState = "";
     FROM Distributor d JOIN Company c ON d.CompanyID = c.CompanyID JOIN Shipping s ON s.DistributorID = d.CompanyID  LEFT JOIN Location l ON l.LocationID = c.LocationID
     JOIN ImpactsCompany i ON i.AffectedCompanyID = d.CompanyID JOIN DisruptionEvent e ON e.EventID = i.EventID JOIN DisruptionCategory y ON y.CategoryID = e.CategoryID";
     $disruptionEventQuery = "{$disruptionEventSelect} {$whereStateShip} AND s.ActualDate BETWEEN e.EventDate AND e.EventRecoveryDate {$groupState} ORDER BY d.CompanyID, c.CompanyName; "; //Will have same filters as user specified
-    echo $disruptionEventQuery;
+    //echo $disruptionEventQuery;
     //Execute the SQL query
     $resultdisruptionEvent = mysqli_query($conn, $disruptionEventQuery);
     // Convert the table into individual rows and reformat.
@@ -195,7 +195,7 @@ $groupState = "";
     FROM Distributor d JOIN Company c ON d.CompanyID = c.CompanyID JOIN Shipping s ON s.DistributorID = d.CompanyID  JOIN Location l ON l.LocationID = c.LocationID
     JOIN ImpactsCompany i ON i.AffectedCompanyID = d.CompanyID JOIN DisruptionEvent e ON e.EventID = i.EventID JOIN DisruptionCategory y ON y.CategoryID = e.CategoryID";
     $disruptionHIGHEventQuery = "{$disruptionHIGHEventSelect} {$whereStateShip} AND s.ActualDate BETWEEN e.EventDate AND e.EventRecoveryDate AND i.ImpactLevel = 'High' {$groupState} ORDER BY d.CompanyID, c.CompanyName; "; //Will have same filters as user specified
-    echo $disruptionHIGHEventQuery;
+   // echo $disruptionHIGHEventQuery;
     //Execute the SQL query
     $resultdisruptionHIGHEvent = mysqli_query($conn, $disruptionHIGHEventQuery);
     // Convert the table into individual rows and reformat.
