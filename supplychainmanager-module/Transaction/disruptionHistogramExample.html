@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+
+  <nav>
+    <ul>
+      <li><strong>Acme Corp</strong></li>
+    </ul>
+    <ul>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Services</a></li>
+      <li><a href="#">Products</a></li>
+    </ul>
+  </nav>
+
+</head>
+
+<body>
+
+  <!-- This Defines the Form and the onsubmit calls the Javascript showCustomer() function defined below -->
+   <!-- https://web.ics.purdue.edu/~cox447/disruptHistogram.html -->
+  <h2 class="section-banner">Company Transactions</h2>
+  <form id="myForm">
+    <label class="mt-2">Location Type</label>
+    <select class="form-control" id="LocationType">
+        <option>Country</option>
+        <option>Continent</option>
+        <option>Tier</option>
+        <option>Company</option>
+        <option>Country and Tier</option>
+    </select>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <label>Start Date</label>
+            <input type="date" class="form-control" id="StartDate" value="2020-09-09">
+        </div>
+        <div class="col-md-6">
+            <label>End Date</label>
+            <input type="date" class="form-control" id="EndDate" value="2025-09-09">
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Submit</button>
+  </form>
+
+  <!-- This Div with id=tester is used to act as a placeholder for the ART plot. -->
+  <div id="tester" style="width:600px;height:400px;"></div>
+  <div id="temp"></div>
+  <!-- This Div with id=tester2 is used to act as a placeholder for the TD plot. -->
+  <div id="tester2" style="width:600px;height:400px;"></div>
+  <div id="temp"></div>
+
+  <script>
+    // Wait for page to load before attaching event listener
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('myForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        showCustomer();
+      });
+    });
+
+    // This function is in a script tag, indicating javascript, it is called when we
+    // click the submit button on the form above.
+    function showCustomer() {
+      console.log("showCustomer() called");
+      
+      // These 3 strings are retrieved from the table above and joined into one string
+      // separated by commas in the format the php file expects to find after the ?q=
+      // part. 
+
+      // This part gets the strings from the table.
+      const locationType = document.getElementById("LocationType").value;
+      const startDate = document.getElementById("StartDate").value;
+      const endDate = document.getElementById("EndDate").value;
+
+      console.log("Location Type:", locationType);
+      console.log("Start Date:", startDate);
+      console.log("End Date:", endDate);
+
+      // This is how you join the strings into one big one.
+      const strQ = startDate + "," + endDate;
+      const strG = locationType;
+
+      console.log("Sending request with q=" + strQ + " and g=" + strG);
+
+      // Here is where we start defining the XHTTP request that JS uses to call the php file 
+      // with the variables.
+      if (!startDate || !endDate) {
+        document.getElementById("temp").innerHTML = "Please select both dates";
+        return;
+      }
+      
+      // this is where we define the actual request.
+      const xhttp = new XMLHttpRequest();
+
+      // This function is called when the request loads from the php file.
+      xhttp.onload = function () {
+        console.log("Response received. Status:", this.status);
+        console.log("Ready state:", this.readyState);
+        
+        // This if statement checks if we're ready and the php file returned a "working"
+        // result (i.e. html status code 200, look this up if curious or confused.)
+        if (this.readyState == 4 && this.status == 200) {
+          console.log("Response text:", this.responseText.substring(0, 200));
+
+          try {
+            // Parse the JSON returned from PHP
+            var temp = JSON.parse(this.responseText);
+
+            console.log("Parsed data:", temp.length, "records");
+
+            // Extract ART values as numbers
+            const artValues = temp
+              .map(item => Number(item.ART))   // convert ART to number
+              .filter(v => Number.isFinite(v)); // remove NaN or invalid entries
+            
+            console.log("ART Values:", artValues);
+            console.log("Number of values:", artValues.length);
+
+            // Create the histogram trace
+            const trace = {
+              x: artValues,     // <-- use your extracted ART values here
+              type: 'histogram',
+              marker: {
+                color: 'rgba(100, 150, 200, 0.7)',
+                line: {
+                  color: 'rgba(100, 150, 200, 1)',
+                  width: 1
+                }
+              }
+            };
+
+            // Layout for the chart (optional)
+            const layout = {
+              title: 'ART Histogram',
+              xaxis: { title: 'ART Values' },
+              yaxis: { title: 'Count' },
+              margin: { t: 40 }
+            };
+
+            // Plot the histogram
+            Plotly.newPlot('tester', [trace], layout);
+            
+            document.getElementById("temp").innerHTML = "Data loaded successfully: " + artValues.length + " records";
+          } catch (error) {
+            console.error("Error parsing response:", error);
+            document.getElementById("temp").innerHTML = "Error parsing data: " + error.message;
+          }
+          try {
+            // Parse the JSON returned from PHP
+            var temp = JSON.parse(this.responseText);
+
+            console.log("Parsed data:", temp.length, "records");
+
+            // Extract ART values as numbers
+            const tdValues = temp
+              .map(item => Number(item.TD))   // convert ART to number
+              .filter(v => Number.isFinite(v)); // remove NaN or invalid entries
+            
+            console.log("TD Values:", tdValues);
+            console.log("Number of TD values:", tdValues.length);
+
+            // Create the histogram trace
+            const trace = {
+              x: tdValues,     // <-- use your extracted ART values here
+              type: 'histogram',
+              marker: {
+                color: 'rgba(100, 150, 200, 0.7)',
+                line: {
+                  color: 'rgba(100, 150, 200, 1)',
+                  width: 1
+                }
+              }
+            };
+
+            // Layout for the chart (optional)
+            const layout = {
+              title: 'TD Histogram',
+              xaxis: { title: 'TD Values' },
+              yaxis: { title: 'Count' },
+              margin: { t: 40 }
+            };
+
+            // Plot the histogram
+            Plotly.newPlot('tester2', [trace], layout);
+            
+            document.getElementById("temp").innerHTML = "Data loaded successfully: " + tdValues.length + " records";
+          } catch (error) {
+            console.error("Error parsing response:", error);
+            document.getElementById("temp").innerHTML = "Error parsing data: " + error.message;
+          }
+
+        } else if (this.readyState == 4) {
+          console.error("Error loading data. Status:", this.status);
+          document.getElementById("temp").innerHTML = "Error loading data. Status: " + this.status + ". Check console for details.";
+        }
+      };
+
+      xhttp.onerror = function() {
+        console.error("Network error occurred");
+        document.getElementById("temp").innerHTML = "Network error occurred. Check console for details.";
+      };
+
+      // This portion actually runs the HTTP request to the php file using the variables set in the table
+      const url = "SCMDisruptionEventQueries.php?q=" + encodeURIComponent(strQ) + "&g=" + encodeURIComponent(strG);
+      console.log("Opening request to:", url);
+      
+      xhttp.open("GET", url, true);
+      xhttp.send();
+      
+      document.getElementById("temp").innerHTML = "Loading data...";
+    }
+  </script>
+
+</body>
+
+</html>
