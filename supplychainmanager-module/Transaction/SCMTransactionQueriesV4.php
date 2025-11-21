@@ -106,7 +106,7 @@ $groupState = "";
     FROM Shipping s JOIN Product p ON s.ProductID = p.ProductID JOIN Company c ON s.SourceCompanyID = c.CompanyID LEFT JOIN Location l ON l.LocationID = c.LocationID JOIN InventoryTransaction t ON s.TransactionID = t.TransactionID LEFT JOIN Receiving r ON r.ShipmentID = s.ShipmentID LEFT JOIN InventoryAdjustment a ON a.TransactionID = t.TransactionID";
     $orderByState = "ORDER BY c.CompanyName;"; //This will be ordered by company name for neat presentation
 
-    $leavingCompanyQuery = "{$leavingCompanySelect} {$whereStateAdj} {$groupState} {$orderByState}";
+    $leavingCompanyQuery = "{$leavingCompanySelect} {$whereStateShip} {$orderByState}";
     // echo $leavingCompanyQuery;
     //Execute the SQL query
     $resultleavingCompany = mysqli_query($conn, $leavingCompanyQuery);
@@ -121,7 +121,7 @@ $groupState = "";
     $arrivingCompanySelect = "SELECT c.CompanyName, r.ReceivingID, r.ReceivedDate, r.QuantityReceived, s.ShipmentID, s.ActualDate, s.PromisedDate, p.ProductID, p.ProductName, s.SourceCompanyID, s.DestinationCompanyID, s.DistributorID, s.TransactionID, a.AdjustmentID, a.AdjustmentDate, a.QuantityChange
     FROM Receiving r JOIN Company c ON r.ReceiverCompanyID = c.CompanyID LEFT JOIN Location l ON l.LocationID = c.LocationID JOIN InventoryTransaction t ON r.TransactionID = t.TransactionID LEFT JOIN Shipping s ON r.ShipmentID = s.ShipmentID JOIN Product p ON s.ProductID = p.ProductID LEFT JOIN InventoryAdjustment a ON a.TransactionID = r.TransactionID
     ";
-    $arrivingCompanyQuery = "{$arrivingCompanySelect} {$whereStateAdj} {$groupState} {$orderByState}";
+    $arrivingCompanyQuery = "{$arrivingCompanySelect} {$whereStateShip} {$orderByState}";
     // echo $arrivingCompanyQuery;
     //Execute the SQL query
     $resultarrivingCompany = mysqli_query($conn, $arrivingCompanyQuery);
