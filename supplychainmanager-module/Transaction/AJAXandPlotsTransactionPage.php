@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCM Dashboard</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script> <!-- For plots-->
+    
+
+    <style>
+        .section-banner {
+            background-color: #0f6fab;
+            color: white;
+            padding: 18px;
+            font-size: 32px;
+            margin-top: 25px;
+            border-radius: 6px;
+            font-family: Cambria, serif;
+        }
+
+        .scroll-box {
+            height: 180px;
+            overflow-y: auto;
+            border: 1px solid #aaa;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: white;
+        }
+
+        .stats-table td {
+            border: 1px solid #666;
+            padding: 10px;
+            font-size: 15px;
+        }
+
+        .stats-header {
+            background-color: #cfcfcf;
+            font-weight: bold;
+            text-align: center;
+            padding: 8px;
+        }
+
+        .collapsible-header {
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .collapse-arrow {
+            transition: transform 0.3s ease;
+        }
+        .collapse-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .collapse-content {
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+            max-height: 0;
+        }
+        .collapse-content.open {
+            max-height: 2000px;
+        }
+
+        .plot-box {
+            text-align: center;
+            margin: 20px;
+            width: 100%;
+            max-width: 280px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .plot-box img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        body {
+            background-color: #f5f6f8;
+        }
+
+        .shipment-item {
+            padding: 8px;
+            margin: 4px 0;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border-left: 3px solid #0f6fab;
+        }
+    </style>
+
+    <script>
+        function toggleCollapse(sectionId) {
+            const content = document.getElementById(sectionId);
+            const arrow = document.querySelector(`[data-arrow='${sectionId}']`);
+            content.classList.toggle("open");
+            arrow.classList.toggle("open");
+        }
+    </script>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div id="supplychainmanager_sidebar"></div>
+            <script>
+                fetch('supplychainmanager_sidebar.html')
+                    .then(r => r.text())
+                    .then(html => document.getElementById('supplychainmanager_sidebar').innerHTML = html)
+                    .catch(err => console.log('Sidebar not loaded'));
+            </script>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+
+            <!-- Dashboard Header -->
+            <div class="card mt-3 p-3" id="dashboard-header">
+                <h3>SCM Dashboard</h3>
+            </div>
+
+            <!-- --------------------- COMPANY TRANSACTIONS --------------------- -->
+            <h2 class="section-banner collapsible-header" onclick="toggleCollapse('companySection')">
+                Company Transactions
+                <span class="collapse-arrow" data-arrow="companySection">▼</span>
+            </h2>
+
+            <div id="companySection" class="collapse-content">
+
+                <form class="mt-3" id="myForm">
+
+                    <label class="mt-2">Location Type</label>
+                    <select class="form-control" id="filterType">
+                        <option value="Country">Country</option>
+                        <option value="State">Continent</option>
+                        <option value="Company">Company</option>
+                    </select>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <label>Start Date</label>
+                            <input type="date" class="form-control" id="startDate">
+                        </div>
+                        <div class="col-md-6">
+                            <label>End Date</label>
+                            <input type="date" class="form-control" id="endDate">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Submit</button>
+
+                </form>
+
+                <!-- Status message -->
+                <div id="statusMessage" class="mt-3"></div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h5>Leaving From</h5>
+                        <div class="scroll-box" id="leavingBox">
+                            <p class="text-muted">Submit query to see results...</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h5>Arriving At</h5>
+                        <div class="scroll-box" id="arrivingBox">
+                            <p class="text-muted">Submit query to see results...</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- --------------------- DISTRIBUTOR DETAILS --------------------- -->
+            <h2 class="section-banner collapsible-header" onclick="toggleCollapse('distributorSection')">
+                Distributor Details
+                <span class="collapse-arrow" data-arrow="distributorSection">▼</span>
+            </h2>
+
+            <div id="distributorSection" class="collapse-content">
+
+                 <form class="mt-3" id="myFormDist">
+                    <label>Distributor Name</label>
+                    <select class="form-control" id="Distributor_Name">
+                </select>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <label>Start Date</label>
+                            <input type="date" class="form-control" id = "StartDist">
+                        </div>
+                        <div class="col-md-6">
+                            <label>End Date</label>
+                            <input type="date" class="form-control" id = "EndDist">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                </form>
+
+                <div class="row mt-4">
+
+                    <div class="col-md-6">
+                        <div class="stats-header">Statistics</div>
+
+                        <table class="table stats-table">
+                            <tr><td>On Time Delivery Rate</td><td id="onTimeRate">--</td></tr>
+                            <tr><td>Total Quantity Shipped</td><td id="totalQty">--</td></tr>
+                            <tr><td>Average Shipment Qty</td><td id="avgQty">--</td></tr>
+                            <tr><td><strong>Total Shippings</strong></td><td id="totalShippingsCell">--</td></tr>
+                            <tr><td>Disruption Exposure</td><td id="disruption">--</td></tr>
+                        </table>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="stats-header">Products Handled</div>
+                        <div class="scroll-box" id="productsHandled">
+                            <p class="text-muted">Submit query to see results...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+
+                    <div class="col-md-6">
+                        <div class="stats-header">Shipments Out</div>
+                        <div class="scroll-box" id="shipmentsOut">
+                            <p class="text-muted">Submit query to see results...</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 text-center">
+                        <div class="stats-header">Status Distribution</div>
+                           <div class = "col-md-6 text-center" id = "pieChartOut"></div>
+                    </div>
+
+                </div>
+                <div class="row mt-4">
+
+                    <div class="col-md-6">
+                        <div class="stats-header">Disruption Event Breakdown</div>
+                        <div class="scroll-box" id="disruptDetails">
+                            <p class="text-muted">Submit query to see results...</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 text-center">
+                        <div class="stats-header">Disruption Event Distribution</div>
+                           <div class = "col-md-6 text-center" id = "barChartDisrupt"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- --------------------- USEFUL PLOTS --------------------- -->
+            <h2 class="section-banner collapsible-header" onclick="toggleCollapse('plotsSection')">
+                Useful Plots
+                <span class="collapse-arrow" data-arrow="plotsSection">▼</span>
+            </h2>
+
+            <div id="plotsSection" class="collapse-content">
+
+                <div class="container mt-4">
+                    <div class="row g-4">
+
+                        <div class="col-md-6 d-flex justify-content-center">
+                            <div class="plot-box">
+                                <img src="supply_chain_plot_temp.png" alt="Plot 1">
+                                <p>Useful Plot #1</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 d-flex justify-content-center">
+                            <div class="plot-box">
+                                <img src="supply_chain_plot_temp.png" alt="Plot 2">
+                                <p>Useful Plot #2</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 d-flex justify-content-center">
+                            <div class="plot-box">
+                                <img src="supply_chain_plot_temp.png" alt="Plot 3">
+                                <p>Useful Plot #3</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 d-flex justify-content-center">
+                            <div class="plot-box">
+                                <img src="supply_chain_plot_temp.png" alt="Plot 4">
+                                <p>Useful Plot #4</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Run this when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        loadDistributors();
+    });
+
+    // Wait for page to load before attaching event listener
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('myForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showCustomer();
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('myFormDist').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showCustomerDistributors();
+        });
+    });
+
+
+    function loadDistributors() { //This function populates company names in the drop down
+    // Fetch data from your PHP file
+        fetch('distributorList.php')  // Replace with your actual PHP file path
+            .then(response => response.json())
+            .then(distributors => {
+                const dropdown = document.getElementById('Distributor_Name');
+            
+            // Clear the loading message
+                dropdown.innerHTML = '';
+            
+             // Add a default "Select a company" option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Select a company';
+                dropdown.appendChild(defaultOption);
+            
+            // Add each company to the dropdown
+                distributors.forEach(distributor => {
+                const option = document.createElement('option');
+                option.value = distributor.CompanyName;  // Adjust based on your JSON structure
+                option.textContent = distributor.CompanyName;  // Adjust based on your JSON structure
+                dropdown.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading companies:', error);
+            const dropdown = document.getElementById('Company_Name');
+            dropdown.innerHTML = '<option value="">Error loading companies</option>';
+        });
+}
+
+    function showCustomer() {
+        console.log("showCustomer() called");
+        
+        // Extract User input from web page
+        const filterType = document.getElementById("filterType").value;
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+
+        console.log("Filter Type:", filterType);
+        console.log("Start Date:", startDate);
+        console.log("End Date:", endDate);
+
+        // Validate dates
+        if (!startDate || !endDate) {
+            document.getElementById("statusMessage").innerHTML = 
+                '<div class="alert alert-warning">Please select both start and end dates</div>';
+            return;
+        }
+
+        // Package parameters
+        const q = `${startDate},${endDate}`;
+        const g = filterType;
+
+        console.log("Sending request with q=" + q + " and g=" + g);
+
+        // Show loading message
+        document.getElementById("statusMessage").innerHTML = 
+            '<div class="alert alert-info">Loading data...</div>';
+        document.getElementById("leavingBox").innerHTML = '<p class="text-muted">Loading...</p>';
+        document.getElementById("arrivingBox").innerHTML = '<p class="text-muted">Loading...</p>';
+
+        // Create XMLHttpRequest
+        const xhttp = new XMLHttpRequest();
+
+        xhttp.onload = function() {
+            console.log("Response received. Status:", this.status);
+            console.log("Ready state:", this.readyState);
+            
+            if (this.readyState == 4 && this.status == 200) {
+                console.log("Response text:", this.responseText.substring(0, 200));
+
+                try {
+                    // Parse the JSON returned from PHP
+                    const data = JSON.parse(this.responseText);
+                    console.log("Parsed data:", data);
+
+                    // Clear boxes
+                    const leavingDiv = document.getElementById("leavingBox");
+                    const arrivingDiv = document.getElementById("arrivingBox");
+                    leavingDiv.innerHTML = "";
+                    arrivingDiv.innerHTML = "";
+
+                    // Display leaving shipments
+                    if (data.leavingCompany && data.leavingCompany.length > 0) {
+                        data.leavingCompany.forEach(item => {
+                            const div = document.createElement("div");
+                            div.className = "shipment-item";
+                            div.innerHTML = `
+                                <strong>Shipment ID:</strong> ${item.ShipmentID}<br>
+                                <strong>Company:</strong> ${item.CompanyName}<br>
+                                <strong>Quantity:</strong> ${item.QuantityReceived}
+                            `;
+                            leavingDiv.appendChild(div);
+                        });
+                    } else {
+                        leavingDiv.innerHTML = '<p class="text-muted">No shipments found</p>';
+                    }
+
+                    // Display arriving shipments
+                    if (data.arrivingCompany && data.arrivingCompany.length > 0) {
+                        data.arrivingCompany.forEach(item => {
+                            const div = document.createElement("div");
+                            div.className = "shipment-item";
+                            div.innerHTML = `
+                                <strong>Shipment ID:</strong> ${item.ShipmentID}<br>
+                                <strong>Company:</strong> ${item.CompanyName}<br>
+                                <strong>Quantity:</strong> ${item.QuantityReceived}
+                            `;
+                            arrivingDiv.appendChild(div);
+                        });
+                    } else {
+                        arrivingDiv.innerHTML = '<p class="text-muted">No shipments found</p>';
+                    }
+
+                    // Update status message
+                    document.getElementById("statusMessage").innerHTML = 
+                        `<div class="alert alert-success">Data loaded successfully: ${data.leavingCompany ? data.leavingCompany.length : 0} leaving, ${data.arrivingAt ? data.arrivingAt.length : 0} arriving</div>`;
+                    
+                } catch (error) {
+                    console.error("Error parsing response:", error);
+                    document.getElementById("statusMessage").innerHTML = 
+                        `<div class="alert alert-danger">Error parsing data: ${error.message}</div>`;
+                    document.getElementById("leavingBox").innerHTML = '<p class="text-danger">Error loading data</p>';
+                    document.getElementById("arrivingBox").innerHTML = '<p class="text-danger">Error loading data</p>';
+                }
+
+            } else if (this.readyState == 4) {
+                console.error("Error loading data. Status:", this.status);
+                document.getElementById("statusMessage").innerHTML = 
+                    `<div class="alert alert-danger">Error loading data. Status: ${this.status}</div>`;
+            }
+        };
+
+        xhttp.onerror = function() {
+            console.error("Network error occurred");
+            document.getElementById("statusMessage").innerHTML = 
+                '<div class="alert alert-danger">Network error occurred. Check console for details.</div>';
+        };
+
+        // Send the request
+        const url = "SCMTransactonQueries.php?q=" + encodeURIComponent(q) + "&g=" + encodeURIComponent(g);
+        console.log("Opening request to:", url);
+        
+        xhttp.open("GET", url, true);
+        xhttp.send();
+    }
+    function showCustomerDistributors() {
+        console.log("showCustomerDistributors() called");
+        
+        // Extract User input from web page
+        const CompanyName = document.getElementById("Distributor_Name").value;
+        const startDate = document.getElementById("StartDist").value;
+        const endDate = document.getElementById("EndDist").value;
+
+        console.log("Distributor Name:", CompanyName);
+        console.log("Start Date:", startDate);
+        console.log("End Date:", endDate);
+
+        // Validate dates
+        if (!startDate || !endDate) {
+            document.getElementById("statusMessage").innerHTML = 
+                '<div class="alert alert-warning">Please select both start and end dates</div>';
+            return;
+        }
+
+        // Package parameters
+        const q = `${startDate},${endDate}`;
+        const g = CompanyName;
+
+        console.log("Sending request with q=" + q + " and g=" + g);
+        // Show loading message
+        document.getElementById("statusMessage").innerHTML = 
+            '<div class="alert alert-info">Loading data...</div>';
+        document.getElementById("productsHandled").innerHTML = '<p class="text-muted">Loading...</p>';
+        document.getElementById("shipmentsOut").innerHTML = '<p class="text-muted">Loading...</p>';
+
+        // Create XMLHttpRequest
+        const xhttp = new XMLHttpRequest();
+
+        xhttp.onload = function() {
+            console.log("Response received. Status:", this.status);
+            console.log("Ready state:", this.readyState);
+            
+            if (this.readyState == 4 && this.status == 200) {
+                console.log("Response text:", this.responseText.substring(0, 200));
+
+                try {
+                    // Parse the JSON returned from PHP
+                    const data = JSON.parse(this.responseText);
+                    console.log("Parsed data:", data);
+
+                    //Fill in Distributor Info
+                    const OTRateDiv = document.getElementById("onTimeRate");
+                    const totQuantityShippedDiv = document.getElementById("totalQty");
+                    const averageShipmentDiv = document.getElementById("avgQty");
+                    const totShipsDiv = document.getElementById("totalShippingsCell");
+                    const disruptExposureDiv = document.getElementById("disruption");
+                    OTRateDiv.innerHTML = data.distributor[0].OTRate;
+                    totQuantityShippedDiv.innerHTML = data.distributor[0].TotQuantityShipped;
+                    averageShipmentDiv.innerHTML = data.distributor[0].AVGShipQuantity;
+                    totShipsDiv.innerHTML = data.distributor[0].ShipmentVolume;
+                    //What if the distributor hasn't experienced a disruption event?
+                    if (data.distributor[0].disruptionExposure && data.distributor[0].disruptionExposure.length > 0) {
+                        disruptExposureDiv.innerHTML = data.distributor[0].disruptionExposure;
+                    }
+                    else{
+                        disruptExposureDiv.innerHTML = "No Disruption Events Found";
+                    }
+
+                    // Clear boxes
+                    const productsDiv = document.getElementById("productsHandled");
+                    const outDiv = document.getElementById("shipmentsOut");
+                    const disruptDiv = document.getElementById("disruptDetails");
+                    productsDiv.innerHTML = "";
+                    outDiv.innerHTML = "";
+                    disruptDiv.innerHTML = "";
+
+                    // Display Product Details
+                    if (data.productsHandled && data.productsHandled.length > 0) {
+                        data.productsHandled.forEach(item => {
+                            const div = document.createElement("div");
+                            div.className = "shipment-item";
+                            div.innerHTML = `
+                                <strong>Product Name:</strong> ${item.ProductName}<br>
+                                <strong>Product ID:</strong> ${item.ProductID}<br>
+                            `;
+                            productsDiv.appendChild(div);
+                        });
+                    } else {
+                        productsDiv.innerHTML = '<p class="text-muted">No products found</p>';
+                    }
+
+                    // Display outstanding shipments
+                    if (data.shipmentsOutstanding && data.shipmentsOutstanding.length > 0) {
+                        data.shipmentsOutstanding.forEach(item => {
+                            const div = document.createElement("div");
+                            div.className = "shipment-item";
+                            div.innerHTML = `
+                                <strong>Shipment ID:</strong> ${item.ShipmentID}<br>
+                                <strong>Company:</strong> ${item.CompanyName}<br>
+                            `;
+                            outDiv.appendChild(div);
+                        });
+                    } else {
+                        outDiv.innerHTML = '<p class="text-muted">No Currently Out Shipments</p>';
+                    }
+
+                    //Pie chart of status distribution
+                        var labels = ['Delivered', 'Outstanding'];
+                    // Calculate outstanding count safely
+                        var outstandingCount = data.shipmentsOutstanding && data.shipmentsOutstanding.length > 0 ? data.shipmentsOutstanding.length : 0;
+
+                    // Calculate delivered shipments (within user specified itme range)
+                    var totalShipments = parseInt(data.distributor[0].ShipmentVolume) || 0;
+                    var deliveredCount = totalShipments - outstandingCount;
+                    //Plot Details
+                    var pieData = [{
+                        values: [deliveredCount, outstandingCount],
+                        labels: labels,
+                        type: 'pie'
+                        }];
+                    var layout = {
+                        title: 'Status Distribution',
+                        height: 300,
+                        width: 550
+                        };
+
+                    Plotly.newPlot('pieChartOut', pieData, layout);
+
+                    //Show what disruption events are impacting distributor
+                   // Display disruption events and bar chart (Have to go in same if statement incase the company was unaffected by disruption events)
+                    if (data.disruptionEvent && data.disruptionEvent.length > 0) {
+                        // Display individual disruption events
+                        data.disruptionEvent.forEach(item => {
+                            const div = document.createElement("div");
+                            div.className = "shipment-item";
+                            div.innerHTML = `
+                                <strong>Event ID:</strong> ${item.EventID}<br>
+                                <strong>Event Category:</strong> ${item.CategoryName}<br>
+                                <strong>Impact Level:</strong> ${item.ImpactLevel}<br>
+                            `;
+                            disruptDiv.appendChild(div);
+                        });
+
+                        // Bar Chart - only if first item has the summary properties
+                        if (data.disruptionEvent[0].NumHighImpact !== undefined) {
+                            var labelsBar = ['High', 'Medium', 'Low'];
+                            var countHigh = parseInt(data.disruptionEvent[0].NumHighImpact) || 0;
+                            var countMed = parseInt(data.disruptionEvent[0].NumMedImpact) || 0;
+                            var countLow = parseInt(data.disruptionEvent[0].NumLowImpact) || 0;
+                            
+                            var barData = [{
+                                x: labelsBar,
+                                y: [countHigh, countMed, countLow],
+                                type: 'bar'
+                            }];
+                            var barLayout = {
+                                title: 'Disruption Event Breakdown',
+                                height: 300,
+                                width: 550
+                            };
+                            Plotly.newPlot('barChartDisrupt', barData, barLayout);
+                        } else {
+                            document.getElementById('barChartDisrupt').innerHTML = '<p class="text-muted">No summary data available</p>';
+                        }
+                    } else {
+                        // No disruption events found
+                        disruptDiv.innerHTML = '<p class="text-muted">No Disruption Events in Time Period!</p>';
+                        document.getElementById('barChartDisrupt').innerHTML = '<p class="text-muted">No data to display</p>';
+                    }
+
+                    // Update status message
+                    document.getElementById("statusMessage").innerHTML = 
+                        `<div class="alert alert-success">Data loaded successfully: ${data.leavingCompany ? data.leavingCompany.length : 0} leaving, ${data.arrivingAt ? data.arrivingAt.length : 0} arriving</div>`;
+                    
+                } catch (error) {
+                    console.error("Error parsing response:", error);
+                    document.getElementById("statusMessage").innerHTML = 
+                        `<div class="alert alert-danger">Error parsing data: ${error.message}</div>`;
+                    document.getElementById("productsHandled").innerHTML = '<p class="text-danger">Error loading data</p>';
+                    document.getElementById("shipmentsOut").innerHTML = '<p class="text-danger">Error loading data</p>';
+                }
+
+            } else if (this.readyState == 4) {
+                console.error("Error loading data. Status:", this.status);
+                document.getElementById("statusMessage").innerHTML = 
+                    `<div class="alert alert-danger">Error loading data. Status: ${this.status}</div>`;
+            }
+        };
+
+        xhttp.onerror = function() {
+            console.error("Network error occurred");
+            document.getElementById("statusMessage").innerHTML = 
+                '<div class="alert alert-danger">Network error occurred. Check console for details.</div>';
+        };
+
+        // Send the request
+        const url = "SCMDistributorQueries.php?q=" + encodeURIComponent(q) + "&g=" + encodeURIComponent(g);
+        console.log("Opening request to:", url);
+        
+        xhttp.open("GET", url, true);
+        xhttp.send();
+    }
+</script>
+
+</body>
+</html>
