@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Supply Chain Manager Dashboard</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+ <style>
+    @import "standardized_project_formatting.css";
+
+    .bubble{
+        display: inline-block;
+        padding: 15px 25px;
+        border-radius: 20px;
+        color: white;
+        font-weight: bold;
+        margin: 25px;
+    }
+    .red{background-color: red;}
+    .blue{background-color: blue;}
+    
+    .button{
+        display: inline-block;
+        background-color: #26b0b9;
+        color: white;
+        padding: 8px 14px;
+        border-radius: 6px;
+        margin-top: 15px;
+        margin-left: -475px;
+        text-decoration: none;
+    }
+
+    .plots{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .plot{
+        margin: 15px;
+        text-align: center;
+    }
+
+    .plot img{
+        width: 150px;
+        height: 200px;
+        background-color: white; /* Placeholder */
+    }
+    
+    /* Column 2 - Dasboard Header */
+    #dashboard-header{
+        background-color: #ececec;  
+        width: auto;
+        height: auto;
+        font-family: Cambria, serif; 
+        font-size: 30px;
+        color: #222;             
+        padding: 15px;           
+        border-radius: 6px;         
+        text-align: center;        
+    }
+
+    #scroll-format {
+  		max-height: 250px;         
+  		overflow-x: hidden;        
+	}
+    
+.disruption-summary {
+  text-align: left 
+}
+.disruption-event-info {
+  text-align: left 
+}
+
+
+
+   </style>
+</head>
+<body>
+
+<form>
+<label for="HeatMapDropDown">Filter By:</label> <!-- How this is labeled allows it to be then found and stored as an ID later on-->
+<select id="HeatMapDropDown" class="form-select mb-3">
+  <option value="">Region Filter</option>
+  <option value="allContinents">All Continents</option>
+  <option value="allCountries">All Countries</option>
+</select>
+
+<label for="TierDropDown">Filter By:</label> <!-- How this is labeled allows it to be then found and stored as an ID later on-->
+<select id="TierDropDown" class="form-select mb-3">
+  <option value="">Tier Filter</option>
+  <option value="AT">All Tiers</option>
+  <option value="T1">Tier 1</option>
+  <option value="T2">Tier 2</option>
+  <option value="T3">Tier 3</option>
+</select>
+
+<body class="p-4">
+<div class="col-md-6">
+    <div class="card mb-3 disruption-summary">
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col">
+            <label for="startDate" class="form-label">Start Date</label>
+            <input type="month" id="startDate" class="form-control">
+          </div>
+          <div class="col">
+            <label for="endDate" class="form-label">End Date</label>
+            <input type="month" id="endDate" class="form-control">
+          </div>
+        </div>
+      </div>
+  </div>
+    </div>
+
+<button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<script>
+
+    //allows values on the page to be stored as IDs so they can be found and easily kept track of
+    //Note these lines will then point to which corresponding drop down the ID corresponds to. 
+  const HeatMapDropDown = document.getElementById("HeatMapDropDown");  //const refers to a constant variable in javascript
+  const TierDropDown = document.getElementById("TierDropDown");
+  const startDate = document.getElementById("startDate");
+  const endDate = document.getElementById("endDate");
+  
+
+
+
+//addEventListener 
+  HeatMapDropDown.addEventListener("change", function () {  // grouping drop downs into a function
+  console.log("selectedID:", this.value);
+
+    // resets like these are necesary, since if they are not included then swapping between region and region and tier will carry values causing errors and glitches. 
+    //HeatMapDropDown.value = "";
+    //HeatMapDropDown.selectedIndex = 0; //setting the Index back to zero automatically selects the first value in the dropdown. Again necessary to avoid issues.
+
+  });
+  TierDropDown.addEventListener("change", function () {  // grouping drop downs into a function
+  console.log("selectedTier:", this.value);
+  });
+  document.querySelector("form").addEventListener("submit", function(event){
+  event.preventDefault();
+  console.log("Start Date:", startDate.value);
+  console.log("End Date:", endDate.value);
+  });
+
+</script>
+
+</body>
+</html>
+    
