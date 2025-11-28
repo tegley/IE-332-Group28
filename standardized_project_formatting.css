@@ -15,10 +15,16 @@ h1{
     position: relative;
 }
 
-
-h2{
-    background-color: #a40f0f; /* Light gray */
-    display: inline-block;
-    padding: 10px 20px;
-    margin-top: 25px;
+/* Top Dasboard Header */
+#dashboard-header {
+    background-color: #ececec;    /* CHANGED: from #c0bebe → softer gray */
+    width: auto;
+    height: auto;
+    font-family: Cambria, serif; /* sets pretty font */
+    font-size: 30px;
+    color: #222;    /* NEW: darker text */
+    padding: 15px;    /* NEW: adds balance to main panel */
+    border-radius: 6px; /* NEW: smoother shape */
+    text-align: center; /* NEW: explicitly centers dashboard text */
+    margin-bottom: 10px;
 }
