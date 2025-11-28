@@ -22,13 +22,13 @@
         top: 385px;
         left: 0;
         right: 0;
-        margin-left: 8px;  /*Adjust this value if needed (e.g., to -15px) */
-        margin-right: 8px; /* Adjust this value if needed (e.g., to -15px) */
+        margin-left: 5px;
+        margin-right: 5px;
+        margin-top: 2px;
     }
 
-    #top-position-spacer {
-        height: 0; /* Occupies no height */
-        margin-top: 325px; /* Pushes the next element 400px down */
+    #myTab {
+        margin-top: 15px;
     }
 
     </style>
@@ -113,7 +113,7 @@
           </select>
         </div>
 
-        <!-- Region and Tier filter -->
+        <!-- Region and Tier filter  <div id="top-position-spacer"></div> -->
         <div id="regionTierFilter" class="filter-group" style="display:none;">
           <label for="regionTierSelect">Tier:</label>
           <select id="regionTierSelect" class="form-select">
@@ -139,169 +139,245 @@
               <button type="button" class="btn btn-primary" onclick="CheckUserInput()">Search</button>
             </div>
           </div>
-        </div>
         
-        <div id="top-position-spacer"></div>
+        
+        
+          <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link active"
+                id="df-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#df"
+                type="button"
+                role="tab"
+                aria-controls="df"
+                aria-selected="true"
+              >
+                DF
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="dsd-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#dsd"
+                type="button"
+                role="tab"
+                aria-controls="dsd"
+                aria-selected="false"
+              >
+                DSD
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="hdr-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#hdr"
+                type="button"
+                role="tab"
+                aria-controls="hdr"
+                aria-selected="false"
+              >
+                HDR
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="art-td-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#art-td"
+                type="button"
+                role="tab"
+                aria-controls="art-td"
+                aria-selected="false"
+              >
+                ART & TD
+              </button>
+            </li>
 
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button
-              class="nav-link active"
-              id="df-tab"
-              data-bs-toggle="tab"
-              data-bs-target="#df"
-              type="button"
-              role="tab"
-              aria-controls="df"
-              aria-selected="true"
+          </ul>
+
+          <div class="tab-content" id="myTabContent">
+            <div
+              class="tab-pane fade show active"
+              id="df"
+              role="tabpanel"
+              aria-labelledby="df-tab"
             >
-              DF
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button
-              class="nav-link"
-              id="dsd-tab"
-              data-bs-toggle="tab"
-              data-bs-target="#dsd"
-              type="button"
-              role="tab"
-              aria-controls="dsd"
-              aria-selected="false"
+              <div class="card mb-2 w-100" id="df-bar-chart" style="height: 500px"> </div>
+            </div>
+
+            <div
+              class="tab-pane fade"
+              id="dsd"
+              role="tabpanel"
+              aria-labelledby="dsd-tab"
             >
-              DSD
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button
-              class="nav-link"
-              id="hdr-tab"
-              data-bs-toggle="tab"
-              data-bs-target="#hdr"
-              type="button"
-              role="tab"
-              aria-controls="hdr"
-              aria-selected="false"
+              <div class="card mb-2 w-100" id="dsd-stackedbar-chart" style="height: 500px"> </div>
+
+            </div>
+
+            <div
+              class="tab-pane fade"
+              id="hdr"
+              role="tabpanel"
+              aria-labelledby="hdr-tab"
             >
-              HDR
-            </button>
-          </li>
-        </ul>
+              <div class="card mb-2 w-100" id="hdr-pie-chart" style="height: 500px"> </div>
+            </div>
 
-        <div class="tab-content" id="myTabContent">
-          <div
-            class="tab-pane fade show active"
-            id="df"
-            role="tabpanel"
-            aria-labelledby="df-tab"
-          >
-            <h3>DF Bar Chart</h3>
-            <div id="df-bar-chart"> </div>
-          </div>
-
-          <div
-            class="tab-pane fade"
-            id="dsd"
-            role="tabpanel"
-            aria-labelledby="dsd-tab"
-          >
-            <h3>DSD Stacked Bar Chart</h3>
-            <div id="dsd-stackedbar-chart"> </div>
-
-          </div>
-
-          <div
-            class="tab-pane fade"
-            id="hdr"
-            role="tabpanel"
-            aria-labelledby="hdr-tab"
-          >
-            <h3>HDR Pie Chart</h3>
-            <div id="hdr-pie-chart"> </div>
+            <div
+              class="tab-pane fade"
+              id="art-td"
+              role="tabpanel"
+              aria-labelledby="art-td-tab"
+            >
+              <div class="card mb-2 w-100" id="art-td-histogram-chart" style="height: 500px"> </div>
+            </div>
           </div>
         </div>
-        
-        <!-- JavaScript for dropdown filter appearance space minimization -->
-        <script>
-            //allows values on the page to be stored as IDs so they can be found and easily kept track of
-            //Note these lines will then point to which corresponding drop down the ID corresponds to. 
-          const DisruptionDropDown = document.getElementById("DisruptionDropDown");  //const refers to a constant variable in javascript
-          const companyNameFilter = document.getElementById("companyNameFilter");
-          const regionChooser     = document.getElementById("regionChooser");
-          const regionSelect      = document.getElementById("regionSelect");
-          const continentFilter   = document.getElementById("continentFilter");
-          const countryFilter     = document.getElementById("countryFilter");
-          const tierFilter        = document.getElementById("tierFilter");
-          const regionTierFilter  = document.getElementById("regionTierFilter");
-
-          const companyInput      = document.getElementById("companyInput");
-          const countryInput      = document.getElementById("countryInput");
-          const continentSelect   = document.getElementById("continentSelect");
-          const tierSelect        = document.getElementById("tierSelect");
-          const regionTierSelect  = document.getElementById("regionTierSelect");
-
-        //addEventListener 
-          DisruptionDropDown.addEventListener("change", function () {  // grouping drop downs into a function
-            //  logging the selected value
-            //console.log("DisruptionDropDown selected:", this.value);
-            companyNameFilter.style.display = "none"; //display nothing (hiding stuff)
-            regionChooser.style.display = "none";
-            continentFilter.style.display = "none";
-            countryFilter.style.display = "none";
-            tierFilter.style.display = "none";
-            regionTierFilter.style.display = "none";
-
-            // resets like these are necesary, since if they are not included then swapping between region and region and tier will carry values causing errors and glitches. 
-            companyInput.value = "";
-            regionSelect.selectedIndex = 0; //setting the Index back to zero automatically selects the first value in the dropdown. Again necessary to avoid issues.
-            continentSelect.selectedIndex = 0;
-            countryInput.value = "";
-            tierSelect.selectedIndex = 0;
-            regionTierSelect.selectedIndex = 0;
-
-        //if statements
-            if (this.value === "company") { //for example, if company is selected. (the ID) 
-              companyNameFilter.style.display = "block";  //then that corresponding dropdown will be displayed
-            }
-            if (this.value === "region") {
-              regionChooser.style.display = "block";
-            }
-            if (this.value === "tier"){
-              tierFilter.style.display ="block";
-            }
-            if (this.value === "regionTier"){
-              regionChooser.style.display ="block";
-              regionTierFilter.style.display ="block";
-            }
-          });
-
-          // region function, this is necessary because it helps eliminate errors when carrying over data about regions.
-          //since we have both select by region and also select by region and tier. It can cause errors.
-          regionSelect.addEventListener("change", function () {
-            //console.log("RegionSelect selected:", this.value);
-            continentFilter.style.display = "none";
-            countryFilter.style.display = "none";
-
-            // reset choices
-            continentSelect.selectedIndex = 0;
-            countryInput.value = "";
-
-            if (this.value === "continent") {
-              continentFilter.style.display = "block";
-            }
-            if (this.value === "country") {
-              countryFilter.style.display = "block";
-            }
-          });
-        </script>
-
       </div> <!-- Closes col-md-9 -> add divs above this line!! -->
 
     </div> <!-- Row -->
   </div> <!-- Container -->
-</body>
 
-<script>
+<script> //JavaScript for dropdown filter appearance space minimization
+    //allows values on the page to be stored as IDs so they can be found and easily kept track of
+    //Note these lines will then point to which corresponding drop down the ID corresponds to. 
+  const DisruptionDropDown = document.getElementById("DisruptionDropDown");  //const refers to a constant variable in javascript
+  const companyNameFilter = document.getElementById("companyNameFilter");
+  const regionChooser     = document.getElementById("regionChooser");
+  const regionSelect      = document.getElementById("regionSelect");
+  const continentFilter   = document.getElementById("continentFilter");
+  const countryFilter     = document.getElementById("countryFilter");
+  const tierFilter        = document.getElementById("tierFilter");
+  const regionTierFilter  = document.getElementById("regionTierFilter");
+
+  const companyInput      = document.getElementById("companyInput");
+  const countryInput      = document.getElementById("countryInput");
+  const continentSelect   = document.getElementById("continentSelect");
+  const tierSelect        = document.getElementById("tierSelect");
+  const regionTierSelect  = document.getElementById("regionTierSelect");
+
+//addEventListener 
+  DisruptionDropDown.addEventListener("change", function () {  // grouping drop downs into a function
+    //  logging the selected value
+    //console.log("DisruptionDropDown selected:", this.value);
+    companyNameFilter.style.display = "none"; //display nothing (hiding stuff)
+    regionChooser.style.display = "none";
+    continentFilter.style.display = "none";
+    countryFilter.style.display = "none";
+    tierFilter.style.display = "none";
+    regionTierFilter.style.display = "none";
+
+    // resets like these are necesary, since if they are not included then swapping between region and region and tier will carry values causing errors and glitches. 
+    companyInput.value = "";
+    regionSelect.selectedIndex = 0; //setting the Index back to zero automatically selects the first value in the dropdown. Again necessary to avoid issues.
+    continentSelect.selectedIndex = 0;
+    countryInput.value = "";
+    tierSelect.selectedIndex = 0;
+    regionTierSelect.selectedIndex = 0;
+
+//if statements
+    if (this.value === "company") { //for example, if company is selected. (the ID) 
+      companyNameFilter.style.display = "block";  //then that corresponding dropdown will be displayed
+    }
+    if (this.value === "region") {
+      regionChooser.style.display = "block";
+    }
+    if (this.value === "tier"){
+      tierFilter.style.display ="block";
+    }
+    if (this.value === "regionTier"){
+      regionChooser.style.display ="block";
+      regionTierFilter.style.display ="block";
+    }
+  });
+
+  // region function, this is necessary because it helps eliminate errors when carrying over data about regions.
+  //since we have both select by region and also select by region and tier. It can cause errors.
+  regionSelect.addEventListener("change", function () {
+    //console.log("RegionSelect selected:", this.value);
+    continentFilter.style.display = "none";
+    countryFilter.style.display = "none";
+
+    // reset choices
+    continentSelect.selectedIndex = 0;
+    countryInput.value = "";
+
+    if (this.value === "continent") {
+      continentFilter.style.display = "block";
+    }
+    if (this.value === "country") {
+      countryFilter.style.display = "block";
+    }
+  });
+</script>
+
+<script> //JavaScript for resizing Plotly graphs
+
+//Ensure graphs are properly sized when other tabs are clicked
+//Achieve this by looping through all tabs and triggering the autosize function for all tabs
+const tabElms = document.querySelectorAll('button[data-bs-toggle="tab"]');
+
+// Loop through each tab element
+tabElms.forEach(tabElm => {
+    // Add an event listener for when the tab is fully shown
+    // 'shown.bs.tab' is the Bootstrap event that fires *after* the content is visible
+    tabElm.addEventListener('shown.bs.tab', event => {
+        
+        const targetTabId = event.target.getAttribute('data-bs-target');
+        
+        // This condition checks which tab was just activated
+        if (targetTabId === '#dsd') {
+            // Get the container element for the DSD chart
+            const chartContainer = document.getElementById('dsd-stackedbar-chart');
+            // Tell Plotly to resize the chart to its new, visible container size
+            if (chartContainer) {
+                Plotly.relayout(chartContainer, { autosize: true });
+            }
+        } 
+        else if (targetTabId === '#df') {
+            const chartContainer = document.getElementById('df-bar-chart');
+            if (chartContainer) {
+                Plotly.relayout(chartContainer, { autosize: true });
+            }
+        }
+        else if (targetTabId === '#hdr') {
+            const chartContainer = document.getElementById('hdr-pie-chart');
+            if (chartContainer) {
+                Plotly.relayout(chartContainer, { autosize: true });
+            }
+        }
+        else if (targetTabId === '#art-td') {
+            const chartContainer = document.getElementById('art-td-histogram-chart');
+            if (chartContainer) {
+                Plotly.relayout(chartContainer, { autosize: true });
+            }
+          }
+    });
+});
+
+//Prevent height compression of first active tab
+const activePane = document.querySelector('.tab-pane.show.active');
+if (activePane) {
+  //Find the chart container inside that active pane
+  const ChartContainer = activePane.querySelector('[id$="-chart"]');
+
+  if (ChartContainer) {
+    //Pass the DOM element to Plotly (FIXED: using dfChartContainer, not its ID string)
+    Plotly.relayout(ChartContainer, { autosize: true });
+  }
+}
+</script>
+
+</body> <!-- End Document -->
+<script> //JavaScript functions
 function CheckUserInput() {
   let DisruptionDropDown = document.getElementById("DisruptionDropDown").value;
   if(DisruptionDropDown == "") {
@@ -439,17 +515,31 @@ function DisruptionEventsAJAX(DisruptionDropDown, user_input, start_date, end_da
     xhtpp.onload = function () {
         if (this.readyState == 4 && this.status == 200) {
           //console.log(this.responseText);
+          
           my_JSON_object = JSON.parse(this.responseText);
           console.log(JSON.stringify(my_JSON_object));
 
-          //DF Bar chart
-          const df_companies = my_JSON_object.DF.map((item) => { return String(item.CompanyName) })
+          //DF - bar chart
+          const df_companies = my_JSON_object.DF.map((item) => { return String(item.CompanyName) });
           const df_values = my_JSON_object.DF.map((item) => { return item.Total });
-          CreateDSDBarChart(df_companies, df_values);
+          CreateDFBarChart(df_companies, df_values);
 
-          //Financial Health line chart example
-          //const x_vals = my_JSON_object.pastHealthScores.map((item) => { return String(item.Quarter + " " + item.RepYear) }).map(String).reverse()
-          //const y_vals = my_JSON_object.pastHealthScores.map((item) => { return item.HealthScore }).map(Number).reverse();
+          //DSD - stacked bar chart
+          const dsd_companies = my_JSON_object.DSD.map((item) => { return String(item.CompanyName) });
+          const dsd_low_values = my_JSON_object.DSD.map((item) => { return item.NumLowImpact });
+          const dsd_medium_values = my_JSON_object.DSD.map((item) => { return item.NumMedImpact });
+          const dsd_high_values = my_JSON_object.DSD.map((item) => { return item.NumHighImpact });
+          CreateDSDStackedBarChart(dsd_companies, dsd_low_values, dsd_medium_values, dsd_high_values);
+
+          //HDR - pie chart
+          const hdr_companies = my_JSON_object.HDR.map((item) => { return String(item.CompanyName) });
+          const hdr_values = my_JSON_object.HDR.map((item) => { return item.NumHighImpact });
+          CreateHDRPieChart(hdr_companies, hdr_values);
+
+          //ART & TD - histogram
+          const downtime_values = my_JSON_object.TD_ART.map((item) => { return item.Downtime })
+          console.log(downtime_values);
+          CreateART_TDHistogram(downtime_values);  
           };
         }
     const url = "supplychainmanager_disruptionevents_queries.php?q=" + encodeURIComponent(q_input) + "&g=" + encodeURIComponent(g_input);
@@ -457,16 +547,13 @@ function DisruptionEventsAJAX(DisruptionDropDown, user_input, start_date, end_da
     xhtpp.send();
 }
 
-function CreateDSDBarChart(df_companies, df_values){
-  
+function CreateDFBarChart(df_companies, df_values){
+  //Placement
+  const BarChart = document.getElementById('df-bar-chart');
+  //Layout
   var layout = {
       title: {
-          text: 'Disruption Frequency Bar Chart'
-      },
-      xaxis: {
-          title: {
-              text: 'Companies'
-          }
+          text: 'Disruption Frequency'
       },
       yaxis: {
           title: {
@@ -474,9 +561,7 @@ function CreateDSDBarChart(df_companies, df_values){
           }
       }
   };
-
-  const BarChart = document.getElementById('df-bar-chart');
-  
+  //Data
   var data = [
   {
     x: df_companies,
@@ -484,9 +569,100 @@ function CreateDSDBarChart(df_companies, df_values){
     type: 'bar'
   }
   ];
-
+  //Execute Plotly
   Plotly.newPlot(BarChart, data, layout);
 }
 
+function CreateDSDStackedBarChart(dsd_companies, dsd_low_values, dsd_medium_values, dsd_high_values){
+  //Placement  
+  const StackedBarChart = document.getElementById('dsd-stackedbar-chart');
+  //Layout
+  var layout = {
+      title: {
+          text: 'Disruption Severity Distribution'
+      },
+      yaxis: {
+          title: {
+              text: 'DSD'
+          }
+      },
+      barmode: 'stack'
+  };
+  //Data
+  var low = {
+    x: dsd_companies,
+    y: dsd_low_values,
+    type: 'bar',
+    name: 'Low Impact'
+  };
+
+  var medium = {
+    x: dsd_companies,
+    y: dsd_medium_values,
+    type: 'bar',
+    name: 'Medium Imapct'
+  };
+  
+  var high = {
+    x: dsd_companies,
+    y: dsd_high_values,
+    type: 'bar',
+    name: 'High Impact'
+  };
+
+  data=[low, medium, high];
+  //Execute Plotly
+  Plotly.newPlot(StackedBarChart, data, layout);
+}
+
+function CreateHDRPieChart(hdr_companies, hdr_values) {
+  //Placement
+  const PieChart = document.getElementById('hdr-pie-chart');
+  //Data
+  var data = [{
+    type: "pie",
+    values: hdr_values,
+    labels: hdr_companies,
+    textinfo: "label+percent",
+  }];
+  //Layout
+  var layout = {
+    title: {
+        text: 'High-Impact Disruption Rate'
+    },
+    showlegend: true
+    };
+  //Execute Plotly
+  Plotly.newPlot(PieChart, data, layout);
+}
+
+function CreateART_TDHistogram(downtime_values) {
+  //Placement
+  const Histogram = document.getElementById('art-td-histogram-chart');
+  //Data
+  var trace = {
+    x: downtime_values,
+    type: 'histogram',
+  };
+  var data = [trace];
+  //Layout
+  var layout = {
+    title: {
+        text: 'Disruption Event Downtime'
+    },
+    yaxis: {
+        title: {
+            text: 'Downtime (days)'
+        }
+    },
+    yaxis: {
+        title: {
+            text: 'Frequency of Downtime'
+        }
+    }
+  };
+  //Execute Plotly
+  Plotly.newPlot(Histogram, data, layout);
+}
 </script>
 </html>
