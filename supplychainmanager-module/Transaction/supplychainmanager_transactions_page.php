@@ -11,6 +11,11 @@
     
     <style>
         @import "standardized_project_formatting.css";
+        #form-box {
+            height: 250px;
+            box-sizing: border-box;
+        }
+
         .section-banner {
             background-color: #0f6fab;
             color: white;
@@ -163,7 +168,7 @@
 
             <div id="companySection" class="collapse-content">
 
-                <form name="myForm">
+                <form name="myForm" id="form-box">
                     <!-- Overall Filter -->
                     <div id="FilterChooser"> 
                     <label for="myForm">Filter By:</label>
@@ -188,7 +193,7 @@
 
                     <!-- Country sub-filter -->
                     <div id="countryFilter" style="display:none;"> 
-                    <input type="text" id="country_input" class="form-control mb-2" placeholder="Enter Company Name">
+                    <input type="text" id="country_input" class="form-control mb-2" placeholder="Enter Country">
                     </div>
 
                     <!-- Continent filter -->
@@ -203,7 +208,7 @@
                         <option>South America</option>
                     </select>
                     </div>
-
+                    
                     <div class="row mt-3">
                         <div class="col-md-6">
                             <label>Start Date</label>
@@ -380,8 +385,8 @@ document.addEventListener('DOMContentLoaded', function() {
 const myForm = document.getElementById("myForm");  //Overarching filter
 const companyFilter = document.getElementById("companyFilter");
 const cityFilter = document.getElementById("cityFilter");
-const countryFilter = document.getElementById("companyFilter");
-const continentFilter = document.getElementById("companyFilter");
+const countryFilter = document.getElementById("countryFilter");
+const continentFilter = document.getElementById("continentFilter");
 
 //Input IDs
 const company_input = document.getElementById("company_input");
@@ -400,7 +405,7 @@ myForm.addEventListener("change", function () {  // grouping drop downs into a f
 
     //Resets inputs 
     company_input.value = "";
-    city_input.selectedIndex = 0;
+    city_input.value = "";
     country_input.value = "";
     continent_input.selectedIndex = 0;
 
