@@ -38,11 +38,11 @@ $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp
     //Start Queries
     $whereDis = " WHERE c.CompanyName =  '" . $quer[0] . "'";
 
-    $distributorSELECT = "SELECT d.CompanyID AS DistributorID, c.CompanyName, COUNT(DISTINCT s.ShipmentID) AS ShipmentVolume, ROUND(((SUM(CASE WHEN s.ActualDate <= s.PromisedDate THEN 1 ELSE 0 END) / COUNT(DISTINCT s.ShipmentID)) * 100), 2) AS OTRate, SUM(s.Quantity) AS TotQuantityShipped, ROUND(AVG(s.Quantity), 2) AS AVGShipQuantity, COUNT(DISTINCT e.EventID) AS disruptionExposure
-    FROM Distributor d JOIN Company c ON d.CompanyID = c.CompanyID JOIN Shipping s ON s.DistributorID = d.CompanyID JOIN Product p ON s.ProductID = p.ProductID JOIN ImpactsCompany i ON i.AffectedCompanyID = d.CompanyID JOIN DisruptionEvent e ON e.EventID = i.EventID
+    $distributorSELECT = "SELECT COUNT(DISTINCT s.ShipmentID) AS ShipmentVolume, SUM(s.Quantity) AS TotQuantityShipped, ROUND(AVG(s.Quantity), 2) AS AVGShipQuantity
+    FROM Distributor d JOIN Company c ON d.CompanyID = c.CompanyID JOIN Shipping s ON s.DistributorID = d.CompanyID JOIN Product p ON s.ProductID = p.ProductID
     "; //User might choose to instead group by products on the page. Query as is will allow user to see the various products handled
-    $distributorQuery = "{$distributorSELECT} {$whereDis} GROUP BY d.CompanyID, c.CompanyName;";
-    //echo $distributorQuery;
+    $distributorQuery = "{$distributorSELECT} {$whereDis} AND s.ActualDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "';";
+    // echo $distributorQuery;
     //Execute the SQL query
     $resultdistributor = mysqli_query($conn, $distributorQuery);
     // Convert the table into individual rows and reformat.
@@ -50,6 +50,19 @@ $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp
     $distributor[] = $row;
     }
     // echo json_encode($distributor); 
+
+    //On time Rate Query
+    $otrSELECT = "SELECT ROUND(((SUM(CASE WHEN s.ActualDate <= s.PromisedDate THEN 1 ELSE 0 END) / COUNT(DISTINCT s.ShipmentID)) * 100), 2) AS OTR
+    FROM (SELECT x.ShipmentID, x.ActualDate, x.PromisedDate FROM Distributor d JOIN Company c ON d.CompanyID = c.CompanyID JOIN Shipping x ON x.DistributorID = d.CompanyID ";
+    $otrQuery = "{$otrSELECT} {$whereDis} AND x.ActualDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "' GROUP BY x.ShipmentID) s;";
+    // echo $otrQuery;
+    //Execute the SQL query
+    $resultotr = mysqli_query($conn, $otrQuery);
+    // Convert the table into individual rows and reformat.
+    while ($row = mysqli_fetch_array($resultotr, MYSQLI_ASSOC)) {
+    $otr[] = $row;
+    }
+    // echo json_encode($otr); 
 
     //Products Handled Query Does this need extra filters?
     $productsHandledSelect = "SELECT d.CompanyID, c.CompanyName, p.ProductName, p.ProductID, x.ProductCount FROM Distributor d JOIN Company c ON d.CompanyID = c.CompanyID JOIN Shipping s ON s.DistributorID = d.CompanyID 
@@ -81,7 +94,7 @@ $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp
     //Query that gets shipment dates for plot
     $shippingSelect = "SELECT s.ShipmentID, s.ActualDate, s.PromisedDate FROM Shipping s JOIN Company c ON s.DistributorID = c.CompanyID";
     $shippingQuery = "{$shippingSelect} {$whereStateShip} AND c.CompanyName =  '" . $quer[0] . "';"; 
-    // echo $shippingQuery;
+    //  echo $shippingQuery;
     //Execute the SQL query
     $resultshipping = mysqli_query($conn, $shippingQuery);
     // Convert the table into individual rows and reformat.
@@ -107,7 +120,7 @@ $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp
     // echo json_encode($disruptionEvent);
 
     //Query that explores disruption event exposure 
-    $disruptionEXPOSUREEventSelect = "SELECT SUM(CASE WHEN i.ImpactLevel = 'High' THEN 1 ELSE 0 END) AS NumHighImpact, SUM(CASE WHEN i.ImpactLevel = 'Medium' THEN 1 ELSE 0 END) AS NumMedImpact, SUM(CASE WHEN i.ImpactLevel = 'Low' THEN 1 ELSE 0 END) AS NumLowImpact
+    $disruptionEXPOSUREEventSelect = "SELECT COUNT(e.EventID) AS disruptionExposure, SUM(CASE WHEN i.ImpactLevel = 'High' THEN 1 ELSE 0 END) AS NumHighImpact, SUM(CASE WHEN i.ImpactLevel = 'Medium' THEN 1 ELSE 0 END) AS NumMedImpact, SUM(CASE WHEN i.ImpactLevel = 'Low' THEN 1 ELSE 0 END) AS NumLowImpact
     FROM Distributor d JOIN Company c ON d.CompanyID = c.CompanyID
     JOIN ImpactsCompany i ON i.AffectedCompanyID = d.CompanyID JOIN DisruptionEvent e ON e.EventID = i.EventID";
     $disruptionEXPOSUREEventQuery = "{$disruptionEXPOSUREEventSelect} {$whereStateEvents} AND c.CompanyName =  '" . $quer[0] . "'; "; //Will have same time range filters as user specified
@@ -125,6 +138,7 @@ $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp
         //Making JSON Object
     $SCMDistributorResults = [
         "distributor"=> $distributor,
+        "otr" => $otr,
         "productsHandled"=> $productsHandled,
         "shipmentsOutstanding"=> $shipmentsOutstanding,
         "shipping" => $shipping,
