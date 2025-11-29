@@ -731,7 +731,7 @@ function showCustomer() {
     };
 
     // Send the request
-    const url = "SCMTransactonQueries.php?q=" + encodeURIComponent(q) + "&g=" + encodeURIComponent(g);
+    const url = "SCMTransactionQueries.php?q=" + encodeURIComponent(q) + "&g=" + encodeURIComponent(g);
     console.log("Opening request to:", url);
     
     xhttp.open("GET", url, true);
