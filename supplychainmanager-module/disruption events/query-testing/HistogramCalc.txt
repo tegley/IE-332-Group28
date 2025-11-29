@@ -1,0 +1,111 @@
+function CreateHDRPieChart(hdr_companies, hdr_values) {
+  //Placement
+  const PieChart = document.getElementById('hdr-pie-chart');
+  //Data
+  var data = [{
+    type: "pie",
+    values: hdr_values,
+    labels: hdr_companies,
+    textinfo: "label+percent",
+  }];
+  //Layout
+  var layout = {
+    title: {
+        text: 'High-Impact Disruption Rate'
+    },
+    showlegend: true
+    };
+  //Execute Plotly
+  Plotly.newPlot(PieChart, data, layout);
+}
+
+function CreateART_TDHistogram(downtime_values) {
+  const Histogram = document.getElementById('art-td-histogram-chart');
+
+  // --- Helper: compute quantile (linear interpolation) ---
+  function histCalculations(arr, q) {
+    const sorted = [...arr].sort((a, b) => a - b);
+    const n = sorted.length;
+    const pos = (n - 1) * q;
+    const base = Math.floor(pos);
+    const rest = pos - base;
+    if (base + 1 < n) {
+      return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+    }
+    return sorted[base];
+  }
+
+  const n = values.length;
+  const minimumValue = Math.min(...values);
+  const maximumValue = Math.max(...values);
+  const q1 = histCalculations(values, 0.25);
+  const q3 = histCalculations(values, 0.75);
+  const iqr = q3 - q1;
+
+  // Freedman–Diaconis bin width
+  let binWidth = (iqr > 0) ? (2 * iqr / Math.cbrt(n)) : 0;
+
+  // Fallback if IQR = 0 or binWidth is 0 / extremely small:
+  // use Sturges' rule to pick a sensible number of bins
+  let numBins;
+  if (!binWidth || !isFinite(binWidth) || binWidth <= 0) {
+    numBins = Math.ceil(Math.log2(n) + 1); // Sturges
+    binWidth = (maximumValue - minimumValue) / numBins || 1; // if range is 0, default width 1
+  } else {
+    numBins = Math.ceil((maximumValue - minimumValue) / binWidth) || 1;
+    // In some edge cases (tiny range or rounding) ensure at least 1 bin
+    if (numBins < 1) numBins = 1;
+  }
+
+  // If computed binWidth ends up >= range (-> single bin), reduce size by factor to get some bins
+  const range = maximumValue - minimumValue;
+  if (range > 0 && binWidth >= range) {
+    // choose at least min(10, n) bins so user sees distribution
+    const fallbackBins = Math.min(10, Math.max(1, Math.floor(Math.sqrt(n))));
+    binWidth = range / fallbackBins;
+    numBins = fallbackBins;
+  }
+
+  // Align start to a nice multiple of binWidth so bins look clean
+  const start = Math.floor(minimumValue / binWidth) * binWidth;
+  const end = start + numBins * binWidth;
+
+  // Debug info — open browser console to inspect
+//  console.group('CreateART_TDHistogram stats');
+  console.log('n =', n);
+  console.log('min =', minimumValue);
+  console.log('max =', maximumValue);
+  console.log('q1 =', q1, 'q3 =', q3, 'IQR =', iqr);
+  console.log('binWidth =', binWidth, 'numBins =', numBins);
+  console.log('start =', start, 'end =', end);
+  console.groupEnd();
+
+  // Plotly histogram trace with explicit xbins
+  const trace = {
+    x: values,
+    type: 'histogram',
+    xbins: {
+      start: start,
+      end: end,
+      size: binWidth
+    },
+    marker: {
+      line: {
+        width: 1
+      }
+    }
+  };
+
+  const layout = {
+    title: { text: 'Disruption Event Downtime' },
+    xaxis: {
+      title: { text: `Downtime (days)` }
+    },
+    yaxis: {
+      title: { text: 'Frequency of Downtime' }
+    },
+    bargap: 0.05
+  };
+
+  Plotly.newPlot(Histogram, [trace], layout, {responsive: true});
+}
