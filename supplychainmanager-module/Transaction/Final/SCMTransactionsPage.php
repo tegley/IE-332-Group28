@@ -37,7 +37,7 @@
         }
 
         .scroll-box-MainContent {
-            height: 250px;
+            height: 300px;
             overflow-y: auto;
             border: 1px solid #aaa;
             padding: 10px;
@@ -82,25 +82,6 @@
             max-height: 2000px;
         }
 
-        .plot-box {
-            text-align: center;
-            margin: 20px;
-            width: 100%;
-            max-width: 280px;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-
-        .plot-box img {
-            width: 100%;
-            height: 180px;
-            object-fit: contain;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
 
         body {
             background-color: #f5f6f8;
@@ -559,16 +540,44 @@ function showCustomer() {
     //Define what user input as their choice of filter
     let userInput = ""; //Placeholder for user's choice of filter
     if(filterType === "company") {
-        userInput = companyInput;
+        if(companyInput === ""){
+            document.getElementById("statusMessage").innerHTML = 
+            '<div class="alert alert-warning">Please select a company!</div>';
+            return;
+        }
+        else{
+            userInput = companyInput;
+        }
     }
     if(filterType === "city") {
-        userInput = cityInput;
+        if(cityInput === ""){
+            document.getElementById("statusMessage").innerHTML = 
+            '<div class="alert alert-warning">Please select a city!</div>';
+            return;
+        }
+        else{
+            userInput = cityInput;
+        }
     }
     if(filterType === "country") {
-        userInput = countryInput;
+        if(countryInput === ""){
+            document.getElementById("statusMessage").innerHTML = 
+            '<div class="alert alert-warning">Please select a country!</div>';
+            return;
+        }
+        else{
+            userInput = countryInput;
+        }
     }
     if(filterType === "continent") {
-        userInput = continentInput;
+        if(continentInput === ""){
+            document.getElementById("statusMessage").innerHTML = 
+            '<div class="alert alert-warning">Please select a continent!</div>';
+            return;
+        }
+        else{
+            userInput = continentInput;
+        }
     }
     console.log("User Input:", userInput);
     // Package parameters
@@ -722,7 +731,7 @@ function showCustomer() {
     };
 
     // Send the request
-    const url = "SCMTransactionQueries.php?q=" + encodeURIComponent(q) + "&g=" + encodeURIComponent(g);
+    const url = "SCMTransactonQueries.php?q=" + encodeURIComponent(q) + "&g=" + encodeURIComponent(g);
     console.log("Opening request to:", url);
     
     xhttp.open("GET", url, true);
@@ -760,7 +769,7 @@ function showCustomerDistributors() {
     if (start >= end) {
         document.getElementById("statusMessageDist").innerHTML = 
             '<div class="alert alert-warning">Start date must be before end date!</div>';
-        return;
+        return; 
     }
 
     // Package parameters
@@ -769,7 +778,7 @@ function showCustomerDistributors() {
 
     console.log("Sending request with q=" + q + " and g=" + g);
     // Show loading message
-    document.getElementById("statusMessage").innerHTML = 
+    document.getElementById("statusMessageDist").innerHTML = 
         '<div class="alert alert-info">Loading data...</div>';
     document.getElementById("productsHandled").innerHTML = '<p class="text-muted">Loading...</p>';
     document.getElementById("shipmentsOut").innerHTML = '<p class="text-muted">Loading...</p>';
@@ -966,12 +975,12 @@ function showCustomerDistributors() {
 
 
                 // Update status message
-                document.getElementById("statusMessage").innerHTML = 
+                document.getElementById("statusMessageDist").innerHTML = 
                     `<div class="alert alert-success">Data loaded successfully: ${data.leavingCompany ? data.leavingCompany.length : 0} leaving, ${data.arrivingAt ? data.arrivingAt.length : 0} arriving</div>`;
                 
             } catch (error) {
                 console.error("Error parsing response:", error);
-                document.getElementById("statusMessage").innerHTML = 
+                document.getElementById("statusMessageDist").innerHTML = 
                     `<div class="alert alert-danger">Error parsing data: ${error.message}</div>`;
                 document.getElementById("productsHandled").innerHTML = '<p class="text-danger">Error loading data</p>';
                 document.getElementById("shipmentsOut").innerHTML = '<p class="text-danger">Error loading data</p>';
@@ -979,14 +988,14 @@ function showCustomerDistributors() {
 
         } else if (this.readyState == 4) {
             console.error("Error loading data. Status:", this.status);
-            document.getElementById("statusMessage").innerHTML = 
+            document.getElementById("statusMessageDist").innerHTML = 
                 `<div class="alert alert-danger">Error loading data. Status: ${this.status}</div>`;
         }
     };
 
     xhttp.onerror = function() {
         console.error("Network error occurred");
-        document.getElementById("statusMessage").innerHTML = 
+        document.getElementById("statusMessageDist").innerHTML = 
             '<div class="alert alert-danger">Network error occurred. Check console for details.</div>';
     };
 
