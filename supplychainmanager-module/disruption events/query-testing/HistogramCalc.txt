@@ -89,5 +89,3 @@ function CreateART_TDHistogram(downtime_values) {
 
   Plotly.newPlot(Histogram, [trace], layout, {responsive: true});
 }
-  Plotly.newPlot(Histogram, [trace], layout, {responsive: true});
-}
