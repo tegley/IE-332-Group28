@@ -87,7 +87,7 @@
             background-color: #f5f6f8;
         }
 
-        .shipment-item {
+        .list-item {
             padding: 8px;
             margin: 4px 0;
             background: #f8f9fa;
@@ -298,7 +298,7 @@
                                 <tr><td>On Time Delivery Rate</td><td id="onTimeRate">--</td></tr>
                                 <tr><td>Total Quantity Shipped</td><td id="totalQty">--</td></tr>
                                 <tr><td>Average Shipment Qty</td><td id="avgQty">--</td></tr>
-                                <tr><td><strong>Total Shippings</strong></td><td id="totalShippingsCell">--</td></tr>
+                                <tr><td>Total Shippings</td><td id="totalShippingsCell">--</td></tr>
                                 <tr><td>Disruption Exposure</td><td id="disruption">--</td></tr>
                             </table>
                         </div>
@@ -623,7 +623,7 @@ function showCustomer() {
                 if (data.leavingCompany && data.leavingCompany.length > 0) {
                     data.leavingCompany.forEach(item => {
                         const div = document.createElement("div");
-                        div.className = "shipment-item";
+                        div.className = "list-item";
                         div.innerHTML = `
                             <strong>Shipment ID:</strong> ${item.ShipmentID}<br>
                             <strong>Company:</strong> ${item.CompanyName}<br>
@@ -639,7 +639,7 @@ function showCustomer() {
                 if (data.arrivingCompany && data.arrivingCompany.length > 0) {
                     data.arrivingCompany.forEach(item => {
                         const div = document.createElement("div");
-                        div.className = "shipment-item";
+                        div.className = "list-item";
                         div.innerHTML = `
                             <strong>Receiving ID:</strong> ${item.ReceivingID}<br>
                             <strong>Company:</strong> ${item.CompanyName}<br>
@@ -655,7 +655,7 @@ function showCustomer() {
                 if (data.adjustments && data.adjustments.length > 0) {
                     data.adjustments.forEach(item => {
                         const div = document.createElement("div");
-                        div.className = "shipment-item";
+                        div.className = "list-item";
                         div.innerHTML = `
                             <strong>Adujustment ID:</strong> ${item.AdjustmentID}, <strong>Date:</strong> ${item.AdjustmentDate} <br>
                             <strong>Company:</strong> ${item.CompanyName}<br>
@@ -804,13 +804,13 @@ function showCustomerDistributors() {
                 const averageShipmentDiv = document.getElementById("avgQty");
                 const totShipsDiv = document.getElementById("totalShippingsCell");
                 const disruptExposureDiv = document.getElementById("disruption");
-                OTRateDiv.innerHTML = data.distributor[0].OTRate;
+                OTRateDiv.innerHTML = data.otr[0].OTR;
                 totQuantityShippedDiv.innerHTML = data.distributor[0].TotQuantityShipped;
                 averageShipmentDiv.innerHTML = data.distributor[0].AVGShipQuantity;
                 totShipsDiv.innerHTML = data.distributor[0].ShipmentVolume;
                 //What if the distributor hasn't experienced a disruption event?
-                if (data.distributor[0].disruptionExposure && data.distributor[0].disruptionExposure.length > 0) {
-                    disruptExposureDiv.innerHTML = data.distributor[0].disruptionExposure;
+                if (data.disruptionEXPOSUREEvent[0].disruptionExposure && data.disruptionEXPOSUREEvent[0].disruptionExposure.length > 0) {
+                    disruptExposureDiv.innerHTML = data.disruptionEXPOSUREEvent[0].disruptionExposure;
                 }
                 else{
                     disruptExposureDiv.innerHTML = "No Disruption Events Found";
@@ -828,7 +828,7 @@ function showCustomerDistributors() {
                 if (data.productsHandled && data.productsHandled.length > 0) {
                     data.productsHandled.forEach(item => {
                         const div = document.createElement("div");
-                        div.className = "shipment-item";
+                        div.className = "list-item";
                         div.innerHTML = `
                             <strong>Product Name:</strong> ${item.ProductName}<br>
                             <strong>Product ID:</strong> ${item.ProductID}<br>
@@ -843,7 +843,7 @@ function showCustomerDistributors() {
                 if (data.shipmentsOutstanding && data.shipmentsOutstanding.length > 0) {
                     data.shipmentsOutstanding.forEach(item => {
                         const div = document.createElement("div");
-                        div.className = "shipment-item";
+                        div.className = "list-item";
                         div.innerHTML = `
                             <strong>Shipment ID:</strong> ${item.ShipmentID}<br>
                             <strong>Company:</strong> ${item.CompanyName}<br>
@@ -882,7 +882,7 @@ function showCustomerDistributors() {
                     // Display individual disruption events
                     data.disruptionEvent.forEach(item => {
                         const div = document.createElement("div");
-                        div.className = "shipment-item";
+                        div.className = "list-item";
                         div.innerHTML = `
                             <strong>Event ID:</strong> ${item.EventID}<br>
                             <strong>Event Category:</strong> ${item.CategoryName}<br>
@@ -948,10 +948,16 @@ function showCustomerDistributors() {
                         y: shipmentDelays.map(item => item.delayDays),
                         type: 'bar',
                         name: 'Delivery Delay (days)',
-                        text: shipmentDelays.map(item => `Shipment ${item.shipmentId}: ${item.delayDays} days`), //This info gets shown in the bars!!
+                        text: shipmentDelays.map(item => {
+                            if (item.delayDays === 0) return `Shipment ${item.shipmentId}: On Time ✓`;
+                            return `Shipment ${item.shipmentId}: ${item.delayDays} days ${item.delayDays > 0 ? 'late' : 'early'}`;
+                        }),
                         marker: {
-                            color: shipmentDelays.map(item => item.delayDays > 0 ? '#dc3545' : '#28a745')
-                            // Red for late deliveries (positive), green for early/on-time (negative/zero)
+                            color: shipmentDelays.map(item => {
+                                if (item.delayDays > 0) return '#dc3545';  // Red for late
+                                if (item.delayDays === 0) return '#007bff'; // Blue for on-time
+                                return '#28a745'; // Green for early
+                            })
                         }
                     };
 
@@ -976,7 +982,7 @@ function showCustomerDistributors() {
 
                 // Update status message
                 document.getElementById("statusMessageDist").innerHTML = 
-                    `<div class="alert alert-success">Data loaded successfully: ${data.leavingCompany ? data.leavingCompany.length : 0} leaving, ${data.arrivingAt ? data.arrivingAt.length : 0} arriving</div>`;
+                    `<div class="alert alert-success">Data loaded successfully!</div>`;
                 
             } catch (error) {
                 console.error("Error parsing response:", error);
