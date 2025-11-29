@@ -1,6 +1,42 @@
+function CreateHDRPieChart(hdr_companies, hdr_values) {
+  //Placement
+  const PieChart = document.getElementById('hdr-pie-chart');
+  //Data
+  var data = [{
+    type: "pie",
+    values: hdr_values,
+    labels: hdr_companies,
+    textinfo: "label+percent",
+  }];
+  //Layout
+  var layout = {
+    title: {
+        text: 'High-Impact Disruption Rate'
+    },
+    showlegend: true
+    };
+  //Execute Plotly
+  Plotly.newPlot(PieChart, data, layout);
+}
 
 function CreateART_TDHistogram(downtime_values) {
   const Histogram = document.getElementById('art-td-histogram-chart');
+
+  // Not sure if this is needed, It all has to do with how the queries are retuned
+  const values = downtime_values
+    .map(v => {
+      // handle string numbers with commas or whitespace
+      if (typeof v === 'string') v = v.replace(/,/g, '').trim();
+      return Number(v);
+    })
+    .filter(v => Number.isFinite(v));
+
+  if (!values.length) {
+    console.warn('CreateART_TDHistogram: no numeric values to plot.');
+    Plotly.purge(Histogram);
+    Histogram.innerHTML = '<div style="padding:12px">No numeric downtime values found.</div>';
+    return;
+  }
 
   // --- Helper: compute quantile (linear interpolation) ---
   function histCalculations(arr, q) {
