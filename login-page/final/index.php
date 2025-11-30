@@ -27,14 +27,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['loggedin'] = true;
         $_SESSION['FullName'] = $result_array[1];
 
-        //If the user is a supply chain manager, redirect them to that page
+        //If the user is a supply chain manager, redirect them to the SCM home page
         if ($result_array[0]=="SupplyChainManager") {
             echo "<script>";
             echo "window.location.href = 'SCM_home_page.php';";
             echo "</script>";
         }
 
-        //If the user is a senior, redirect them to that page
+        //If the user is a senior manager, redirect them to the ERP home page
         if ($result_array[0]=="SeniorManager") {
             echo "<script>";
             echo "alert('Work in progress');";
@@ -232,4 +232,5 @@ function ValidateLogin() {
 }
 </script>
 </html>
+
 
