@@ -31,6 +31,16 @@
         margin-top: 15px;
     }
 
+    .my-table td:first-child {
+      border-right: 1px solid #000;
+    }
+
+    .my-table{
+      text-align: center;
+      padding: 0.5rem 1rem;
+      margin: 5px;
+    }
+
     </style>
 </head>
 
@@ -70,7 +80,9 @@
         <!-- Company filter -->
         <div id="companyNameFilter" class="filter-group" style="display:none;">
           <label for="companyInput">Company Name:</label>
-          <input type="text" id="companyInput" class="form-control" placeholder="Enter Company Name">
+            <select id="companyInput" class="form-select mb-2">
+              <option value="">Loading companies...</option>
+            </select>
         </div>
 
         <!-- Region filter -->
@@ -99,7 +111,9 @@
         <!-- Country filter -->
         <div id="countryFilter" class="filter-group" style="display:none;"> 
           <label for="countryInput">Country Name:</label>
-          <input type="text" id="countryInput" class="form-control mb-3" placeholder="Enter Country Name">
+            <select id="countryInput" class="form-select mb-3">
+              <option value="">Loading countries...</option>
+            </select>
         </div>
 
         <!-- Tier filter -->
@@ -140,8 +154,9 @@
             </div>
           </div>
         
-        
-        
+          <div id="StatusMessage" class="mt-3">
+          </div>
+          
           <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
               <button
@@ -209,7 +224,7 @@
               role="tabpanel"
               aria-labelledby="df-tab"
             >
-              <div class="card mb-2 w-100" id="df-bar-chart" style="height: 500px"> </div>
+              <div class="card mb-2 w-100" id="df-bar-chart" style="height: 525px"> </div>
             </div>
 
             <div
@@ -218,8 +233,7 @@
               role="tabpanel"
               aria-labelledby="dsd-tab"
             >
-              <div class="card mb-2 w-100" id="dsd-stackedbar-chart" style="height: 500px"> </div>
-
+              <div class="card mb-2 w-100" id="dsd-stackedbar-chart" style="height: 525px"> </div>
             </div>
 
             <div
@@ -228,7 +242,7 @@
               role="tabpanel"
               aria-labelledby="hdr-tab"
             >
-              <div class="card mb-2 w-100" id="hdr-pie-chart" style="height: 500px"> </div>
+              <div class="card mb-2 w-100" id="hdr-pie-chart" style="height: 525px"> </div>
             </div>
 
             <div
@@ -237,7 +251,22 @@
               role="tabpanel"
               aria-labelledby="art-td-tab"
             >
-              <div class="card mb-2 w-100" id="art-td-histogram-chart" style="height: 500px"> </div>
+              <div class="row g-0">
+                <div class="col-6 p-0">
+                    <table class="table my-table" style="border-right: 1px solid #666;">
+                        <tr><td>Total Downtime</td><td id="OverallTD">--</td></tr>
+                    </table>
+                </div>
+                
+                <div class="col-6 p-0">
+                    <table class="table my-table" style="border-left: 1px solid #666;">
+                        <tr><td>Average Recovery Time</td><td id="OverallART">--</td></tr>
+                    </table>
+                </div>
+              </div>
+              <div class="row g-0" id="art-td-card">
+                <div class="card mb-2 w-100" id="art-td-histogram-chart" style="height: 525px"> </div>
+              </div>
             </div>
           </div>
         </div>
@@ -246,10 +275,16 @@
     </div> <!-- Row -->
   </div> <!-- Container -->
 
-<script> //JavaScript for dropdown filter appearance space minimization
-    //allows values on the page to be stored as IDs so they can be found and easily kept track of
-    //Note these lines will then point to which corresponding drop down the ID corresponds to. 
-  const DisruptionDropDown = document.getElementById("DisruptionDropDown");  //const refers to a constant variable in javascript
+<script> //Populate dropdown menus
+document.addEventListener('DOMContentLoaded', function() {
+    LoadDropdowns();
+});
+</script>
+
+<script> //JavaScript for dropdown filter appearance & space minimization
+  //Allows values on the page to be stored as IDs so they can be found and easily kept track of
+  //Note these lines will then point to which corresponding drop down the ID corresponds to. 
+  const DisruptionDropDown = document.getElementById("DisruptionDropDown"); 
   const companyNameFilter = document.getElementById("companyNameFilter");
   const regionChooser     = document.getElementById("regionChooser");
   const regionSelect      = document.getElementById("regionSelect");
@@ -266,26 +301,25 @@
 
 //addEventListener 
   DisruptionDropDown.addEventListener("change", function () {  // grouping drop downs into a function
-    //  logging the selected value
-    //console.log("DisruptionDropDown selected:", this.value);
-    companyNameFilter.style.display = "none"; //display nothing (hiding stuff)
+    //Hide all filters
+    companyNameFilter.style.display = "none";
     regionChooser.style.display = "none";
     continentFilter.style.display = "none";
     countryFilter.style.display = "none";
     tierFilter.style.display = "none";
     regionTierFilter.style.display = "none";
 
-    // resets like these are necesary, since if they are not included then swapping between region and region and tier will carry values causing errors and glitches. 
-    companyInput.value = "";
-    regionSelect.selectedIndex = 0; //setting the Index back to zero automatically selects the first value in the dropdown. Again necessary to avoid issues.
+    //Reset dropdown values to prevent errors and glitches.
+    companyInput.selectedIndex = 0;
+    regionSelect.selectedIndex = 0;
     continentSelect.selectedIndex = 0;
-    countryInput.value = "";
+    countryInput.selectedIndex = 0;
     tierSelect.selectedIndex = 0;
     regionTierSelect.selectedIndex = 0;
 
-//if statements
-    if (this.value === "company") { //for example, if company is selected. (the ID) 
-      companyNameFilter.style.display = "block";  //then that corresponding dropdown will be displayed
+//If statements to control which dropdown is selected
+    if (this.value === "company") { 
+      companyNameFilter.style.display = "block";
     }
     if (this.value === "region") {
       regionChooser.style.display = "block";
@@ -299,16 +333,14 @@
     }
   });
 
-  // region function, this is necessary because it helps eliminate errors when carrying over data about regions.
-  //since we have both select by region and also select by region and tier. It can cause errors.
+  //Region function, this is necessary because it helps eliminate errors when carrying over data about regions.
+  //Since we have both select by region and also select by region and tier -> we need to avoid errors
   regionSelect.addEventListener("change", function () {
-    //console.log("RegionSelect selected:", this.value);
     continentFilter.style.display = "none";
     countryFilter.style.display = "none";
 
-    // reset choices
     continentSelect.selectedIndex = 0;
-    countryInput.value = "";
+    countryInput.selectedIndex = 0;
 
     if (this.value === "continent") {
       continentFilter.style.display = "block";
@@ -320,7 +352,6 @@
 </script>
 
 <script> //JavaScript for resizing Plotly graphs
-
 //Ensure graphs are properly sized when other tabs are clicked
 //Achieve this by looping through all tabs and triggering the autosize function for all tabs
 const tabElms = document.querySelectorAll('button[data-bs-toggle="tab"]');
@@ -333,11 +364,9 @@ tabElms.forEach(tabElm => {
         
         const targetTabId = event.target.getAttribute('data-bs-target');
         
-        // This condition checks which tab was just activated
+        //If the tab is active, resize the chart to fit to card dimensions
         if (targetTabId === '#dsd') {
-            // Get the container element for the DSD chart
             const chartContainer = document.getElementById('dsd-stackedbar-chart');
-            // Tell Plotly to resize the chart to its new, visible container size
             if (chartContainer) {
                 Plotly.relayout(chartContainer, { autosize: true });
             }
@@ -363,14 +392,14 @@ tabElms.forEach(tabElm => {
     });
 });
 
-//Prevent height compression of first active tab
+//Prevent height compression on first active tab
 const activePane = document.querySelector('.tab-pane.show.active');
 if (activePane) {
   //Find the chart container inside that active pane
   const ChartContainer = activePane.querySelector('[id$="-chart"]');
 
   if (ChartContainer) {
-    //Pass the DOM element to Plotly (FIXED: using dfChartContainer, not its ID string)
+    //Pass the DOM element to Plotly
     Plotly.relayout(ChartContainer, { autosize: true });
   }
 }
@@ -378,6 +407,48 @@ if (activePane) {
 
 </body> <!-- End Document -->
 <script> //JavaScript functions
+function LoadDropdowns() {
+    //Fetch data from your PHP file that returns all the data
+    fetch('distributorList.php')
+        .then(response => response.json())
+        .then(data => {
+            //Populate companies dropdown
+            const companyDropdown = document.getElementById('companyInput');
+            companyDropdown.innerHTML = '';
+            
+            const defaultCompanyOption = document.createElement('option');
+            defaultCompanyOption.value = '';
+            defaultCompanyOption.textContent = 'Select a company';
+            companyDropdown.appendChild(defaultCompanyOption);
+            
+            data.company.forEach(company => {
+                const option = document.createElement('option');
+                option.value = company.CompanyName;
+                option.textContent = company.CompanyName;
+                companyDropdown.appendChild(option);
+            });
+            
+            //Populate the countries dropdowns
+            const countryDropdown = document.getElementById('countryInput');
+            countryDropdown.innerHTML = '';
+            
+            const defaultCountryOption = document.createElement('option');
+            defaultCountryOption.value = '';
+            defaultCountryOption.textContent = 'Select a country';
+            countryDropdown.appendChild(defaultCountryOption);
+
+            data.country.forEach(country => {
+                const option = document.createElement('option');
+                option.value = country.CountryName;
+                option.textContent = country.CountryName;
+                countryDropdown.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading data:', error);
+        });
+}
+
 function CheckUserInput() {
   let DisruptionDropDown = document.getElementById("DisruptionDropDown").value;
   if(DisruptionDropDown == "") {
@@ -398,7 +469,7 @@ function CheckUserInput() {
         return false;
       }
       DisruptionDropDown = "country";
-      user_input = country_input + "," + "";
+      user_input = country_input + "|" + "";
     }
     if(region_selection == "continent") { //Option 2 - Continent only
       const continent_input = document.getElementById("continentSelect").value;
@@ -408,7 +479,7 @@ function CheckUserInput() {
         return false;
       }
       DisruptionDropDown = "continent";
-      user_input = continent_input + "," + "";
+      user_input = continent_input + "|" + "";
     }
   }
   if(DisruptionDropDown == "company") { //Option 3 - Company name
@@ -418,7 +489,7 @@ function CheckUserInput() {
       document.getElementById("companyInput").focus();
       return false;
     }
-    user_input = company_input + "," + "";
+    user_input = company_input + "|" + "";
   }
   if(DisruptionDropDown == "tier") { //Option 4 - Tier level
     let tier_input = document.getElementById("tierSelect").value;
@@ -432,11 +503,17 @@ function CheckUserInput() {
       case "Tier 2": tier_input = "2"; break;
       case "Tier 3": tier_input = "3"; break;
     }
-    user_input = tier_input + "," + "";
+    user_input = tier_input + "|" + "";
   }
   if(DisruptionDropDown == "regionTier") {
     const region_selection = document.getElementById("regionSelect").value;
-    const tier_input = document.getElementById("regionTierSelect").value;
+    let tier_input = document.getElementById("regionTierSelect").value;
+    switch (tier_input) {
+      case "Tier 1": tier_input = "1"; break;
+      case "Tier 2": tier_input = "2"; break;
+      case "Tier 3": tier_input = "3"; break;
+      default: tier_input = ""; 
+    }
     if(region_selection == "" && tier_input =="") {
       alert("Please select a region and tier!");
       document.getElementById("regionSelect").focus();
@@ -460,7 +537,7 @@ function CheckUserInput() {
         return false;
       }
       DisruptionDropDown = "country-tier";
-      user_input = country_input + "," + tier_input;
+      user_input = country_input + "|" + tier_input;
     }
     else if(region_selection =="continent"){ //Option 6 - Continent & tier
       const continent_input = document.getElementById("continentSelect").value;
@@ -470,19 +547,17 @@ function CheckUserInput() {
         return false;
       }
       DisruptionDropDown = "continent-tier";
-      user_input = continent_input + "," + tier_input;
+      user_input = continent_input + "|" + tier_input;
     }
   }
   //If user input is valid
   const date_result = CheckDates()
   if (date_result) {
-    // If result is not false, use destructuring assignment to get the dates
     const [start_date, end_date] = date_result;    
-    //console.log("Valid Dates:", start_date, end_date);
     DisruptionEventsAJAX(DisruptionDropDown, user_input, start_date, end_date);
 
   } else {
-    //console.log("Date check failed.");
+    console.log("Date check failed.");
   }
 }
 
@@ -507,41 +582,117 @@ function CheckDates(){
 var my_JSON_object;
 function DisruptionEventsAJAX(DisruptionDropDown, user_input, start_date, end_date) {
     q_input = user_input;
-    g_input = DisruptionDropDown + "," + start_date + "," + end_date;
-    console.log(q_input);
-    console.log(g_input);
+    g_input = DisruptionDropDown + "|" + start_date + "|" + end_date;
     
     xhtpp = new XMLHttpRequest();
     xhtpp.onload = function () {
         if (this.readyState == 4 && this.status == 200) {
-          //console.log(this.responseText);
-          
-          my_JSON_object = JSON.parse(this.responseText);
-          console.log(JSON.stringify(my_JSON_object));
+          const error_check = this.responseText; //Temporarily store query results
+          let status = true; //Variable to determine if charts should be executed
+          try {
+            my_JSON_object = JSON.parse(this.responseText); //Attempt to parse JSON object
+          } catch (error) { //If there is an error, it means that a component of the user input was not found in the database
+            console.error("An error occurred:", error.message);
+            status = false; //In the case of an error, the charts should not be executed and there is no need to check for null data
+            if(error_check=="Error country") {
+              document.getElementById("StatusMessage").innerHTML = '<div class="alert alert-warning">Selected country is not in the database</div>';
+            }
+            if(error_check=="Error continent") {
+              document.getElementById("StatusMessage").innerHTML = '<div class="alert alert-warning">Selected country is not in the database</div>';
+            }
+            if(error_check=="Error company") {
+              document.getElementById("StatusMessage").innerHTML = '<div class="alert alert-warning">Selected company is not in the database</div>';
+            }
+            if(error_check=="Error tier") {
+              document.getElementById("StatusMessage").innerHTML = '<div class="alert alert-warning">There are no companies at the specified tier</div>';
+            }
+            if(error_check=="Error company country") {
+              document.getElementById("StatusMessage").innerHTML = '<div class="alert alert-warning">There are no companies residing in the selected country</div>';
+            }
+            if(error_check=="Error company continent") {
+              document.getElementById("StatusMessage").innerHTML = '<div class="alert alert-warning">There are no companies residing in the selected continent</div>';
+            }
+            if(error_check=="Error country tier") {
+              document.getElementById("StatusMessage").innerHTML = '<div class="alert alert-warning">There are no companies at the specified tier residing in the selected country</div>';
+            }
+            if(error_check=="Error continent tier") {
+              document.getElementById("StatusMessage").innerHTML = '<div class="alert alert-warning">There are no companies at the specified tier residing in the selected continent</div>';
+            }
+          } finally {
+            if(status==true) { //In case that data output is returned, perform initial check on data
+              const null_check = my_JSON_object.TD_overall[0]["TD"]; //Account for case where there are no disruption events within time range
+              if(null_check == null){ //If there are no disruption events within the time range, don't plot any charts (everything would break)
+                document.getElementById("StatusMessage").innerHTML = '<div class="alert alert-warning">There are no disruption events occuring within the specified time period</div>';
+                status = false //This also means that graphs shouldn't generate
+              }
+            }
 
-          //DF - bar chart
-          const df_companies = my_JSON_object.DF.map((item) => { return String(item.CompanyName) });
-          const df_values = my_JSON_object.DF.map((item) => { return item.Total });
-          CreateDFBarChart(df_companies, df_values);
+            if(status==false) { //If status is false, meaning there is an error in the query output or there is no data, reset all graphs
+              document.getElementById('df').innerHTML = '<div class="card mb-2 w-100" style="height: 525px"> </div>';
+              document.getElementById('dsd').innerHTML = '<div class="card mb-2 w-100" style="height: 525px"> </div>';
+              document.getElementById('hdr').innerHTML = '<div class="card mb-2 w-100" style="height: 525px"> </div>';
+              document.getElementById('OverallART').innerHTML = "--";
+              document.getElementById('OverallTD').innerHTML = "--";
+              document.getElementById('art-td-card').innerHTML = '<div class="card mb-2 w-100" style="height: 525px"> </div>';
+            }
 
-          //DSD - stacked bar chart
-          const dsd_companies = my_JSON_object.DSD.map((item) => { return String(item.CompanyName) });
-          const dsd_low_values = my_JSON_object.DSD.map((item) => { return item.NumLowImpact });
-          const dsd_medium_values = my_JSON_object.DSD.map((item) => { return item.NumMedImpact });
-          const dsd_high_values = my_JSON_object.DSD.map((item) => { return item.NumHighImpact });
-          CreateDSDStackedBarChart(dsd_companies, dsd_low_values, dsd_medium_values, dsd_high_values);
+            if(status==true) { //If status is true, meaning no errors were identified in the query output and the data valid, plot the charts
+              document.getElementById('df').innerHTML = '<div class="card mb-2 w-100" id="df-bar-chart" style="height: 525px"> </div>'
+              document.getElementById('dsd').innerHTML = '<div class="card mb-2 w-100" id="dsd-stackedbar-chart" style="height: 525px"> </div>'
+              document.getElementById('hdr').innerHTML = '<div class="card mb-2 w-100" id="hdr-pie-chart" style="height: 525px"> </div>'
+              document.getElementById('art-td-card').innerHTML = '<div class="card mb-2 w-100" id="art-td-histogram-chart" style="height: 525px"> </div>'
+              document.getElementById("StatusMessage").innerHTML = "";
+              
+              //To log the raw-data
+              console.log(JSON.stringify(my_JSON_object));
 
-          //HDR - pie chart
-          const hdr_companies = my_JSON_object.HDR.map((item) => { return String(item.CompanyName) });
-          const hdr_values = my_JSON_object.HDR.map((item) => { return item.NumHighImpact });
-          CreateHDRPieChart(hdr_companies, hdr_values);
+              //DF - bar chart
+              const df_companies = my_JSON_object.DF_chart.map((item) => { return String(item.CompanyName) });
+              const df_values = my_JSON_object.DF_chart.map((item) => { return item.DF });
+              CreateDFBarChart(df_companies, df_values);
 
-          //ART & TD - histogram
-          const downtime_values = my_JSON_object.TD_ART.map((item) => { return item.Downtime })
-          console.log(downtime_values);
-          CreateART_TDHistogram(downtime_values);  
-          };
-        }
+              //DSD - stacked bar chart
+              const dsd_companies = my_JSON_object.DSD_chart.map((item) => { return String(item.CompanyName) });
+              const dsd_low_values = my_JSON_object.DSD_chart.map((item) => { return item.NumLowImpact });
+              const dsd_medium_values = my_JSON_object.DSD_chart.map((item) => { return item.NumMedImpact });
+              const dsd_high_values = my_JSON_object.DSD_chart.map((item) => { return item.NumHighImpact });
+              CreateDSDStackedBarChart(dsd_companies, dsd_low_values, dsd_medium_values, dsd_high_values);
+
+              //HDR - pie chart
+              const hdr_companies = my_JSON_object.HDR_chart.map((item) => { return String(item.CompanyName) });
+              const hdr_values = my_JSON_object.HDR_chart.map((item) => { return item.NumHighImpact });
+              const hdr_length = hdr_values.length;
+              //Omit 0 values from the pie chart
+              let position = 0;
+              let filtered_hdr_companies = [];
+              let filtered_hdr_values = [];
+              for (let i = 0; i < hdr_length; i++) {
+                if(hdr_values[i]!="0"){
+                  filtered_hdr_companies[position] = hdr_companies[i];
+                  filtered_hdr_values[position] = hdr_values[i];
+                  position += 1;
+                }
+              }
+              //If there are more than 8 companies, don't label the slices
+              let text_display = "label+percent";
+              if(hdr_length > 8){
+                text_display = "none";
+              }
+              CreateHDRPieChart(filtered_hdr_companies, filtered_hdr_values, text_display);
+              
+              //ART & TD - histogram
+              const downtime_values = my_JSON_object.TD_ART_chart.map((item) => { return item.Downtime });
+              CreateART_TDHistogram(downtime_values);
+
+              //ART & TD - overall statistics
+              const ART_overall = String(Number(my_JSON_object.ART_overall[0]["ART"]).toFixed(2));
+              const TD_overall = my_JSON_object.TD_overall[0]["TD"];
+              document.getElementById('OverallART').innerHTML = `${ART_overall} days`;
+              document.getElementById('OverallTD').innerHTML = `${TD_overall} days`;
+            }
+          }
+        };
+    }
     const url = "supplychainmanager_disruptionevents_queries.php?q=" + encodeURIComponent(q_input) + "&g=" + encodeURIComponent(g_input);
     xhtpp.open("GET", url, true);
     xhtpp.send();
@@ -555,6 +706,11 @@ function CreateDFBarChart(df_companies, df_values){
       title: {
           text: 'Disruption Frequency'
       },
+      xaxis: {
+        tickfont: {
+          size: 8, // Adjust this value to your desired font size
+        }
+      },
       yaxis: {
           title: {
               text: 'DF'
@@ -566,7 +722,10 @@ function CreateDFBarChart(df_companies, df_values){
   {
     x: df_companies,
     y: df_values,
-    type: 'bar'
+    type: 'bar',
+    marker: {
+      color: '#0f6fab'
+    }
   }
   ];
   //Execute Plotly
@@ -581,6 +740,11 @@ function CreateDSDStackedBarChart(dsd_companies, dsd_low_values, dsd_medium_valu
       title: {
           text: 'Disruption Severity Distribution'
       },
+      xaxis: {
+        tickfont: {
+          size: 8, // Adjust this value to your desired font size
+        }
+      },
       yaxis: {
           title: {
               text: 'DSD'
@@ -593,29 +757,37 @@ function CreateDSDStackedBarChart(dsd_companies, dsd_low_values, dsd_medium_valu
     x: dsd_companies,
     y: dsd_low_values,
     type: 'bar',
-    name: 'Low Impact'
+    name: 'Low Impact',
+    marker: {
+      color: '#FFDD00'
+    }
   };
 
   var medium = {
     x: dsd_companies,
     y: dsd_medium_values,
     type: 'bar',
-    name: 'Medium Imapct'
-  };
+    name: 'Medium Imapct',
+    marker: {
+      color: 'orange'
+    }
+  };  
   
   var high = {
     x: dsd_companies,
     y: dsd_high_values,
     type: 'bar',
-    name: 'High Impact'
+    name: 'High Impact',
+    marker: {
+      color: 'red'
+    }
   };
-
   data=[low, medium, high];
   //Execute Plotly
   Plotly.newPlot(StackedBarChart, data, layout);
 }
 
-function CreateHDRPieChart(hdr_companies, hdr_values) {
+function CreateHDRPieChart(hdr_companies, hdr_values, text_display) {
   //Placement
   const PieChart = document.getElementById('hdr-pie-chart');
   //Data
@@ -623,7 +795,7 @@ function CreateHDRPieChart(hdr_companies, hdr_values) {
     type: "pie",
     values: hdr_values,
     labels: hdr_companies,
-    textinfo: "label+percent",
+    textinfo: `${text_display}`,
   }];
   //Layout
   var layout = {
@@ -637,32 +809,110 @@ function CreateHDRPieChart(hdr_companies, hdr_values) {
 }
 
 function CreateART_TDHistogram(downtime_values) {
-  //Placement
   const Histogram = document.getElementById('art-td-histogram-chart');
-  //Data
-  var trace = {
-    x: downtime_values,
+
+  //Convert query output to numeric
+  const values = downtime_values
+    .map(v => {
+      //Handle string numbers with commas or whitespace
+      if (typeof v === 'string') v = v.replace(/,/g, '').trim();
+      return Number(v);
+    })
+    .filter(v => Number.isFinite(v));
+
+  if (!values.length) {
+    console.warn('CreateART_TDHistogram: no numeric values to plot.');
+    Plotly.purge(Histogram);
+    Histogram.innerHTML = '<div style="padding:12px">No numeric downtime values found.</div>';
+    return;
+  }
+
+  // --- Helper: compute quantile (linear interpolation) ---
+  function histCalculations(arr, q) {
+    const sorted = [...arr].sort((a, b) => a - b);
+    const n = sorted.length;
+    const pos = (n - 1) * q;
+    const base = Math.floor(pos);
+    const rest = pos - base;
+    if (base + 1 < n) {
+      return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+    }
+    return sorted[base];
+  }
+
+  const n = values.length;
+  const minimumValue = Math.min(...values);
+  const maximumValue = Math.max(...values);
+  const q1 = histCalculations(values, 0.25);
+  const q3 = histCalculations(values, 0.75);
+  const iqr = q3 - q1;
+
+  // Freedman–Diaconis bin width
+  let binWidth = (iqr > 0) ? (2 * iqr / Math.cbrt(n)) : 0;
+
+  // Fallback if IQR = 0 or binWidth is 0 / extremely small:
+  // use Sturges' rule to pick a sensible number of bins
+  let numBins;
+  if (!binWidth || !isFinite(binWidth) || binWidth <= 0) {
+    numBins = Math.ceil(Math.log2(n) + 1); // Sturges
+    binWidth = (maximumValue - minimumValue) / numBins || 1; // if range is 0, default width 1
+  } else {
+    numBins = Math.ceil((maximumValue - minimumValue) / binWidth) || 1;
+    // In some edge cases (tiny range or rounding) ensure at least 1 bin
+    if (numBins < 1) numBins = 1;
+  }
+
+  // If computed binWidth ends up >= range (-> single bin), reduce size by factor to get some bins
+  const range = maximumValue - minimumValue;
+  if (range > 0 && binWidth >= range) {
+    // choose at least min(10, n) bins so user sees distribution
+    const fallbackBins = Math.min(10, Math.max(1, Math.floor(Math.sqrt(n))));
+    binWidth = range / fallbackBins;
+    numBins = fallbackBins;
+  }
+
+  // Align start to a nice multiple of binWidth so bins look clean
+  const start = Math.floor(minimumValue / binWidth) * binWidth;
+  const end = start + numBins * binWidth;
+
+  //Debug information - print to console if desired
+  //console.log('n =', n);
+  //console.log('min =', minimumValue);
+  //console.log('max =', maximumValue);
+  //console.log('q1 =', q1, 'q3 =', q3, 'IQR =', iqr);
+  //console.log('binWidth =', binWidth, 'numBins =', numBins);
+  //console.log('start =', start, 'end =', end);
+  //console.groupEnd();
+
+  //Plotly histogram trace with explicit xbins
+  const trace = {
+    x: values,
     type: 'histogram',
-  };
-  var data = [trace];
-  //Layout
-  var layout = {
-    title: {
-        text: 'Disruption Event Downtime'
+    xbins: {
+      start: start,
+      end: end,
+      size: binWidth
     },
-    yaxis: {
-        title: {
-            text: 'Downtime (days)'
-        }
-    },
-    yaxis: {
-        title: {
-            text: 'Frequency of Downtime'
-        }
+    marker: {
+      color: '#0f6fab',
+      line: {
+        width: 1
+      }
     }
   };
-  //Execute Plotly
-  Plotly.newPlot(Histogram, data, layout);
+
+  const layout = {
+    title: { text: 'Disruption Event Downtime' },
+    xaxis: {
+      title: { text: `Downtime (days)` }
+    },
+    yaxis: {
+      title: { text: 'Frequency of Downtime' }
+    },
+    bargap: 0.05
+  };
+
+  Plotly.newPlot(Histogram, [trace], layout, {responsive: true});
 }
 </script>
 </html>
