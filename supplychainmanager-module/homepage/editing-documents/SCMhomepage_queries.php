@@ -14,7 +14,7 @@ if ($conn->connect_error) {
 
 $tmp = $_GET['q'];
 
-// Convert the comma-delimited string into an array of strings.
+// Convert the comma-delimited string into an array of strings
 $tmp = explode('|', $tmp);
 // print_r($tmp);
 
