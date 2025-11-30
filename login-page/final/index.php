@@ -9,7 +9,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     //1st Case - Username is incorrect
     if ($result_array[1] == "Username is incorrect") {
         echo "<script>";
-        // Add the closing parenthesis and semicolon
         echo "alert('Username is invalid');"; 
         echo "</script>";
     }
@@ -233,3 +232,4 @@ function ValidateLogin() {
 }
 </script>
 </html>
+
