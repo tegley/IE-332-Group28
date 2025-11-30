@@ -23,13 +23,11 @@ if ($conn->connect_error) {
 $user_input = $_GET['q']; //Input from options 1-6
 $filter_option = $_GET['g']; //Selected filter option, start date, end date
 
-$user_input = explode(',', $user_input);
-$filter_option = explode(',', $filter_option);
-//echo "{$filter_option[0]}";
-//echo "{$user_input[0]}";
+$user_input = explode('|', $user_input);
+$filter_option = explode('|', $filter_option);
 
-//Select statements
-$DF_chart_query = "SELECT c.CompanyName, (COUNT(*) / TIMESTAMPDIFF(MONTH, '{$filter_option[1]}', '{$filter_option[2]}')) As Total";
+//Chart data - SELECT statements
+$DF_chart_query = "SELECT c.CompanyName, (COUNT(*) / TIMESTAMPDIFF(MONTH, '{$filter_option[1]}', '{$filter_option[2]}')) As DF";
 
 $HDR_chart_query = "SELECT c.CompanyName, SUM(CASE WHEN i.ImpactLevel = 'High' THEN 1 ELSE 0 END) AS NumHighImpact";
 
@@ -39,6 +37,10 @@ SUM(CASE WHEN i.ImpactLevel = 'Low' THEN 1 ELSE 0 END) AS NumLowImpact";
 
 $TD_ART_chart_query = "SELECT DATEDIFF(e.EventRecoveryDate, e.EventDate) AS Downtime";
 
+//Overall ART & TD statistics - SELECT statements
+$TD_statistic_query = "SELECT SUM(MyTable.Downtime) AS TD FROM (SELECT DISTINCT(e.EventID), DATEDIFF(e.EventRecoveryDate, e.EventDate) AS Downtime"; 
+$ART_statistic_query = "SELECT SUM(MyTable.Downtime) * 1.0 / COUNT(*) AS ART FROM (SELECT DISTINCT(e.EventID), DATEDIFF(e.EventRecoveryDate, e.EventDate) AS Downtime"; 
+
 //Common FROM statement
 $from = "FROM Company c JOIN ImpactsCompany i ON i.AffectedCompanyID = c.CompanyID JOIN DisruptionEvent e ON e.EventID = i.EventID JOIN Location l ON l.LocationID = c.LocationID";
 
@@ -47,79 +49,187 @@ $where = "WHERE ((e.EventDate BETWEEN '{$filter_option[1]}' AND '{$filter_option
 
 //Option 1 - Country
 if($filter_option[0] == 'country'){
-    //Check if country exists
-    $checksql = "SELECT DISTINCT(l.LocationID) FROM Company c JOIN Location l WHERE c.LocationID = l.LocationId AND l.CountryName = '{$user_input[0]}';";
+    //Check if the selected country is in the database
+    $checksql = "SELECT l.LocationID FROM Location l WHERE l.CountryName = '{$user_input[0]}';";
     $checksql_result = mysqli_query($conn, $checksql);
     $checksql_result = mysqli_fetch_row($checksql_result);
-
     if (isset($checksql_result[0]) == false || $checksql_result[0] == "") {
-        echo "Country Not Found";
+        echo "Error country";
         $conn->close();
+        exit();
     }
-    //Country GROUP BY and HAVING statements
+
+    //Check if any companies reside in the selected country
+    $checksql = "SELECT c.CompanyID FROM Company c JOIN Location l ON c.LocationID = l.LocationID WHERE c.LocationID = l.LocationId AND l.CountryName = '{$user_input[0]}';";
+    $checksql_result = mysqli_query($conn, $checksql);
+    $checksql_result = mysqli_fetch_row($checksql_result);
+    if (isset($checksql_result[0]) == false || $checksql_result[0] == "") {
+        echo "Error company country";
+        $conn->close();
+        exit();
+    }
+    
+    //Country - GROUP BY and HAVING statements
     $group_by = "GROUP BY c.CompanyName, l.CountryName";
     $having = "HAVING l.CountryName = '{$user_input[0]}'";
+
+    //Country - overall ART & TD statistic statement
+    $statistic_statement = " {$where} AND l.CountryName = '{$user_input[0]}'";
 }
 
 //Option 2 - Continent
 if($filter_option[0] == 'continent'){
-    $checksql = "SELECT DISTINCT(l.LocationID) FROM Company c JOIN Location l WHERE c.LocationID = l.LocationId AND l.ContinentName = '{$user_input[0]}';";
+    //Check if the selected continent is in the database
+    $checksql = "SELECT l.LocationID FROM Location l WHERE l.ContinentName = '{$user_input[0]}';";
     $checksql_result = mysqli_query($conn, $checksql);
     $checksql_result = mysqli_fetch_row($checksql_result);
-
     if (isset($checksql_result[0]) == false || $checksql_result[0] == "") {
-        echo "Error in continent selection";
+        echo "Error continent";
         $conn->close();
+        exit();
     }
 
-    //Continent GROUP BY and HAVING statement
+    //Check if any companies reside in the selected continent
+    $checksql = "SELECT c.CompanyID FROM Company c JOIN Location l ON c.LocationID = l.LocationID WHERE c.LocationID = l.LocationId AND l.ContinentName = '{$user_input[0]}';";
+    $checksql_result = mysqli_query($conn, $checksql);
+    $checksql_result = mysqli_fetch_row($checksql_result);
+    if (isset($checksql_result[0]) == false || $checksql_result[0] == "") {
+        echo "Error company continent";
+        $conn->close();
+        exit();
+    }
+
+    //Continent - GROUP BY and HAVING statement
     $group_by = "GROUP BY c.CompanyName, l.ContinentName";
     $having = "HAVING l.ContinentName = '{$user_input[0]}'";
+
+    //Continent - overall ART & TD statistic statement
+    $statistic_statement = " {$where} AND l.ContinentName = '{$user_input[0]}'";
+
 }
 
 //Option 3 - Company
 if($filter_option[0] == 'company'){
+    //Check if specified company exists in the database
     $checksql = "SELECT c.CompanyID FROM Company c WHERE c.CompanyName = '{$user_input[0]}';";
     $checksql_result = mysqli_query($conn, $checksql);
     $checksql_result = mysqli_fetch_row($checksql_result);
-
     if (isset($checksql_result[0]) == false || $checksql_result[0] == "") {
-        echo "Company Not Found";
+        echo "Error company";
         $conn->close();
+        exit();
     }
 
-    //Company GROUP BY and HAVING statements
+    //Company - GROUP BY and HAVING statements
     $group_by = "GROUP BY c.CompanyName";
     $having = "HAVING c.CompanyName = '{$user_input[0]}'";
+
+    //Company - overall ART & TD statistic statement
+    $statistic_statement = " {$where} AND c.CompanyName = '{$user_input[0]}'";
 }
 
 //Option 4 - Tier
 if($filter_option[0] == 'tier'){
-    $checksql = "SELECT c.TierLevel FROM Company c WHERE c.TierLevel = '{$user_input[0]}';";
+    //Check if there are companies in the database at the specified tier
+    $checksql = "SELECT DISTINCT(c.TierLevel) FROM Company c WHERE c.TierLevel = '{$user_input[0]}';";
     $checksql_result = mysqli_query($conn, $checksql);
     $checksql_result = mysqli_fetch_row($checksql_result);
-
     if (isset($checksql_result[0]) == false || $checksql_result[0] == "") {
-        echo "Error in tier selection";
+        echo "Error tier";
         $conn->close();
+        exit();
     }
 
-    //Tier GROUP BY and HAVING statements
+    //Tier - GROUP BY and HAVING statements
     $group_by = "GROUP BY c.CompanyName, c.TierLevel";
     $having = "HAVING c.TierLevel = '{$user_input[0]}'";
+
+    //Tier - overall ART & TD statistic statement
+    $statistic_statement = " {$where} AND c.TierLevel = '{$user_input[0]}'";
 }
 
-//HDR subquery version
-/*
-$HDR_charts_query .= "( SUM(CASE WHEN i.ImpactLevel = 'High' THEN 1 ELSE 0 END) * 1.0 / (SELECT SUM(CASE WHEN i2.ImpactLevel = 'High' THEN 1 ELSE 0 END) 
-FROM Company c2 JOIN ImpactsCompany i2 ON i2.AffectedCompanyID = c2.CompanyID JOIN DisruptionEvent e2 ON e2.EventID = i2.EventID JOIN Location l2 ON l2.LocationID = c2.LocationID 
-WHERE ((e2.EventDate BETWEEN '{$filter_option[1]}' AND '{$filter_option[2]}') OR (e2.EventRecoveryDate BETWEEN '{$filter_option[1]}' AND '{$filter_option[2]}') 
-OR (e2.EventDate < '{$filter_option[1]}' AND e2.EventRecoveryDate > '{$filter_option[2]}')) AND c2.TierLevel = '{$user_input[0]}' ) ) AS HDR";
-//AND l2.ContinentName = '{$user_input[0]}'
-//AND l2.CountryName = '{$user_input[0]}'
-*/
+//Option 5 - Country & tier
+if($filter_option[0] == 'country-tier'){
+    //Check if the selected country is in the database
+    $checksql = "SELECT l.LocationID FROM Location l WHERE l.CountryName = '{$user_input[0]}';";
+    $checksql_result = mysqli_query($conn, $checksql);
+    $checksql_result = mysqli_fetch_row($checksql_result);
+    if (isset($checksql_result[0]) == false || $checksql_result[0] == "") {
+        echo "Error country";
+        $conn->close();
+        exit();
+    }
 
-//Build queries
+    //Check if there are companies in the database at the specified tier
+    $checksql = "SELECT DISTINCT(c.TierLevel) FROM Company c WHERE c.TierLevel = '{$user_input[1]}';";
+    $checksql_result = mysqli_query($conn, $checksql);
+    $checksql_result = mysqli_fetch_row($checksql_result);
+    if (isset($checksql_result[0]) == false || $checksql_result[0] == "") {
+        echo "Error tier";
+        $conn->close();
+        exit();
+    }
+
+    //Check if there are any companies in the database at the specified tier that reside in the specified country
+    $checksql = "SELECT DISTINCT(c.TierLevel) FROM Company c JOIN Location l ON c.LocationID = l.LocationID WHERE c.TierLevel = '{$user_input[1]}' AND l.CountryName = '{$user_input[0]}';";
+    $checksql_result = mysqli_query($conn, $checksql);
+    $checksql_result = mysqli_fetch_row($checksql_result);
+    if (isset($checksql_result[0]) == false || $checksql_result[0] == "") {
+        echo "Error country tier";
+        $conn->close();
+        exit();
+    }
+
+    //Country & tier - GROUP BY and HAVING statements
+    $group_by = "GROUP BY c.CompanyName, c.TierLevel, l.CountryName";
+    $having = "HAVING c.TierLevel = '{$user_input[1]}' AND l.CountryName = '{$user_input[0]}'";
+
+    //Country & tier - overall ART & TD statistic statement
+    $statistic_statement = " {$where} AND c.TierLevel = '{$user_input[1]}' AND l.CountryName = '{$user_input[0]}'";
+}
+
+//Option 6 - Continent & tier
+if($filter_option[0] == 'continent-tier'){
+    //Check if the selected continent is in the database
+    $checksql = "SELECT l.LocationID FROM Location l WHERE l.ContinentName = '{$user_input[0]}';";
+    $checksql_result = mysqli_query($conn, $checksql);
+    $checksql_result = mysqli_fetch_row($checksql_result);
+    if (isset($checksql_result[0]) == false || $checksql_result[0] == "") {
+        echo "Error continent";
+        $conn->close();
+        exit();
+    }
+
+    //Check if there are companies in the database at the specified tier
+    $checksql = "SELECT DISTINCT(c.TierLevel) FROM Company c WHERE c.TierLevel = '{$user_input[1]}';";
+    $checksql_result = mysqli_query($conn, $checksql);
+    $checksql_result = mysqli_fetch_row($checksql_result);
+    if (isset($checksql_result[0]) == false || $checksql_result[0] == "") {
+        echo "Error tier";
+        $conn->close();
+        exit();
+    }
+
+    //Check if there are any companies in the database at the specified tier that reside in the specified continent
+    $checksql = "SELECT DISTINCT(c.TierLevel) FROM Company c JOIN Location l ON c.LocationID = l.LocationID WHERE c.TierLevel = '{$user_input[1]}' AND l.ContinentName = '{$user_input[0]}';";
+    $checksql_result = mysqli_query($conn, $checksql);
+    $checksql_result = mysqli_fetch_row($checksql_result);
+    if (isset($checksql_result[0]) == false || $checksql_result[0] == "") {
+        echo "Error continent tier";
+        $conn->close();
+        exit();
+    }
+
+    //Continent & tier - GROUP BY and HAVING statements
+    $group_by = "GROUP BY c.CompanyName, c.TierLevel, l.ContinentName";
+    $having = "HAVING c.TierLevel = '{$user_input[1]}' AND l.ContinentName = '{$user_input[0]}'";
+
+    //Continent & tier - overall ART & TD statistic statement
+    $statistic_statement = " {$where} AND c.TierLevel = '{$user_input[1]}' AND l.ContinentName = '{$user_input[0]}'";
+}
+
+
+//Build chart queries
 $DF_chart_query .= " {$from} {$where} {$group_by} {$having}";
 $DSD_chart_query .= " {$from} {$where} {$group_by} {$having}";
 $HDR_chart_query .= " {$from} {$where} {$group_by} {$having}";
@@ -138,10 +248,19 @@ switch($filter_option[0]){
     case "tier": 
         $group_by = "GROUP BY c.TierLevel, e.EventID";
         break;
+    case "country-tier":
+        $group_by = "GROUP BY c.TierLevel, l.CountryName, e.EventID";
+        break;
+    case "continent-tier":
+        $group_by = "GROUP BY c.TierLevel, l.ContinentName, e.EventID";
+        break;
 }
 
 $TD_ART_chart_query .= " {$from} {$where} {$group_by} {$having}";
-//echo "\n {$TD_ART_chart_query} \n";
+
+//Build overall statistic queries
+$TD_statistic_query .= " {$from} {$statistic_statement}) As MyTable";
+$ART_statistic_query .= " {$from} {$statistic_statement}) As MyTable";
 
 //Run all queries
 $DF_chart_query_result = mysqli_query($conn, $DF_chart_query);
@@ -159,17 +278,29 @@ while ($row = mysqli_fetch_array($HDR_chart_query_result, MYSQLI_ASSOC)) {
     $HDR_chart[] = $row;
 }
 
-$TD_ART_query_result = mysqli_query($conn, $TD_ART_chart_query);
-while ($row = mysqli_fetch_array($TD_ART_query_result, MYSQLI_ASSOC)) {
+$TD_ART_chart_query_result = mysqli_query($conn, $TD_ART_chart_query);
+while ($row = mysqli_fetch_array($TD_ART_chart_query_result, MYSQLI_ASSOC)) {
     $TD_ART_chart[] = $row;
+}
+
+$TD_statistic_query_result = mysqli_query($conn, $TD_statistic_query);
+while ($row = mysqli_fetch_array($TD_statistic_query_result, MYSQLI_ASSOC)) {
+    $TD_statistic[] = $row;
+}
+
+$ART_statistic_query_result = mysqli_query($conn, $ART_statistic_query);
+while ($row = mysqli_fetch_array($ART_statistic_query_result, MYSQLI_ASSOC)) {
+    $ART_statistic[] = $row;
 }
 
 //Create and encode JSON object
 $SCMDisruptionEventResults = [
-    "DF" => $DF_chart,
-    "DSD" => $DSD_chart,
-    "HDR" => $HDR_chart,
-    "TD_ART" => $TD_ART_chart
+    "DF_chart" => $DF_chart,
+    "DSD_chart" => $DSD_chart,
+    "HDR_chart" => $HDR_chart,
+    "TD_ART_chart" => $TD_ART_chart,
+    "TD_overall" => $TD_statistic,
+    "ART_overall" => $ART_statistic,
 ];
 
 echo json_encode($SCMDisruptionEventResults);
