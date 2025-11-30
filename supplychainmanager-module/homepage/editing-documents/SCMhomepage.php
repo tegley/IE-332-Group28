@@ -677,7 +677,7 @@ function CompanyInformationAJAX(company_name, start_date, end_date) {
                                     
         }
     };
-    xhtpp.open("GET", "supplychainmanager_homepage_queries.php?q=" + input, true);
+    xhtpp.open("GET", "SCMhomepage_queries.php?q=" + input, true);
     console.log("Sending request with q=" + input);
     xhtpp.send();
 }
