@@ -6,6 +6,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user_password = $_POST['password'];
     require 'check_login.php';
 
+    //1st Case - Username is incorrect
     if ($result_array[1] == "Username is incorrect") {
         echo "<script>";
         // Add the closing parenthesis and semicolon
@@ -22,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     //3rd Case - Username & Password are correct
-    if ($result_array[1]!="Username is incorrect" || $result_array[1]!="Password is incorrect") {
+    if ($result_array[1]!=="Username is incorrect" || $result_array[1]!=="Password is incorrect") {
         $_SESSION['username'] = $user_username;
         $_SESSION['loggedin'] = true;
         $_SESSION['FullName'] = $result_array[1];
@@ -30,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         //If the user is a supply chain manager, redirect them to that page
         if ($result_array[0]=="SupplyChainManager") {
             echo "<script>";
-            echo "window.location.href = 'supplychainmanager_homepage_editing.php';";
+            echo "window.location.href = 'SCM_home_page.php';";
             echo "</script>";
         }
 
@@ -70,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <!-- CSS -->
   <style>
   /* Standardize formatting across website via Universal Project Formatting CSS file */
-  @import "standardized_project_formatting";
+  @import url("standardized_project_formatting.css");
   /* Container for the login form */
   .login-box {
     margin: 40px auto; /* centers it horizontally using 'auto' */
@@ -198,7 +199,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div>
     </div>
 </body>
-
 
 <script> //Use JavaScript to validate the login
 function ValidateLogin() {
