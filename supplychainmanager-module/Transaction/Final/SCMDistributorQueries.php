@@ -38,7 +38,7 @@ $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp
     //Start Queries
     $whereDis = " WHERE c.CompanyName =  '" . $quer[0] . "'";
 
-    $distributorSELECT = "SELECT COUNT(DISTINCT s.ShipmentID) AS ShipmentVolume, SUM(s.Quantity) AS TotQuantityShipped, ROUND(AVG(s.Quantity), 2) AS AVGShipQuantity
+    $distributorSELECT = "SELECT d.CompanyID, c.CompanyName, COUNT(DISTINCT s.ShipmentID) AS ShipmentVolume, SUM(s.Quantity) AS TotQuantityShipped, ROUND(AVG(s.Quantity), 2) AS AVGShipQuantity
     FROM Distributor d JOIN Company c ON d.CompanyID = c.CompanyID JOIN Shipping s ON s.DistributorID = d.CompanyID JOIN Product p ON s.ProductID = p.ProductID
     "; //User might choose to instead group by products on the page. Query as is will allow user to see the various products handled
     $distributorQuery = "{$distributorSELECT} {$whereDis} AND s.ActualDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "';";
@@ -68,7 +68,7 @@ $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp
     $productsHandledSelect = "SELECT d.CompanyID, c.CompanyName, p.ProductName, p.ProductID, x.ProductCount FROM Distributor d JOIN Company c ON d.CompanyID = c.CompanyID JOIN Shipping s ON s.DistributorID = d.CompanyID 
     JOIN Product p ON p.ProductID = s.ProductID JOIN (SELECT d.CompanyID, COUNT(DISTINCT p.productID) AS ProductCount FROM Shipping s JOIN Distributor d ON s.DistributorID = d.CompanyID JOIN Product p ON p.ProductID = s.ProductID 
     GROUP BY d.CompanyID) x ON x.CompanyID = d.CompanyID";
-    $productsHandledQuery = "{$productsHandledSelect} {$whereDis} GROUP BY p.ProductName, p.ProductID ORDER BY d.CompanyID, c.CompanyName;";
+    $productsHandledQuery = "{$productsHandledSelect} {$whereDis} AND s.ActualDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "' GROUP BY p.ProductName, p.ProductID ORDER BY d.CompanyID, c.CompanyName;";
     // echo $productsHandledQuery;
     //Execute the SQL query
     $resultproductsHandled = mysqli_query($conn, $productsHandledQuery);
