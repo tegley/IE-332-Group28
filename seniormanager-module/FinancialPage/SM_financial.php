@@ -181,7 +181,7 @@ $user_FullName = $_SESSION['FullName']; */
                                 </div>
 
                                 <div class="col-12 mt-3 d-flex justify-content-center">
-                                    <button type="button" class="btn btn-primary" onclick="LoadTypeHealth()">
+                                    <button type="button" class="btn btn-primary" onclick="if (Validate_Tab1()) LoadTypeHealth();">
                                         Submit
                                     </button>
                                 </div>
@@ -250,7 +250,7 @@ $user_FullName = $_SESSION['FullName']; */
                                 </div>
 
                                 <div class="col-12 mt-3 d-flex justify-content-center">
-                                    <button type="button" class="btn btn-primary" onclick="LoadRegionFinancials()">
+                                    <button type="button" class="btn btn-primary" onclick="if (Validate_Tab2()) LoadRegionFinancials();">
                                         Submit
                                     </button>
                                 </div>
@@ -390,17 +390,38 @@ $user_FullName = $_SESSION['FullName']; */
     </script>
 
     <script>
-        function CheckUserInput() {
-            const company_name = document.CompanyInfoForm.CompanyName.value;
-            const start_date = document.CompanyInfoForm.StartDate.value;
-            const end_date = document.CompanyInfoForm.EndDate.value;
-
-            if (company_name == "") { alert("Please provide a company!"); return false; }
-            if (start_date == "" || end_date == "") { alert("Please provide date range!"); return false; }
-            if (start_date >= end_date) { alert("Start date must be before end date!"); return false; }
-
-            CompanyInformationAJAX(company_name, start_date, end_date);
+        function Validate_DateRange(start, end) {
+            if (start === "" || end === "") {
+                alert("Please provide a start and end date.");
+                return false;
+            }
+            if (start >= end) {
+                alert("Start date must be before end date.");
+                return false;
+            }
             return true;
+        }
+
+        // TAB 1 validator
+        function Validate_Tab1() {
+            const start = document.getElementById("typeStart_input").value;
+            const end = document.getElementById("typeEnd_input").value;
+
+            return Validate_DateRange(start, end);
+        }
+
+        // TAB 2 validator
+        function Validate_Tab2() {
+            const regionType = document.getElementById("regionType_input").value;
+            const start = document.getElementById("regionStart_input").value;
+            const end = document.getElementById("regionEnd_input").value;
+
+            if (regionType === "") {
+                alert("Please select a Region Type (Country or Continent).");
+                return false;
+            }
+
+            return Validate_DateRange(start, end);
         }
     </script>
 
