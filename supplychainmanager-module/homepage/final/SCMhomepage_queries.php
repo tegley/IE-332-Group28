@@ -174,9 +174,10 @@ $tmp = explode('|', $tmp);
     }
     //  echo json_encode($otr); 
 
-    $shipmentDetailsQuery = "SELECT ROUND(AVG(s.ActualDate - s.PromisedDate),2) AS avgDelay, ROUND(STDDEV(s.ActualDate - s.PromisedDate),2) AS stdDelay, COUNT(*) FROM Company c JOIN Shipping s ON c.CompanyID = s.SourceCompanyID 
+    $shipmentDetailsQuery = "SELECT ROUND(AVG(DATEDIFF(s.ActualDate, s.PromisedDate)), 2) AS avgDelay, ROUND(STDDEV_SAMP(DATEDIFF(s.ActualDate, s.PromisedDate)), 2) AS stdDelay, COUNT(*) 
+    FROM Company c JOIN Shipping s ON c.CompanyID = s.SourceCompanyID 
     WHERE CompanyName = '" . $tmp[0] . "' AND s.ActualDate BETWEEN '" . $tmp[1] . "' AND '" . $tmp[2] . "' AND s.PromisedDate <= s.ActualDate;";
-    // echo $shipmentDetailsQuery;
+    //echo $shipmentDetailsQuery;
      //Execute the SQL query
     $resultshipmentDetails = mysqli_query($conn, $shipmentDetailsQuery);
     // Convert the table into individual rows and reformat.
