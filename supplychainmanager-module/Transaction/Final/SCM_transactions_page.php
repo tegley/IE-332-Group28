@@ -12,7 +12,6 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 $user_FullName = $_SESSION['FullName'];
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -372,7 +371,6 @@ $user_FullName = $_SESSION['FullName'];
 //Run this when the page loads to populate drop downs and prefill date with date range examples
 document.addEventListener('DOMContentLoaded', function() {
     loadDistributors();
-    showCustomer('2020-09-09', '2025-09-09', 'Asia');
     showCustomerDistributors('2020-09-09', '2025-09-09', 'Davis PLC');
 });
 
@@ -388,7 +386,7 @@ const continentFilter = document.getElementById("continentFilter");
 
 //Input IDs
 const company_input = document.getElementById("company_input");
-const city_input = document.getElementById("city_input");showCu
+const city_input = document.getElementById("city_input");
 const country_input = document.getElementById("country_input");
 const continent_input = document.getElementById("continent_input");
 
