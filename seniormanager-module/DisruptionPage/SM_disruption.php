@@ -224,7 +224,7 @@ $user_FullName = $_SESSION['FullName']; */
                                         </select>
 
                                         <div class="d-flex justify-content-center mt-3">
-                                            <button class="btn btn-primary px-4" onclick="SearchByDisruptionID()">
+                                            <button class="btn btn-primary px-4" onclick="if (CheckUserInput()) SearchByDisruptionID();">
                                                 Submit
                                             </button>
                                         </div>
@@ -264,7 +264,7 @@ $user_FullName = $_SESSION['FullName']; */
                                         </select>
 
                                         <div class="d-flex justify-content-center mt-3">
-                                            <button class="btn btn-primary px-4" onclick="SearchByCompanyName()">
+                                            <button class="btn btn-primary px-4" onclick="if (CheckUserInput()) SearchByCompanyName();">
                                                 Submit
                                             </button>
                                         </div>
@@ -369,15 +369,29 @@ $user_FullName = $_SESSION['FullName']; */
 
     <script>
         function CheckUserInput() {
-            const company_name = document.CompanyInfoForm.CompanyName.value;
-            const start_date = document.CompanyInfoForm.StartDate.value;
-            const end_date = document.CompanyInfoForm.EndDate.value;
 
-            if (company_name == "") { alert("Please provide a company!"); return false; }
-            if (start_date == "" || end_date == "") { alert("Please provide date range!"); return false; }
-            if (start_date >= end_date) { alert("Start date must be before end date!"); return false; }
+            const start_date = document.getElementById("globalStartDate").value;
+            const end_date = document.getElementById("globalEndDate").value;
 
-            CompanyInformationAJAX(company_name, start_date, end_date);
+            const disruptionID = document.getElementById("DisruptionID_input").value;
+            const companyName = document.getElementById("CompanyName_input").value;
+
+            // Validate date range
+            if (start_date === "" || end_date === "") {
+                alert("Please provide a date range!");
+                return false;
+            }
+            if (start_date >= end_date) {
+                alert("Start date must be before end date!");
+                return false;
+            }
+
+            // if both filters empty, warn user
+            if (disruptionID === "" && companyName === "") {
+                alert("Please select a Disruption ID or a Company Name.");
+                return false;
+            }
+
             return true;
         }
     </script>
