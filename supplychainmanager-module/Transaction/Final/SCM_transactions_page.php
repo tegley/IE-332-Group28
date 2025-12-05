@@ -12,6 +12,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 $user_FullName = $_SESSION['FullName'];
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,8 +23,7 @@ $user_FullName = $_SESSION['FullName'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-3.3.0.min.js" charset="utf-8"></script> <!-- JavaScript for Plotly -->
-    <script src="SCM_display_alerts.js"></script>
-
+    
     <style>
         @import "standardized_project_formatting.css";
         #form-box {
@@ -162,7 +162,7 @@ $user_FullName = $_SESSION['FullName'];
 
             <!-- Dashboard Header -->
             <div class="card" id="dashboard-header">
-                <?php echo "{$user_FullName}'s SCM Dashboard" ?>
+                SCM Dashboard
             </div>
 
             <!-- --------------------- COMPANY TRANSACTIONS --------------------- -->
@@ -208,7 +208,7 @@ $user_FullName = $_SESSION['FullName'];
                     </div>
 
                     <!-- Continent filter -->
-                    <div id="continentFilter" class="filter-group" style="display:none;"``>
+                    <div id="continentFilter" class="filter-group" style="display:none;">
                     <select id="continent_input" class="form-select">
                         <option value="" disabled selected>Select Continent</option>
                         <option>Africa</option>
@@ -222,16 +222,16 @@ $user_FullName = $_SESSION['FullName'];
                     
                     <div class="row mt-3">
                         <div class="col-md-6">
-                            <label>Start Date</label>
-                            <input type="date" class="form-control" id="startDate">
+                            <label>Start Date e.g. (XXXX-XX-XX)</label>
+                            <input type="date" class="form-control"  value="2020-09-09" id="startDate">
                         </div>
                         <div class="col-md-6">
-                            <label>End Date</label>
-                            <input type="date" class="form-control" id="endDate">
+                            <label>End Date e.g. (XXXX-XX-XX)</label>
+                            <input type="date" class="form-control"  value="2025-09-09" id="endDate">
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary mt-3">Submit</button> <!--Change button so that it calls-->
+                    <button type="button" onclick="CheckUserInput()" class="btn btn-primary">Submit</button> 
 
                 </form>
 
@@ -282,21 +282,20 @@ $user_FullName = $_SESSION['FullName'];
 
                  <form class="mt-3" id="myFormDist">
                     <label>Distributor Name</label>
-                    <select class="form-control" id="Distributor_Name">
-                </select>
+                    <select class="form-control" id="Distributor_Name"></select>
 
                     <div class="row mt-3">
                         <div class="col-md-6">
-                            <label>Start Date</label>
+                            <label>Start Date e.g. (XXXX-XX-XX)</label>
                             <input type="date" class="form-control" id = "StartDist">
                         </div>
                         <div class="col-md-6">
-                            <label>End Date</label>
+                            <label>End Date e.g. (XXXX-XX-XX)</label>
                             <input type="date" class="form-control" id = "EndDist">
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                    <button type="button" onclick="CheckUserInputDist()" class="btn btn-primary">Submit</button>
                 </form>
 
                 <!-- Status message for user validation -->
@@ -370,25 +369,13 @@ $user_FullName = $_SESSION['FullName'];
 </div> <!-- End container -->
 
 <script> //Event listener functions
-//Run this when the page loads
+//Run this when the page loads to populate drop downs and prefill date with date range examples
 document.addEventListener('DOMContentLoaded', function() {
     loadDistributors();
+    showCustomer('2020-09-09', '2025-09-09', 'Asia');
+    showCustomerDistributors('2020-09-09', '2025-09-09', 'Davis PLC');
 });
 
-//Wait for page to load before attaching event listener
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('form-box').addEventListener('submit', function(e) {
-        e.preventDefault();
-        showCustomer();
-    });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('myFormDist').addEventListener('submit', function(e) {
-        e.preventDefault();
-        showCustomerDistributors();
-    });
-});
 </script>
 
 <script> //JavaScript for dropdown filter appearance space minimization
@@ -401,7 +388,7 @@ const continentFilter = document.getElementById("continentFilter");
 
 //Input IDs
 const company_input = document.getElementById("company_input");
-const city_input = document.getElementById("city_input");
+const city_input = document.getElementById("city_input");showCu
 const country_input = document.getElementById("country_input");
 const continent_input = document.getElementById("continent_input");
 
@@ -513,9 +500,7 @@ function loadDistributors() {
         });
 }
 
-function showCustomer() {
-    console.log("showCustomer() called");
-    
+function CheckUserInput() {
     // Extract User input from web page
     const filterType = document.getElementById("filterType").value; //Overarching filter
     const companyInput = document.getElementById("company_input").value; //Subfilter
@@ -594,6 +579,11 @@ function showCustomer() {
         }
     }
     console.log("User Input:", userInput);
+    showCustomer(startDate, endDate, userInput)
+}
+
+function showCustomer(startDate, endDate, userInput) {
+    console.log("showCustomer() called");
     // Package parameters
     const q = `${startDate},${endDate}`;
     const g = `${filterType}|${userInput}`;
@@ -682,6 +672,7 @@ function showCustomer() {
                     adjusmentsDiv.innerHTML = '<p class="text-muted">No adjustments found</p>';
                 }
                 if (data.leavingCompany && data.leavingCompany.length > 0) {
+            
             // Aggregate quantities by company
             const companyCounts = {};
             data.leavingCompany.forEach(item => {
@@ -690,28 +681,37 @@ function showCustomer() {
                 companyCounts[company] = (companyCounts[company] || 0) + quantity;
             });
 
-            // Sort companies by quantity
-            const sortedCompanies = Object.entries(companyCounts)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 10); // Top 10 companies
+            // Filter by date range
+const filteredData = data.leavingCompany.filter(item => {
+    const itemDate = new Date(item.ActualDate); // Your date field
+    return itemDate >= new Date(startDate) && itemDate <= new Date(endDate);
+});
 
-            var trace = {
-                x: sortedCompanies.map(item => item[0]),
-                y: sortedCompanies.map(item => item[1]),
-                type: 'bar',
-                marker: { color: '#0f6fab' }
-            };
+const sortedCompanies = Object.entries(companyCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
 
-            var layout = {
-                title: 'Top Companies by Shipment Volume',
-                xaxis: { 
-                    title: 'Company',
-                    tickangle: -45
-                },
-                yaxis: { title: 'Total Quantity Shipped' },
-                autosize: true,
-                margin: { l: 50, r: 50, t: 50, b: 100 }
-            };
+var trace = {
+    y: sortedCompanies.map(item => item[0]),  // Horizontal bars
+    x: sortedCompanies.map(item => item[1]),
+    type: 'bar',
+    orientation: 'h',
+    marker: { 
+        color: sortedCompanies.map((item, i) => i === 0 ? '#d95f02' : '#0f6fab'),
+        line: { color: '#fff', width: 1 }
+    },
+    hovertemplate: '<b>%{y}</b><br>Quantity: %{x:,}<extra></extra>'
+};
+
+var layout = {
+    title: {
+        text: `Top 10 Companies by Shipment Volume<br><sub>${startDate} to ${endDate}</sub>`,
+    },
+    xaxis: { title: 'Total Quantity Shipped', tickformat: ',' },
+    yaxis: { title: '', automargin: true },
+    autosize: true,
+    margin: { l: 180, r: 50, t: 80, b: 50 }
+};
 
             Plotly.newPlot('lineChartAdjustments', [trace], layout, {responsive: true});
         } else {
@@ -721,7 +721,7 @@ function showCustomer() {
 
                 // Update status message
                 document.getElementById("statusMessage").innerHTML = 
-                    `<div class="alert alert-success">Data loaded successfully: ${data.leavingCompany ? data.leavingCompany.length : 0} leaving, ${data.arrivingAt ? data.arrivingAt.length : 0} arriving</div>`;
+                    `<div class="alert alert-success">Data loaded successfully for date range ${startDate} to ${endDate}: ${data.leavingCompany ? data.leavingCompany.length : 0} leaving, ${data.arrivingAt ? data.arrivingAt.length : 0} arriving</div>`;
                 
             } catch (error) {
                 console.error("Error parsing response:", error);
@@ -745,16 +745,14 @@ function showCustomer() {
     };
 
     // Send the request
-    const url = "SCMTransactionQueries.php?q=" + encodeURIComponent(q) + "&g=" + encodeURIComponent(g);
+    const url = "SCMTransactonQueries.php?q=" + encodeURIComponent(q) + "&g=" + encodeURIComponent(g);
     console.log("Opening request to:", url);
     
     xhttp.open("GET", url, true);
     xhttp.send();
 }
 
-function showCustomerDistributors() {
-    console.log("showCustomerDistributors() called");
-    
+function CheckUserInputDist() {
     // Extract User input from web page
     const CompanyName = document.getElementById("Distributor_Name").value;
     const startDate = document.getElementById("StartDist").value;
@@ -785,6 +783,11 @@ function showCustomerDistributors() {
             '<div class="alert alert-warning">Start date must be before end date!</div>';
         return; 
     }
+    showCustomerDistributors(startDate, endDate, CompanyName)
+}
+
+function showCustomerDistributors(startDate, endDate, CompanyName) {
+    console.log("showCustomerDistributors() called");
 
     // Package parameters
     const q = `${startDate},${endDate}`;
@@ -996,7 +999,7 @@ function showCustomerDistributors() {
 
                 // Update status message
                 document.getElementById("statusMessageDist").innerHTML = 
-                    `<div class="alert alert-success">Data loaded successfully!</div>`;
+                    `<div class="alert alert-success">Data loaded successfully for date range ${startDate} to ${endDate} and ${data.distributor[0].CompanyName}! CompanyID: ${data.distributor[0].CompanyID}</div>`;
                 
             } catch (error) {
                 console.error("Error parsing response:", error);
