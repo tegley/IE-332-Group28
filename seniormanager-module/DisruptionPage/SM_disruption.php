@@ -119,6 +119,29 @@ $user_FullName = $_SESSION['FullName']; */
                     <?php echo "{$user_FullName}'s SM Dashboard" ?>
                 </div>
 
+                <!-- GLOBAL DATE FILTERS -->
+                <div class="card mb-3">
+                    <div class="card-body row">
+
+                        <div class="col-md-4">
+                            <label>Start Date</label>
+                            <input type="date" class="form-control" id="globalStartDate">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>End Date</label>
+                            <input type="date" class="form-control" id="globalEndDate">
+                        </div>
+
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button class="btn btn-primary w-100" onclick="ApplyGlobalDates()">
+                                Apply Date Range
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
                 <!-- BOOTSTRAP TABS -->
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
 
@@ -196,9 +219,11 @@ $user_FullName = $_SESSION['FullName']; */
 
                                     <div class="card-body">
                                         <label>Disruption ID</label>
-                                        <input type="text" class="form-control mb-3" id="SearchDisruptionID">
+                                        <select class="form-control" id="DisruptionID_input">
+                                            <option value="">Select ID</option>
+                                        </select>
 
-                                        <div class="d-flex justify-content-center">
+                                        <div class="d-flex justify-content-center mt-3">
                                             <button class="btn btn-primary px-4" onclick="SearchByDisruptionID()">
                                                 Submit
                                             </button>
@@ -234,9 +259,11 @@ $user_FullName = $_SESSION['FullName']; */
 
                                     <div class="card-body">
                                         <label>Company Name</label>
-                                        <input type="text" class="form-control mb-3" id="SearchCompanyName2">
+                                        <select class="form-control" id="CompanyName_input">
+                                            <option value="">Select Company</option>
+                                        </select>
 
-                                        <div class="d-flex justify-content-center">
+                                        <div class="d-flex justify-content-center mt-3">
                                             <button class="btn btn-primary px-4" onclick="SearchByCompanyName()">
                                                 Submit
                                             </button>
