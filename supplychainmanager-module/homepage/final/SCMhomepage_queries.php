@@ -48,7 +48,6 @@ $tmp = explode('|', $tmp);
     }
 
     $basicCompanyInfo = mysqli_query($conn, $BasicInfoSQL);
-    // echo $BasicInfoSQL;
 
     // Convert the table into individual rows and reformat.
     $companyInfo = []; //Making Basic Company Info Array
@@ -161,22 +160,43 @@ $tmp = explode('|', $tmp);
     // echo json_encode($adjustments);
 
     //Queries for Key Performance
-    //On time Rate Query
-    $otrSELECT = "SELECT ROUND(((SUM(CASE WHEN s.ActualDate <= s.PromisedDate THEN 1 ELSE 0 END) / COUNT(DISTINCT s.ShipmentID)) * 100), 2) AS OTR
-    FROM (SELECT x.ShipmentID, x.ActualDate, x.PromisedDate FROM Company c JOIN Shipping x ON c.CompanyID = x.SourceCompanyID ";
-    $otrQuery = "{$otrSELECT} WHERE c.CompanyName =  '" . $tmp[0] . "' AND x.ActualDate BETWEEN '" . $tmp[1] . "' AND '" . $tmp[2] . "' GROUP BY x.ShipmentID) s;";
-    //  echo $otrQuery;
-    //Execute the SQL query
+    //On time delivery rate, average delay, and standard deviation of delay
+    $company_type = "SELECT Type FROM Company WHERE CompanyName = '{$tmp[0]}'";
+    $result_company_type = mysqli_query($conn, $company_type);
+    $user_company_type = mysqli_fetch_array($result_company_type, MYSQLI_NUM); //Capture query result
+    echo $user_company_type[0];
+    if ($user_company_type[0] == "Distributor") { //Distributors - shipments they handle
+        //On time delivery rate
+        $otrSELECT = "SELECT ROUND(((SUM(CASE WHEN s.ActualDate <= s.PromisedDate THEN 1 ELSE 0 END) / COUNT(DISTINCT s.ShipmentID)) * 100), 2) AS OTR
+        FROM (SELECT x.ShipmentID, x.ActualDate, x.PromisedDate FROM Distributor d JOIN Company c ON d.CompanyID = c.CompanyID JOIN Shipping x ON x.DistributorID = d.CompanyID ";
+        $otrQuery = "{$otrSELECT} WHERE c.CompanyName =  '{$tmp[0]}' AND x.ActualDate BETWEEN '" . $tmp[1] . "' AND '" . $tmp[2] . "' GROUP BY x.ShipmentID) s;";
+
+        //Average Delay & Standard Deviation
+        $shipmentDetailsQuery = "SELECT ROUND(AVG(DATEDIFF(s.ActualDate, s.PromisedDate)), 2) AS avgDelay, ROUND(STDDEV(DATEDIFF(s.ActualDate, s.PromisedDate)), 2) AS stdDelay, COUNT(*) 
+        FROM Company c JOIN Shipping s ON c.CompanyID = s.DistributorID
+        WHERE c.CompanyName = '" . $tmp[0] . "' AND s.ActualDate BETWEEN '" . $tmp[1] . "' AND '" . $tmp[2] . "' AND s.PromisedDate <= s.ActualDate;";
+    }
+    else { //Manufacturers and Retailers - products they ship & recieve
+        //On time delivery rate
+        $otrSELECT = "SELECT ROUND(((SUM(CASE WHEN s.ActualDate <= s.PromisedDate THEN 1 ELSE 0 END) / COUNT(DISTINCT s.ShipmentID)) * 100), 2) AS OTR
+        FROM (SELECT x.ShipmentID, x.ActualDate, x.PromisedDate FROM Company c JOIN Shipping x ON c.CompanyID = x.SourceCompanyID ";
+        $otrQuery = "{$otrSELECT} WHERE c.CompanyName =  '" . $tmp[0] . "' AND x.ActualDate BETWEEN '" . $tmp[1] . "' AND '" . $tmp[2] . "' GROUP BY x.ShipmentID) s;";
+
+        //Average Delay & Standard Deviation
+        $shipmentDetailsQuery = "SELECT ROUND(AVG(DATEDIFF(s.ActualDate, s.PromisedDate)), 2) AS avgDelay, ROUND(STDDEV(DATEDIFF(s.ActualDate, s.PromisedDate)), 2) AS stdDelay, COUNT(*) 
+        FROM Company c JOIN Shipping s ON c.CompanyID = s.SourceCompanyID
+        WHERE c.CompanyName = '" . $tmp[0] . "' AND s.ActualDate BETWEEN '" . $tmp[1] . "' AND '" . $tmp[2] . "' AND s.PromisedDate <= s.ActualDate;";
+    }
+    echo $otrQuery;
+    echo $shipmentDetialsQuery;
+
+    //Execute on time rate SQL query
     $resultotr = mysqli_query($conn, $otrQuery);
     // Convert the table into individual rows and reformat.
     while ($row = mysqli_fetch_array($resultotr, MYSQLI_ASSOC)) {
     $otr[] = $row;
     }
-    //  echo json_encode($otr); 
 
-    $shipmentDetailsQuery = "SELECT ROUND(AVG(DATEDIFF(s.ActualDate, s.PromisedDate)), 2) AS avgDelay, ROUND(STDDEV_SAMP(DATEDIFF(s.ActualDate, s.PromisedDate)), 2) AS stdDelay, COUNT(*) 
-    FROM Company c JOIN Shipping s ON c.CompanyID = s.SourceCompanyID 
-    WHERE CompanyName = '" . $tmp[0] . "' AND s.ActualDate BETWEEN '" . $tmp[1] . "' AND '" . $tmp[2] . "' AND s.PromisedDate <= s.ActualDate;";
     //echo $shipmentDetailsQuery;
      //Execute the SQL query
     $resultshipmentDetails = mysqli_query($conn, $shipmentDetailsQuery);
@@ -185,6 +205,10 @@ $tmp = explode('|', $tmp);
     while ($row = mysqli_fetch_array($resultshipmentDetails, MYSQLI_ASSOC)) {
         $shipmentDetails[] = $row;
     }
+
+
+
+//
     // echo json_encode($shipmentDetails);
 
     $totalShipmentsQuery = "SELECT COUNT(*) FROM Company c JOIN Shipping s ON c.CompanyID = s.SourceCompanyID
