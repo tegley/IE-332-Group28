@@ -119,29 +119,44 @@ $user_FullName = $_SESSION['FullName']; */
                     <?php echo "{$user_FullName}'s SM Dashboard" ?>
                 </div>
 
-                <!-- GLOBAL DATE FILTERS -->
-                <div class="card mb-3">
-                    <div class="card-body row">
+                 <!-- GLOBAL FILTERS -->
+                        <div class="card mb-3">
+                            <div class="card-body row">
 
-                        <div class="col-md-4">
-                            <label>Start Date</label>
-                            <input type="date" class="form-control" id="globalStartDate">
+                                <div class="col-md-3">
+                                    <label>Region Type</label>
+                                    <select class="form-control" id="regionType_input" onchange='LoadRegionList(document.getElementById("regionType_input").value)'>
+                                        <option value="">Select Type</option>
+                                        <option value="Country">Country</option>
+                                        <option value="Continent">Continent</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label>Region</label>
+                                    <select class="form-control" id="region_input">
+                                        <option value="">All Regions</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label>Start Date</label>
+                                    <input type="date" class="form-control" id="globalStartDate">
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label>End Date</label>
+                                    <input type="date" class="form-control" id="globalEndDate">
+                                </div>
+
+                                <div class="col-12 mt-3 d-flex justify-content-center">
+                                    <button type="button" class="btn btn-primary" onclick="if (CheckUserInput()) updateDropDowns(); LoadRegionDisruptions(document.getElementById('globalStartDate').value, document.getElementById('globalEndDate').value, document.getElementById('regionType_input').value, document.getElementById('region_input').value);">
+                                        Submit
+                                    </button>
+                                </div>
+
+                            </div>
                         </div>
-
-                        <div class="col-md-4">
-                            <label>End Date</label>
-                            <input type="date" class="form-control" id="globalEndDate">
-                        </div>
-
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button class="btn btn-primary w-100" onclick="if(ValidateGlobalDates()) ApplyGlobalDates();">
-                                Apply Date Range
-                            </button>
-
-                        </div>
-
-                    </div>
-                </div>
 
                 <!-- BOOTSTRAP TABS -->
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -175,18 +190,18 @@ $user_FullName = $_SESSION['FullName']; */
                 <!-- Start TAB CONTENT WRAPPER -->
                 <div class="tab-content" id="myTabContent">
 
-                    <!-- TAB 1: AVERAGE FINANCIAL HEALTH BY COMPANY TYPE -->
+                    <!-- TAB 1: Regional Disruption info -->
                     <div class="tab-pane fade show active" id="countrycontinent" role="tabpanel" aria-labelledby="countrycontinent-tab">
 
                         <div class="area-header">Disruption Events by Region and Frequency</div>
 
-                        <!-- Bar Chart + Line Chart -->
+                        <!-- Table + Bar Chart -->
                         <div class="row">
 
                             <div class="col-md-6">
                                 <div class="card" style="height: 350px;">
-                                    <div class="card-header">Bar Chart</div>
-                                    <ul class="list-group list-group-flush" id="typeHealthList">
+                                    <div class="card-header"><h4>Regional Disruption Overview</h4></div>
+                                    <ul class="list-group list-group-flush" id="regionalOverviewList" style="max-height:700px; overflow-y: auto;">
                                         <p class="text-muted">Submit query to see results...</p>
                                     </ul>
                                 </div>
@@ -194,8 +209,8 @@ $user_FullName = $_SESSION['FullName']; */
 
                             <div class="col-md-6">
                                 <div class="card" style="height: 350px;">
-                                    <div class="card-header">Line Chart</div>
-                                    <div id="typeHealthBarChart" style="height: 300px;">
+                                    <div class="card-header"><h4>Regional Disruption Bar Chart</h4></div>
+                                    <div id="disruptionLevelChart" style="height: 300px;">
                                         <p class="text-muted">Submit query to see results...</p>
                                     </div>
                                 </div>
@@ -208,7 +223,7 @@ $user_FullName = $_SESSION['FullName']; */
                     <!-- TAB 2: SEARCH BY DISRUPTION ID OR COMPANY NAME -->
                     <div class="tab-pane fade" id="idname" role="tabpanel" aria-labelledby="idname-tab">
 
-                        <div class="area-header">Search by Disruption ID or Company Name</div>
+                        <div class="area-header">Search by Disruption ID or Company Name within Region</div>
 
                         <div class="row">
 
@@ -220,15 +235,9 @@ $user_FullName = $_SESSION['FullName']; */
 
                                     <div class="card-body">
                                         <label>Disruption ID</label>
-                                        <select class="form-control" id="DisruptionID_input">
+                                        <select class="form-control" id="DisruptionID_input" onchange="SearchByDisruptionID(document.getElementById('DisruptionID_input').value)">
                                             <option value="">Select ID</option>
                                         </select>
-
-                                        <div class="d-flex justify-content-center mt-3">
-                                            <button class="btn btn-primary px-4" onclick="if (CheckUserInput()) SearchByDisruptionID();">
-                                                Submit
-                                            </button>
-                                        </div>
                                     </div>
                                 </div>
 
@@ -244,7 +253,7 @@ $user_FullName = $_SESSION['FullName']; */
                                                     <th>Impact Level</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody id="tbodyDisruptID">
                                             </tbody>
                                         </table>
                                     </div>
@@ -260,15 +269,9 @@ $user_FullName = $_SESSION['FullName']; */
 
                                     <div class="card-body">
                                         <label>Company Name</label>
-                                        <select class="form-control" id="CompanyName_input">
+                                        <select class="form-control" id="CompanyName_input" onchange="SearchByCompanyName(document.getElementById('CompanyName_input').value)">
                                             <option value="">Select Company</option>
                                         </select>
-
-                                        <div class="d-flex justify-content-center mt-3">
-                                            <button class="btn btn-primary px-4" onclick="if (CheckUserInput()) SearchByCompanyName();">
-                                                Submit
-                                            </button>
-                                        </div>
                                     </div>
                                 </div>
 
@@ -285,7 +288,7 @@ $user_FullName = $_SESSION['FullName']; */
                                                     <th>Impact Level</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody id = "tbodyCompany">
                                             </tbody>
                                         </table>
                                     </div>
@@ -345,12 +348,60 @@ $user_FullName = $_SESSION['FullName']; */
         document.addEventListener('DOMContentLoaded', function() {
             loadCompanies();
         });
+         function LoadRegionList(region) {
+            xhtpp = new XMLHttpRequest();
+            const input = region;
+            console.log("LoadRegionListCalled!");
+            
+
+            xhtpp.onload = function () {
+                if (this.readyState == 4 && this.status == 200) {
+
+                    const my_JSON_object = JSON.parse(this.responseText);
+                    console.log(JSON.stringify(my_JSON_object));
+
+                    const regionDropdown = document.getElementById('region_input');
+                    regionDropdown.innerHTML = '';
+                    
+                    const defaultRegionOption = document.createElement('option');
+                    defaultRegionOption.value = '';
+                    defaultRegionOption.textContent = 'Select a specific region';
+                    regionDropdown.appendChild(defaultRegionOption);
+                    
+                    //Since the key will change based on user input, we must find out what the key is
+                    const $key = Object.keys(my_JSON_object[0])[0];
+
+                    my_JSON_object.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item[$key];
+                        option.textContent = item[$key];
+                        regionDropdown.appendChild(option);
+                        });
+
+                    //Add All option
+                    const allOption = document.createElement('option');
+                        allOption.value = "";
+                        allOption.textContent = "All Regions";
+                        regionDropdown.appendChild(allOption);
+
+
+                } // END onload function
+                else{
+                    console.log("Failed");
+                }
+            }
+
+            xhtpp.open("GET", "regionOpts.php?q=" + region, true);
+            console.log("regionOpts.php?q=" + region); 
+            xhtpp.send();
+    } //End LoadRegionList
 
         function loadCompanies() {
             fetch('distributorList.php')
                 .then(response => response.json())
                 .then(data => {
-                    const companyDropdown = document.getElementById('company_input');
+                    //Populate Company Options
+                    const companyDropdown = document.getElementById('CompanyName_input');
                     companyDropdown.innerHTML = '';
                     
                     const defaultCompanyOption = document.createElement('option');
@@ -364,7 +415,92 @@ $user_FullName = $_SESSION['FullName']; */
                         option.textContent = company.CompanyName;
                         companyDropdown.appendChild(option);
                     });
+                    //Population Disruption Event IDs
+                    const disruptionDropdown = document.getElementById('DisruptionID_input');
+                    disruptionDropdown.innerHTML = '';
+                    
+                    const defaultdisruptionOption = document.createElement('option');
+                    defaultdisruptionOption.value = '';
+                    defaultdisruptionOption.textContent = 'Select a disruptionID';
+                    disruptionDropdown.appendChild(defaultdisruptionOption);
+                    
+                    data.disruptionID.forEach(disruptionID => {
+                        const option = document.createElement('option');
+                        option.value = disruptionID.EventID;
+                        option.textContent = disruptionID.EventID;
+                        disruptionDropdown.appendChild(option);
+                    });
                 })
+        }
+        // Update Dropdown List
+        function updateDropDowns(){
+            xhtpp = new XMLHttpRequest();
+            const start_date = document.getElementById("globalStartDate").value;
+            const end_date = document.getElementById("globalEndDate").value;
+            const regionType = document.getElementById("regionType_input").value;
+            const region = document.getElementById("region_input").value;
+            const input = regionType + ',' + region + ',' + start_date + ',' + end_date;
+            console.log("updateRegionsCalled!");
+            
+
+            xhtpp.onload = function () {
+                if (this.readyState == 4 && this.status == 200) {
+
+                    const data = JSON.parse(this.responseText);
+                    console.log(JSON.stringify(data));
+                     const companyDropdown = document.getElementById('CompanyName_input');
+                    companyDropdown.innerHTML = '';
+                    const disruptionDropdown = document.getElementById('DisruptionID_input');
+                    disruptionDropdown.innerHTML = '';
+
+                    if(data.company.length > 0){
+                    //Populate Company Options
+                    const defaultCompanyOption = document.createElement('option');
+                    defaultCompanyOption.value = '';
+                    defaultCompanyOption.textContent = 'Select a company';
+                    companyDropdown.appendChild(defaultCompanyOption);
+                    
+                    data.company.forEach(company => {
+                        const option = document.createElement('option');
+                        option.value = company.CompanyName;
+                        option.textContent = company.CompanyName;
+                        companyDropdown.appendChild(option);
+                    });}else{
+                        const defaultCompanyOption = document.createElement('option');
+                        defaultCompanyOption.value = '';
+                        defaultCompanyOption.textContent = 'No Companies in Filter';
+                        companyDropdown.appendChild(defaultCompanyOption);
+                        const disruptionDropdown = document.getElementById('DisruptionID_input');
+                        disruptionDropdown.innerHTML = '';
+                    }
+                    if(data.disruptionID.length > 0){
+                    //Population Disruption Event IDs
+                    const defaultdisruptionOption = document.createElement('option');
+                    defaultdisruptionOption.value = '';
+                    defaultdisruptionOption.textContent = 'Select a disruptionID';
+                    disruptionDropdown.appendChild(defaultdisruptionOption);
+                    data.disruptionID.forEach(disruptionID => {
+                        const option = document.createElement('option');
+                        option.value = disruptionID.EventID;
+                        option.textContent = disruptionID.EventID;
+                        disruptionDropdown.appendChild(option);
+                    });
+                    } else{
+                    const defaultdisruptionOption = document.createElement('option');
+                    defaultdisruptionOption.value = '';
+                    defaultdisruptionOption.textContent = 'No Disruptions within Filter';
+                    disruptionDropdown.appendChild(defaultdisruptionOption);
+                    }
+
+
+                } // END onload function
+                else{
+                    console.log("Failed");
+                }
+                }
+                xhtpp.open("GET", "regionSelectionOptions.php?q=" + input, true);
+                console.log("regionSelectionOptions.php?q=" + input); 
+                xhtpp.send();
         }
     </script>
 
@@ -374,8 +510,9 @@ $user_FullName = $_SESSION['FullName']; */
             const start_date = document.getElementById("globalStartDate").value;
             const end_date = document.getElementById("globalEndDate").value;
 
-            const disruptionID = document.getElementById("DisruptionID_input").value;
-            const companyName = document.getElementById("CompanyName_input").value;
+            const regionType = document.getElementById("regionType_input").value;
+            console.log("Called!!");
+     
 
             // Validate date range
             if (start_date === "" || end_date === "") {
@@ -387,232 +524,190 @@ $user_FullName = $_SESSION['FullName']; */
                 return false;
             }
 
-            // if both filters empty, warn user
-            if (disruptionID === "" && companyName === "") {
-                alert("Please select a Disruption ID or a Company Name.");
-                return false;
-            }
-
-            return true;
-        }
-    </script>
-
-    <!-- New script for Global Date Filters -->
-    <script>
-        function ValidateGlobalDates() {
-            const start = document.getElementById("globalStartDate").value;
-            const end   = document.getElementById("globalEndDate").value;
-
-            if (start === "" || end === "") {
-                alert("Please provide a date range!");
-                return false;
-            }
-            if (start >= end) {
-                alert("Start date must be before end date!");
+            if (regionType === "") {
+                alert("Please select a Region Type (Country or Continent).");
                 return false;
             }
             return true;
         }
     </script>
+
     <script>
-        var my_JSON_object;
+        let my_JSON_object = ""; //Making global JSON object so that the user's selection can dynamically update when they select a dropdown filter
 
-        function CompanyInformationAJAX(company_name, start_date, end_date) {
+        function LoadRegionDisruptions(start_date, end_date, regionType, region) {
 
-            let todays_date = new Date().toJSON().slice(0, 10);
-            one_year_ago = String(todays_date.slice(0, 4) - 1);
-            month = todays_date.slice(5, 7);
-            day = todays_date.slice(8, 10);
-            one_year_ago_from_today_date = `${one_year_ago}-${month}-${day}`;
-
-            input = company_name + "|" + start_date + "|" + end_date + "|" + todays_date + "|" + one_year_ago_from_today_date;
+           input = start_date + "|" + end_date;
+            g = regionType + "|" + region;
 
             xhtpp = new XMLHttpRequest();
 
             xhtpp.onload = function () {
                 if (this.readyState == 4 && this.status == 200) {
 
-                    my_JSON_object = JSON.parse(this.responseText);
-                    console.log(JSON.stringify(my_JSON_object));
+                    data = JSON.parse(this.responseText);
+                    my_JSON_object = data; //Update global object
+                    console.log("Katya is rad");
+                    console.log(JSON.stringify(data));
 
-                    //Financial Health Line chart
-                    const x_vals = my_JSON_object.pastHealthScores.map((item) => { return String(item.Quarter + " " + item.RepYear) }).map(String).reverse()
-                    const y_vals = my_JSON_object.pastHealthScores.map((item) => { return item.HealthScore }).map(Number).reverse();
+                    // Table of Events
+                    const companyImpactedDiv = document.getElementById("regionalOverviewList");
+                    companyImpactedDiv.innerHTML = ""; //Clear out placeholder
 
-                    var layout = {
-                        title: { text: 'Financial Health Status Over Past Year from Today' },
-                        xaxis: { title: { text: 'Quarter & Year' } },
-                        yaxis: { range: [25, 100], title: { text: 'Financial Health Score' } }
-                    };
-
-                    const TESTER = document.getElementById('finHealthPastYear');
-                    TESTER.innerHTML = "";
-                    Plotly.newPlot(TESTER, [{ x: x_vals, y: y_vals }], layout);
-
-                    // Company Information
-                    document.getElementById("address").innerHTML =
-                        my_JSON_object.companyInfo[0].City + ", " + my_JSON_object.companyInfo[0].CountryName;
-
-                    document.getElementById("company-type").innerHTML =
-                        my_JSON_object.companyInfo[0].Type;
-
-                    document.getElementById("tier-level").innerHTML =
-                        my_JSON_object.companyInfo[0].TierLevel;
-
-                    document.getElementById("financial-health-score").innerHTML =
-                        my_JSON_object.companyInfo[0].HealthScore;
-
-                    // Other Info
-                    const otherInfoLabel = document.getElementById("otherInfoHeader");
-                    const otherInfoDiv = document.getElementById("otherInfo");
-                    otherInfoDiv.innerHTML = "";
-
-                    if (my_JSON_object.companyInfo[0].Type === "Distributor") {
-                        otherInfoLabel.innerHTML = "Unique Routes Operated";
-                        my_JSON_object.distRoutes.forEach(item => {
-                            const li = document.createElement("li");
-                            li.className = "list-group-item";
-                            li.textContent = `From Company ID: ${item.FromCompanyID} To Company ID: ${item.ToCompanyID}`;
-                            otherInfoDiv.appendChild(li);
-                        });
-                    }
-                    if (my_JSON_object.companyInfo[0].Type === "Manufacturer") {
-                        otherInfoLabel.innerHTML = "Manufacturer Capacity";
-                        const li = document.createElement("li");
-                        li.className = "list-group-item";
-                        li.textContent = `Factory Capacity: ${my_JSON_object.companyInfo[0].FactoryCapacity}`;
-                        otherInfoDiv.appendChild(li);
-                    }
-
-                    // Dependencies
-                    const dependsOnDiv = document.getElementById("dependsOn");
-                    const dependedOnDiv = document.getElementById("dependedOn");
-                    dependsOnDiv.innerHTML = "";
-                    dependedOnDiv.innerHTML = "";
-
-                    if (my_JSON_object.dependsOn.length > 0) {
-                        my_JSON_object.dependsOn.forEach(item => {
-                            const li = document.createElement("li");
-                            li.className = "list-group-item";
-                            li.textContent = `UpStream Company ID: ${item.UpStreamCompanyID}`;
-                            dependsOnDiv.appendChild(li);
+                    if (data.companyAffectedByEvent && data.companyAffectedByEvent.length > 0) {
+                        data.companyAffectedByEvent.forEach(item => {
+                            const div = document.createElement("div");
+                            div.className = "list-item";
+                            div.innerHTML = `
+                                <strong>Company Name:</strong> ${item.CompanyName} <strong>ID:</strong> ${item.CompanyID}<br>
+                                <strong>Event ID:</strong> ${item.EventID} <strong>Impact Level:</strong> ${item.ImpactLevel}<br>
+                                <strong>Country:</strong> ${item.CategoryName}<br>
+                                <strong>Country:</strong> ${item.CountryName} <strong>Continent:</strong> ${item.ContinentName}
+                            `;
+                            companyImpactedDiv.appendChild(div);
                         });
                     } else {
-                        dependsOnDiv.innerHTML = '<p class="text-muted">No dependencies found</p>';
+                        companyImpactedDiv.innerHTML = '<p class="text-muted">No disruptions found</p>';
                     }
-
-                    if (my_JSON_object.dependedOn.length > 0) {
-                        my_JSON_object.dependedOn.forEach(item => {
-                            const li = document.createElement("li");
-                            li.className = "list-group-item";
-                            li.textContent = `DownStream Company ID: ${item.DownStreamCompanyID}`;
-                            dependedOnDiv.appendChild(li);
-                        });
-                    } else {
-                        dependedOnDiv.innerHTML = '<p class="text-muted">No dependencies found</p>';
+                    let regionDesired = "";
+                    switch (regionType){
+                        case "Country":
+                            regionDesired = "CountryName";
+                            break;
+                        case "Continent":
+                            regionDesired = "ContinentName";
+                            break;
                     }
+                    console.log(regionDesired);
 
-                    // Products
-                    const productsDiv = document.getElementById("productsSupplied");
-                    productsDiv.innerHTML = "";
-                    my_JSON_object.productsSupplied.forEach(item => {
-                        const li = document.createElement("li");
-                        li.className = "list-group-item";
-                        li.textContent = `Product Name: ${item.ProductName} Product ID: ${item.ProductID}`;
-                        productsDiv.appendChild(li);
-                    });
-
-                    // Product Diversity Pie
-                    const pieDiv = document.getElementById("ProductDiversityPieChart");
-                    pieDiv.innerHTML = "";
-                    if (my_JSON_object.productDiversity.length > 0) {
-                        const categories = my_JSON_object.productDiversity.map(item => item.Category);
-                        const counts = my_JSON_object.productDiversity.map(item => parseInt(item["COUNT(*)"]));
-                        Plotly.newPlot('ProductDiversityPieChart', [{
-                            values: counts,
-                            labels: categories,
-                            type: 'pie'
-                        }]);
-                    }
-
-                    // Shipping
-                    const shippingDiv = document.getElementById("shipmentDetails");
-                    shippingDiv.innerHTML = "";
-                    my_JSON_object.shipping.forEach(item => {
-                        const div = document.createElement("div");
-                        div.className = "list-item";
-                        div.innerHTML = `<strong>Shipment ID:</strong> ${item.ShipmentID}<br>
-                                         <strong>Date Delivered:</strong> ${item.ActualDate}<br>
-                                         <strong>Product & Quantity:</strong> ${item.ProductID}, ${item.Quantity}`;
-                        shippingDiv.appendChild(div);
-                    });
-
-                    // Receiving
-                    const receivingDiv = document.getElementById("receivingDetails");
-                    receivingDiv.innerHTML = "";
-                    my_JSON_object.receivings.forEach(item => {
-                        const div = document.createElement("div");
-                        div.className = "list-item";
-                        div.innerHTML = `<strong>Receiving ID:</strong> ${item.ReceivingID}<br>
-                                         <strong>Date Received:</strong> ${item.ReceivedDate}<br>
-                                         <strong>Product & Quantity:</strong> ${item.ProductID}, ${item.QuantityReceived}`;
-                        receivingDiv.appendChild(div);
-                    });
-
-                    // Adjustments
-                    const adjustmentsDiv = document.getElementById("adjustmentDetails");
-                    adjustmentsDiv.innerHTML = "";
-                    my_JSON_object.adjustments.forEach(item => {
-                        const div = document.createElement("div");
-                        div.className = "list-item";
-                        div.innerHTML = `<strong>Adjustment ID:</strong> ${item.AdjustmentID}<br>
-                                         <strong>Date:</strong> ${item.AdjustmentDate}<br>
-                                         <strong>Product & Quantity:</strong> ${item.ProductID}, ${item.QuantityChange}<br>
-                                         <strong>Reason:</strong> ${item.Reason}`;
-                        adjustmentsDiv.appendChild(div);
-                    });
-
-                    // KPI
-                    document.getElementById("onTimeRate").innerHTML =
-                        (my_JSON_object.otr[0].OTR || "N/A") + "%";
-
-                    document.getElementById("avgDelay").innerHTML =
-                        (my_JSON_object.shipmentDetails[0].avgDelay || "N/A") + " days";
-
-                    document.getElementById("stdDelay").innerHTML =
-                        (my_JSON_object.shipmentDetails[0].stdDelay || "N/A") + " days";
-
-                    // Disruption Events
-                    const disruptionDiv = document.getElementById("disruptEvents");
-                    disruptionDiv.innerHTML = "";
-                    my_JSON_object.disruptionEvents.forEach(item => {
-                        const li = document.createElement("li");
-                        li.className = "list-group-item";
-                        li.textContent =
-                            `${item.CategoryName} | ID: ${item.EventID} | Date: ${item.EventDate} → Recovery: ${item.EventRecoveryDate}`;
-                        disruptionDiv.appendChild(li);
-                    });
-
-                    // Disruption Distribution Bar Chart
-                    const distDiv = document.getElementById("disruptEventsBarChart");
-                    distDiv.innerHTML = "";
-                    if (my_JSON_object.disruptionEventsDistribution.length > 0) {
-                        const categories = my_JSON_object.disruptionEventsDistribution.map(item => item.CategoryName);
-                        const counts = my_JSON_object.disruptionEventsDistribution.map(item => parseInt(item.NumEvents));
-                        Plotly.newPlot('disruptEventsBarChart', [{
-                            x: categories,
-                            y: counts,
-                            type: 'bar',
-                            marker: { color: '#0f6fab' }
-                        }]);
-                    }
+                    //Plot
+                    const dsd_regions = data.regionalOverview.map((item) => { return item[regionDesired] });
+                    console.log(dsd_regions);
+                    const dsd_other_values = data.regionalOverview.map((item) => { return item.leftOverDisruption });
+                    console.log(dsd_other_values);
+                    const dsd_high_values = data.regionalOverview.map((item) => { return item.HighImpactCount });
+                    console.log(dsd_high_values);
+                    CreateDSDStackedBarChart(dsd_regions, dsd_other_values, dsd_high_values);
+                   
 
                 } // END readyState if
+                else{
+                    console.log("Bad bad bad")
+                }
             } // END onload function
-
-            xhtpp.open("GET", "SCMhomepage_queries.php?q=" + input, true);
+            console.log("Sending: seniorDisruptionQueries.php?q=" + input + "&g=" + g)
+            xhtpp.open("GET", "seniorDisruptionQueries.php?q=" + input + "&g=" + g, true);
             xhtpp.send();
-        } // END CompanyInformationAJAX
+        } // END AJAX
+        // Filter based on disruption drop down
+        function SearchByDisruptionID(disruptionID) {
+            if(!disruptionID || disruptionID.length === 0) { //If selection not selected or value is null, display all data
+                data = my_JSON_object.companyAffectedByEvent;
+                return false;
+            }
+            if(my_JSON_object.length === 0){
+                alert("Submit Query First!");
+                return false;
+            }
+
+            const data = my_JSON_object.companyAffectedByEvent.filter(item => item.EventID === disruptionID);
+            const disruptionIDtBody = document.getElementById("tbodyDisruptID");
+                    disruptionIDtBody.innerHTML = ""; //Clear out placeholder
+
+            if (data && data.length > 0) {
+                for (let i = 0; i < data.length; i++){
+                    const row = disruptionIDtBody.insertRow();
+                    row.innerHTML = `
+                        <td>${data[i].CompanyName}</td>
+                        <td>${data[i].ImpactLevel}</td>
+                        `;
+                }
+            } else {
+                const row = disruptionIDtBody.insertRow();
+                    row.innerHTML = `
+                        <td>No company affected</td>
+                        <td>N/A</td>
+                        `;
+            }
+
+        }
+        // Filter based on disruption drop down
+        function SearchByCompanyName(companyName) {
+            if(!companyName || companyName.length === 0) { //If selection not selected or value is null, display all data
+                data = my_JSON_object.companyAffectedByEvent;
+                return false;
+            }
+            if(my_JSON_object.length === 0){
+                alert("Submit Query First!");
+                return false;
+            }
+
+            const data = my_JSON_object.companyAffectedByEvent.filter(item => item.CompanyName === companyName);
+            const disruptionIDtBody = document.getElementById("tbodyCompany");
+                    disruptionIDtBody.innerHTML = ""; //Clear out placeholder
+
+            if (data && data.length > 0) {
+                for (let i = 0; i < data.length; i++){
+                    const row = disruptionIDtBody.insertRow();
+                    row.innerHTML = `
+                        <td>${data[i].EventID}</td>
+                        <td>${data[i].EventDate}</td>
+                        <td>${data[i].ImpactLevel}</td>
+                        `;
+                }
+            } else {
+                const row = disruptionIDtBody.insertRow();
+                    row.innerHTML = `
+                        <td>No company affected</td>
+                        <td>N/A</td>
+                        `;
+            }
+        }
+        function CreateDSDStackedBarChart(dsd_regions, dsd_other_values, dsd_high_values){
+            //Placement  
+            const StackedBarChart = document.getElementById('disruptionLevelChart');
+            StackedBarChart.innerHTML = "";
+            //Layout
+            var layout = {
+                title: {
+                    text: 'Portion of High Impact Disruption Events'
+                },
+                xaxis: {
+                    tickfont: {
+                    size: 8, // Adjust this value to your desired font size
+                    }
+                },
+                yaxis: {
+                    title: {
+                        text: 'Count of Events'
+                    }
+                },
+                barmode: 'stack'
+            };
+            //Data
+            var other = {
+                x: dsd_regions,
+                y: dsd_other_values,
+                type: 'bar',
+                name: 'Disruption Events',
+                marker: {
+                color: '#FFDD00'
+                }
+            };
+            
+            var high = {
+                x: dsd_regions,
+                y: dsd_high_values,
+                type: 'bar',
+                name: 'High Impact',
+                marker: {
+                color: 'red'
+                }
+            };
+            data=[other, high];
+            //Execute Plotly
+            Plotly.newPlot(StackedBarChart, data, layout);
+            }
     </script>
 
 </body>
