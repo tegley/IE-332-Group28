@@ -181,9 +181,8 @@ $user_FullName = $_SESSION['FullName']; */
                                 </div>
 
                                 <div class="col-12 mt-3 d-flex justify-content-center">
-                                    <button type="button" class="btn btn-primary" onclick="if (Validate_Tab1()) LoadTypeHealth();">
-                                        Submit
-                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="if (Validate_Tab1()) LoadTypeHealth(document.getElementById('typeStart_input').value, document.getElementById('typeEnd_input').value, document.getElementById('companyType_input').value);">
+                                    Submit</button>
                                 </div>
 
                             </div>
@@ -194,8 +193,8 @@ $user_FullName = $_SESSION['FullName']; */
 
                             <div class="col-md-6">
                                 <div class="card" style="height: 350px;">
-                                    <div class="card-header">List</div>
-                                    <ul class="list-group list-group-flush" id="typeHealthList">
+                                    <div class="card-header">Average Financial Health of Companies</div>
+                                    <ul class="list-group list-group-flush" id="typeHealthList" style="max-height:700px; overflow-y: auto;">
                                         <p class="text-muted">Submit query to see results...</p>
                                     </ul>
                                 </div>
@@ -203,7 +202,7 @@ $user_FullName = $_SESSION['FullName']; */
 
                             <div class="col-md-6">
                                 <div class="card" style="height: 350px;">
-                                    <div class="card-header">Bar Chart</div>
+                                    <div class="card-header">Visualization of Average Financial Health Scores</div>
                                     <div id="typeHealthBarChart" style="height: 300px;">
                                         <p class="text-muted">Submit query to see results...</p>
                                     </div>
@@ -225,7 +224,7 @@ $user_FullName = $_SESSION['FullName']; */
 
                                 <div class="col-md-3">
                                     <label>Region Type</label>
-                                    <select class="form-control" id="regionType_input" onchange="LoadRegionList()">
+                                    <select class="form-control" id="regionType_input" onchange='LoadRegionList(document.getElementById("regionType_input").value)'>
                                         <option value="">Select Type</option>
                                         <option value="Country">Country</option>
                                         <option value="Continent">Continent</option>
@@ -250,7 +249,7 @@ $user_FullName = $_SESSION['FullName']; */
                                 </div>
 
                                 <div class="col-12 mt-3 d-flex justify-content-center">
-                                    <button type="button" class="btn btn-primary" onclick="if (Validate_Tab2()) LoadRegionFinancials();">
+                                    <button type="button" class="btn btn-primary" onclick="if (Validate_Tab2()) LoadRegionFinancials(document.getElementById('regionStart_input').value, document.getElementById('regionEnd_input').value, document.getElementById('regionType_input').value, document.getElementById('region_input').value);">
                                         Submit
                                     </button>
                                 </div>
@@ -265,18 +264,18 @@ $user_FullName = $_SESSION['FullName']; */
                             <div class="col-md-6">
                                 <div class="card" style="height: 350px;">
                                     <div class="card-header">List of Health Scores</div>
-                                    <ul class="list-group list-group-flush scroll-box" id="regionHealthList">
+                                    <ul class="list-group list-group-flush" id="regionHealthList" style="max-height:700px; overflow-y: auto;">
                                         <p class="text-muted">Submit query to see results...</p>
                                     </ul>
                                 </div>
                             </div>
 
-                            <!-- BAR CHART -->
+                            <!-- Company Info -->
                             <div class="col-md-6">
                                 <div class="card" style="height: 350px;">
-                                    <div class="card-header">Bar Chart</div>
-                                    <div id="regionHealthBarChart" style="height: 300px;">
-                                        <p class="text-muted">Submit query to see results...</p>
+                                    <div class="card-header">Company Information</div>
+                                    <div id="companyInfo" style="height: 350px;">
+                                        <p class="text-muted">Select a Company</p>
                                     </div>
                                 </div>
                             </div>
@@ -367,26 +366,47 @@ $user_FullName = $_SESSION['FullName']; */
             loadCompanies();
         });
 
-        function loadCompanies() {
-            fetch('distributorList.php')
-                .then(response => response.json())
-                .then(data => {
-                    const companyDropdown = document.getElementById('company_input');
-                    companyDropdown.innerHTML = '';
+        function LoadRegionList(region) {
+            xhtpp = new XMLHttpRequest();
+            const input = region;
+            console.log("LoadRegionListCalled!");
+            
+
+            xhtpp.onload = function () {
+                if (this.readyState == 4 && this.status == 200) {
+
+                    const my_JSON_object = JSON.parse(this.responseText);
+                    console.log(JSON.stringify(my_JSON_object));
+
+                    const regionDropdown = document.getElementById('region_input');
+                    regionDropdown.innerHTML = '';
                     
-                    const defaultCompanyOption = document.createElement('option');
-                    defaultCompanyOption.value = '';
-                    defaultCompanyOption.textContent = 'Select a company';
-                    companyDropdown.appendChild(defaultCompanyOption);
+                    const defaultRegionOption = document.createElement('option');
+                    defaultRegionOption.value = '';
+                    defaultRegionOption.textContent = 'Select a specific region';
+                    regionDropdown.appendChild(defaultRegionOption);
                     
-                    data.company.forEach(company => {
+                    //Since the key will change based on user input, we must find out what the key is
+                    const $key = Object.keys(my_JSON_object[0])[0];
+
+                    my_JSON_object.forEach(item => {
                         const option = document.createElement('option');
-                        option.value = company.CompanyName;
-                        option.textContent = company.CompanyName;
-                        companyDropdown.appendChild(option);
-                    });
-                })
-        }
+                        option.value = item[$key];
+                        option.textContent = item[$key];
+                        regionDropdown.appendChild(option);
+                        });
+
+
+                } // END onload function
+                else{
+                    console.log("Failed");
+                }
+            }
+
+            xhtpp.open("GET", "regionOpts.php?q=" + region, true);
+            console.log("regionOpts.php?q=" + region); 
+            xhtpp.send();
+    } //End LoadRegionList
     </script>
 
     <script>
@@ -407,7 +427,15 @@ $user_FullName = $_SESSION['FullName']; */
             const start = document.getElementById("typeStart_input").value;
             const end = document.getElementById("typeEnd_input").value;
 
-            return Validate_DateRange(start, end);
+            if (start === "" || end === "") {
+                alert("Please provide a start and end date.");
+                return false;
+            }
+            if (start >= end) {
+                alert("Start date must be before end date.");
+                return false;
+            }
+            return true;
         }
 
         // TAB 2 validator
@@ -428,202 +456,357 @@ $user_FullName = $_SESSION['FullName']; */
     <script>
         var my_JSON_object;
 
-        function CompanyInformationAJAX(company_name, start_date, end_date) {
+        function LoadTypeHealth(start_date, end_date, companyType) {
+            //Break start date and end date into their year and quarter for PHP purposes
+            const start = new Date(start_date);
+            const end = new Date(end_date);
+            let startYear = start.getFullYear();
+            let startMonth = start.getMonth() + 1; // getMonth() built in JavaScript function considers Jan as 0 so add one
+            let startQuarter = Math.ceil(startMonth / 3); //Math.Ciel rounds up, so if the user put something in May, 5/3 = 1.67 will put May as Quarter 2, which we want! In contrast, if it were July 7/3 = 2.33 will get saved as 3, also what we want!
 
-            let todays_date = new Date().toJSON().slice(0, 10);
-            one_year_ago = String(todays_date.slice(0, 4) - 1);
-            month = todays_date.slice(5, 7);
-            day = todays_date.slice(8, 10);
-            one_year_ago_from_today_date = `${one_year_ago}-${month}-${day}`;
+            let endYear = end.getFullYear();
+            let endMonth = end.getMonth() + 1;
+            let endQuarter = Math.ceil(endMonth / 3);
 
-            input = company_name + "|" + start_date + "|" + end_date + "|" + todays_date + "|" + one_year_ago_from_today_date;
+
+            input = startYear + "|" + startMonth + "|" + endYear + "|" + endQuarter;
 
             xhtpp = new XMLHttpRequest();
 
             xhtpp.onload = function () {
                 if (this.readyState == 4 && this.status == 200) {
 
-                    my_JSON_object = JSON.parse(this.responseText);
-                    console.log(JSON.stringify(my_JSON_object));
+                    data = JSON.parse(this.responseText);
+                    console.log(JSON.stringify(data));
 
-                    //Financial Health Line chart
-                    const x_vals = my_JSON_object.pastHealthScores.map((item) => { return String(item.Quarter + " " + item.RepYear) }).map(String).reverse()
-                    const y_vals = my_JSON_object.pastHealthScores.map((item) => { return item.HealthScore }).map(Number).reverse();
+                    // List of health scores
+                    const finHealthDiv = document.getElementById("typeHealthList");
+                    finHealthDiv.innerHTML = ""; //Clear out placeholder
 
-                    var layout = {
-                        title: { text: 'Financial Health Status Over Past Year from Today' },
-                        xaxis: { title: { text: 'Quarter & Year' } },
-                        yaxis: { range: [25, 100], title: { text: 'Financial Health Score' } }
-                    };
-
-                    const TESTER = document.getElementById('finHealthPastYear');
-                    TESTER.innerHTML = "";
-                    Plotly.newPlot(TESTER, [{ x: x_vals, y: y_vals }], layout);
-
-                    // Company Information
-                    document.getElementById("address").innerHTML =
-                        my_JSON_object.companyInfo[0].City + ", " + my_JSON_object.companyInfo[0].CountryName;
-
-                    document.getElementById("company-type").innerHTML =
-                        my_JSON_object.companyInfo[0].Type;
-
-                    document.getElementById("tier-level").innerHTML =
-                        my_JSON_object.companyInfo[0].TierLevel;
-
-                    document.getElementById("financial-health-score").innerHTML =
-                        my_JSON_object.companyInfo[0].HealthScore;
-
-                    // Other Info
-                    const otherInfoLabel = document.getElementById("otherInfoHeader");
-                    const otherInfoDiv = document.getElementById("otherInfo");
-                    otherInfoDiv.innerHTML = "";
-
-                    if (my_JSON_object.companyInfo[0].Type === "Distributor") {
-                        otherInfoLabel.innerHTML = "Unique Routes Operated";
-                        my_JSON_object.distRoutes.forEach(item => {
+                    if (data.length > 0) {
+                        data.forEach(item => {
                             const li = document.createElement("li");
                             li.className = "list-group-item";
-                            li.textContent = `From Company ID: ${item.FromCompanyID} To Company ID: ${item.ToCompanyID}`;
-                            otherInfoDiv.appendChild(li);
-                        });
-                    }
-                    if (my_JSON_object.companyInfo[0].Type === "Manufacturer") {
-                        otherInfoLabel.innerHTML = "Manufacturer Capacity";
-                        const li = document.createElement("li");
-                        li.className = "list-group-item";
-                        li.textContent = `Factory Capacity: ${my_JSON_object.companyInfo[0].FactoryCapacity}`;
-                        otherInfoDiv.appendChild(li);
-                    }
-
-                    // Dependencies
-                    const dependsOnDiv = document.getElementById("dependsOn");
-                    const dependedOnDiv = document.getElementById("dependedOn");
-                    dependsOnDiv.innerHTML = "";
-                    dependedOnDiv.innerHTML = "";
-
-                    if (my_JSON_object.dependsOn.length > 0) {
-                        my_JSON_object.dependsOn.forEach(item => {
-                            const li = document.createElement("li");
-                            li.className = "list-group-item";
-                            li.textContent = `UpStream Company ID: ${item.UpStreamCompanyID}`;
-                            dependsOnDiv.appendChild(li);
+                            li.textContent = `Company Name: ${item.CompanyName} Average Health Score: ${item.avgHealth}`;
+                            finHealthDiv.appendChild(li);
                         });
                     } else {
-                        dependsOnDiv.innerHTML = '<p class="text-muted">No dependencies found</p>';
+                        finHealthDiv.innerHTML = '<p class="text-muted">No health data found</p>';
                     }
+                    //Make a cool, interactive bar chart
+            const finHealthBarDiv = document.getElementById("typeHealthBarChart");
+            finHealthBarDiv.innerHTML = ""; //Clear out placeholder
 
-                    if (my_JSON_object.dependedOn.length > 0) {
-                        my_JSON_object.dependedOn.forEach(item => {
-                            const li = document.createElement("li");
-                            li.className = "list-group-item";
-                            li.textContent = `DownStream Company ID: ${item.DownStreamCompanyID}`;
-                            dependedOnDiv.appendChild(li);
+            if (data.length > 0) {
+                // Create chart container
+                finHealthBarDiv.innerHTML = `
+                    <div class="chart-container" style="background: linear-gradient(to bottom right, #f8fafc, #e2e8f0); padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                            <h3 style="margin: 0; color: #1f2937; font-size: 24px; font-weight: bold;">Company Health Scores</h3>
+                            <button id="sortToggle" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                                </svg>
+                                <span id="sortLabel">Sort by Name</span>
+                            </button>
+                        </div>
+                        <div style="background: white; border-radius: 8px; padding: 16px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.06); max-height: 600px; overflow-y: auto;">
+                            <svg id="healthChart" width="100%" height="${data.length * 35}"></svg>
+                        </div>
+                        <div style="display: flex; justify-content: center; gap: 24px; margin-top: 16px; font-size: 14px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 16px; height: 16px; background: #10b981; border-radius: 3px;"></div>
+                                <span>Excellent (85+)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 16px; height: 16px; background: #fbbf24; border-radius: 3px;"></div>
+                                <span>Good (70-84)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 16px; height: 16px; background: #fb923c; border-radius: 3px;"></div>
+                                <span>Fair (60-69)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 16px; height: 16px; background: #ef4444; border-radius: 3px;"></div>
+                                <span>Poor (&lt;60)</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Process and sort data
+                let sortBy = 'health';
+                const processedData = data.map(item => ({
+                    name: item.CompanyName,
+                    health: parseFloat(item.avgHealth)
+                }));
+
+                function getColor(health) {
+                    if (health >= 85) return '#10b981';
+                    if (health >= 70) return '#fbbf24';
+                    if (health >= 60) return '#fb923c';
+                    return '#ef4444';
+                }
+
+                function sortData(dataToSort, sortType) {
+                    return [...dataToSort].sort((a, b) => {
+                        if (sortType === 'health') {
+                            return b.health - a.health;
+                        } else {
+                            return a.name.localeCompare(b.name);
+                        }
+                    });
+                }
+
+                function drawChart(chartData) {
+                    const svg = document.getElementById('healthChart');
+                    const containerWidth = svg.parentElement.clientWidth - 32;
+                    const margin = { top: 5, right: 30, bottom: 5, left: 200 };
+                    const width = containerWidth - margin.left - margin.right;
+                    const height = chartData.length * 35;
+                    const barHeight = 25;
+
+                    svg.setAttribute('height', height);
+                    svg.innerHTML = '';
+
+                    // Create scales
+                    const maxHealth = 100;
+                    const xScale = (value) => (value / maxHealth) * width;
+
+                    // Draw bars
+                    chartData.forEach((item, i) => {
+                        const y = i * 35 + 5;
+                        const barWidth = xScale(item.health);
+
+                        // Bar group
+                        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                        g.setAttribute('class', 'bar-group');
+                        g.style.cursor = 'pointer';
+
+                        // Company name
+                        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        text.setAttribute('x', margin.left - 10);
+                        text.setAttribute('y', y + barHeight / 2 + 4);
+                        text.setAttribute('text-anchor', 'end');
+                        text.setAttribute('fill', '#374151');
+                        text.setAttribute('font-size', '12');
+                        text.textContent = item.name.length > 25 ? item.name.substring(0, 25) + '...' : item.name;
+
+                        // Bar background (light gray)
+                        const bgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                        bgRect.setAttribute('x', margin.left);
+                        bgRect.setAttribute('y', y);
+                        bgRect.setAttribute('width', width);
+                        bgRect.setAttribute('height', barHeight);
+                        bgRect.setAttribute('fill', '#f3f4f6');
+                        bgRect.setAttribute('rx', '4');
+
+                        // Actual bar
+                        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                        rect.setAttribute('x', margin.left);
+                        rect.setAttribute('y', y);
+                        rect.setAttribute('width', barWidth);
+                        rect.setAttribute('height', barHeight);
+                        rect.setAttribute('fill', getColor(item.health));
+                        rect.setAttribute('rx', '4');
+
+                        // Tooltip on hover
+                        g.addEventListener('mouseenter', function(e) {
+                            rect.setAttribute('opacity', '0.8');
+                            showTooltip(e, item);
                         });
-                    } else {
-                        dependedOnDiv.innerHTML = '<p class="text-muted">No dependencies found</p>';
+                        g.addEventListener('mouseleave', function() {
+                            rect.setAttribute('opacity', '1');
+                            hideTooltip();
+                        });
+
+                        g.appendChild(text);
+                        g.appendChild(bgRect);
+                        g.appendChild(rect);
+                        svg.appendChild(g);
+                    });
+
+                    // X-axis labels
+                    const xAxisLabels = [0, 25, 50, 75, 100];
+                    xAxisLabels.forEach(value => {
+                        const x = margin.left + xScale(value);
+                        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        line.setAttribute('x1', x);
+                        line.setAttribute('y1', 0);
+                        line.setAttribute('x2', x);
+                        line.setAttribute('y2', height);
+                        line.setAttribute('stroke', '#e5e7eb');
+                        line.setAttribute('stroke-dasharray', '3,3');
+                        svg.appendChild(line);
+
+                        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        label.setAttribute('x', x);
+                        label.setAttribute('y', height - 2);
+                        label.setAttribute('text-anchor', 'middle');
+                        label.setAttribute('fill', '#6b7280');
+                        label.setAttribute('font-size', '11');
+                        label.textContent = value;
+                        svg.appendChild(label);
+                    });
+                }
+
+                // Tooltip functions
+                function showTooltip(e, item) {
+                    let tooltip = document.getElementById('chartTooltip');
+                    if (!tooltip) {
+                        tooltip = document.createElement('div');
+                        tooltip.id = 'chartTooltip';
+                        tooltip.style.position = 'fixed';
+                        tooltip.style.background = '#1f2937';
+                        tooltip.style.color = 'white';
+                        tooltip.style.padding = '8px 12px';
+                        tooltip.style.borderRadius = '6px';
+                        tooltip.style.fontSize = '14px';
+                        tooltip.style.pointerEvents = 'none';
+                        tooltip.style.zIndex = '1000';
+                        tooltip.style.boxShadow = '0 4px 6px rgba(0,0,0,0.3)';
+                        document.body.appendChild(tooltip);
                     }
+                    tooltip.innerHTML = `<strong>${item.name}</strong><br>Health Score: <strong>${item.health.toFixed(2)}</strong>`;
+                    tooltip.style.display = 'block';
+                    tooltip.style.left = (e.pageX + 10) + 'px';
+                    tooltip.style.top = (e.pageY + 10) + 'px';
+                }
 
-                    // Products
-                    const productsDiv = document.getElementById("productsSupplied");
-                    productsDiv.innerHTML = "";
-                    my_JSON_object.productsSupplied.forEach(item => {
-                        const li = document.createElement("li");
-                        li.className = "list-group-item";
-                        li.textContent = `Product Name: ${item.ProductName} Product ID: ${item.ProductID}`;
-                        productsDiv.appendChild(li);
-                    });
-
-                    // Product Diversity Pie
-                    const pieDiv = document.getElementById("ProductDiversityPieChart");
-                    pieDiv.innerHTML = "";
-                    if (my_JSON_object.productDiversity.length > 0) {
-                        const categories = my_JSON_object.productDiversity.map(item => item.Category);
-                        const counts = my_JSON_object.productDiversity.map(item => parseInt(item["COUNT(*)"]));
-                        Plotly.newPlot('ProductDiversityPieChart', [{
-                            values: counts,
-                            labels: categories,
-                            type: 'pie'
-                        }]);
+                function hideTooltip() {
+                    const tooltip = document.getElementById('chartTooltip');
+                    if (tooltip) {
+                        tooltip.style.display = 'none';
                     }
+                }
 
-                    // Shipping
-                    const shippingDiv = document.getElementById("shipmentDetails");
-                    shippingDiv.innerHTML = "";
-                    my_JSON_object.shipping.forEach(item => {
-                        const div = document.createElement("div");
-                        div.className = "list-item";
-                        div.innerHTML = `<strong>Shipment ID:</strong> ${item.ShipmentID}<br>
-                                         <strong>Date Delivered:</strong> ${item.ActualDate}<br>
-                                         <strong>Product & Quantity:</strong> ${item.ProductID}, ${item.Quantity}`;
-                        shippingDiv.appendChild(div);
-                    });
+                // Initial draw
+                let sortedData = sortData(processedData, sortBy);
+                drawChart(sortedData);
 
-                    // Receiving
-                    const receivingDiv = document.getElementById("receivingDetails");
-                    receivingDiv.innerHTML = "";
-                    my_JSON_object.receivings.forEach(item => {
-                        const div = document.createElement("div");
-                        div.className = "list-item";
-                        div.innerHTML = `<strong>Receiving ID:</strong> ${item.ReceivingID}<br>
-                                         <strong>Date Received:</strong> ${item.ReceivedDate}<br>
-                                         <strong>Product & Quantity:</strong> ${item.ProductID}, ${item.QuantityReceived}`;
-                        receivingDiv.appendChild(div);
-                    });
+                // Sort button handler
+                document.getElementById('sortToggle').addEventListener('click', function() {
+                    sortBy = sortBy === 'health' ? 'name' : 'health';
+                    document.getElementById('sortLabel').textContent = sortBy === 'health' ? 'Sort by Name' : 'Sort by Health';
+                    sortedData = sortData(processedData, sortBy);
+                    drawChart(sortedData);
+                });
 
-                    // Adjustments
-                    const adjustmentsDiv = document.getElementById("adjustmentDetails");
-                    adjustmentsDiv.innerHTML = "";
-                    my_JSON_object.adjustments.forEach(item => {
-                        const div = document.createElement("div");
-                        div.className = "list-item";
-                        div.innerHTML = `<strong>Adjustment ID:</strong> ${item.AdjustmentID}<br>
-                                         <strong>Date:</strong> ${item.AdjustmentDate}<br>
-                                         <strong>Product & Quantity:</strong> ${item.ProductID}, ${item.QuantityChange}<br>
-                                         <strong>Reason:</strong> ${item.Reason}`;
-                        adjustmentsDiv.appendChild(div);
-                    });
-
-                    // KPI
-                    document.getElementById("onTimeRate").innerHTML =
-                        (my_JSON_object.otr[0].OTR || "N/A") + "%";
-
-                    document.getElementById("avgDelay").innerHTML =
-                        (my_JSON_object.shipmentDetails[0].avgDelay || "N/A") + " days";
-
-                    document.getElementById("stdDelay").innerHTML =
-                        (my_JSON_object.shipmentDetails[0].stdDelay || "N/A") + " days";
-
-                    // Disruption Events
-                    const disruptionDiv = document.getElementById("disruptEvents");
-                    disruptionDiv.innerHTML = "";
-                    my_JSON_object.disruptionEvents.forEach(item => {
-                        const li = document.createElement("li");
-                        li.className = "list-group-item";
-                        li.textContent =
-                            `${item.CategoryName} | ID: ${item.EventID} | Date: ${item.EventDate} → Recovery: ${item.EventRecoveryDate}`;
-                        disruptionDiv.appendChild(li);
-                    });
-
-                    // Disruption Distribution Bar Chart
-                    const distDiv = document.getElementById("disruptEventsBarChart");
-                    distDiv.innerHTML = "";
-                    if (my_JSON_object.disruptionEventsDistribution.length > 0) {
-                        const categories = my_JSON_object.disruptionEventsDistribution.map(item => item.CategoryName);
-                        const counts = my_JSON_object.disruptionEventsDistribution.map(item => parseInt(item.NumEvents));
-                        Plotly.newPlot('disruptEventsBarChart', [{
-                            x: categories,
-                            y: counts,
-                            type: 'bar',
-                            marker: { color: '#0f6fab' }
-                        }]);
-                    }
+            } else {
+                finHealthBarDiv.innerHTML = '<p class="text-muted">No health data found</p>';
+            }
+                   
 
                 } // END readyState if
             } // END onload function
 
-            xhtpp.open("GET", "SCMhomepage_queries.php?q=" + input, true);
+            xhtpp.open("GET", "seniorFinancialQueries.php?q=" + input + "&g=" + companyType, true);
             xhtpp.send();
         } // END CompanyInformationAJAX
+
+        function LoadRegionFinancials(start_date, end_date, regionType, region) {
+            //Break start date and end date into their year and quarter for PHP purposes
+            const start = new Date(start_date);
+            const end = new Date(end_date);
+            let startYear = start.getFullYear();
+            let startMonth = start.getMonth() + 1; // getMonth() built in JavaScript function considers Jan as 0 so add one
+            let startQuarter = Math.ceil(startMonth / 3); //Math.Ciel rounds up, so if the user put something in May, 5/3 = 1.67 will put May as Quarter 2, which we want! In contrast, if it were July 7/3 = 2.33 will get saved as 3, also what we want!
+
+            let endYear = end.getFullYear();
+            let endMonth = end.getMonth() + 1;
+            let endQuarter = Math.ceil(endMonth / 3);
+
+
+            input = startYear + "|" + startMonth + "|" + endYear + "|" + endQuarter;
+            g = regionType + "|" + region;
+
+            xhtpp = new XMLHttpRequest();
+
+            xhtpp.onload = function () {
+                if (this.readyState == 4 && this.status == 200) {
+
+                    data = JSON.parse(this.responseText);
+                    console.log("Harro");
+                    console.log(JSON.stringify(data));
+
+                    // Dependencies
+                    const finHealthDiv = document.getElementById("regionHealthList");
+                    finHealthDiv.innerHTML = ""; //Clear out placeholder
+
+                    if (data.length > 0) {
+                        data.forEach(item => {
+                            const div = document.createElement("div");
+                            div.className = "list-item";
+                            div.innerHTML = `
+                                <strong>Company Name:</strong> ${item.CompanyName}<br>
+                                <strong>Average Health Score:</strong> ${item.avgHealth}<br>
+                                <strong>Country:</strong> ${item.CountryName}<br>
+                                <strong>Continent:</strong> ${item.ContinentName}
+                            `;
+                            // Add click event listener to each item so that senior manager can bring up any company's data
+                            div.addEventListener('click', function() {
+                                // Add visual feedback for selected item
+                                document.querySelectorAll('.list-item').forEach(el => {
+                                    el.style.backgroundColor = '#f8f9fa';
+                                });
+                                this.style.backgroundColor = '#e3f2fd';
+                                
+                                // Call the function with the company name
+                                CompanyInformationAJAX(item.CompanyName);
+                            });
+                            finHealthDiv.appendChild(div);
+                        });
+                    } else {
+                        finHealthDiv.innerHTML = '<p class="text-muted">No health data found</p>';
+                    }
+                   
+
+                } // END readyState if
+            } // END onload function
+            console.log("Sending: seniorRegionalFinancesQueries.php?q=" + input + "&g=" + g)
+            xhtpp.open("GET", "seniorRegionalFinancesQueries.php?q=" + input + "&g=" + g, true);
+            xhtpp.send();
+        } // END 
+
+        function CompanyInformationAJAX(company_name) {
+            input = company_name;
+            xhtpp = new XMLHttpRequest();
+            xhtpp.onload = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            my_JSON_object = JSON.parse(this.responseText);
+            console.log(JSON.stringify(my_JSON_object));
+
+            //Company Information - Important Info
+            const companyInfoDiv = document.getElementById("companyInfo");
+            companyInfoDiv.innerHTML = ""; //Clear out placeholder
+            address = String(my_JSON_object.companyInfo[0].City) + ", " + String(my_JSON_object.companyInfo[0].CountryName);
+
+            var div1 = document.createElement("div");
+            div1.className = "list-item";
+            div1.innerHTML = `<strong>Company Name:</strong> ${my_JSON_object.companyInfo[0].CompanyName}`;
+            companyInfoDiv.appendChild(div1);
+            var li5 = document.createElement("div");
+            li5.className = "list-item";
+            li5.innerHTML = `<strong>CompanyID:</strong> ${my_JSON_object.companyInfo[0].CompanyID}`;
+            companyInfoDiv.appendChild(li5);
+            var li2 = document.createElement("div");
+            li2.className = "list-item";
+            li2.innerHTML = `<strong>Company Address:</strong> ${address}`;
+            companyInfoDiv.appendChild(li2);
+            var li3 = document.createElement("div");
+            li3.className = "list-item";
+            li3.innerHTML = `<strong>Company Type:</strong> ${my_JSON_object.companyInfo[0].Type}`;
+            companyInfoDiv.appendChild(li3);
+            var li4 = document.createElement("div");
+            li4.className = "list-item";
+            li4.innerHTML = `<strong>Company Tier:</strong> ${my_JSON_object.companyInfo[0].TierLevel}`;
+            companyInfoDiv.appendChild(li3);    
+        }
+    };
+    xhtpp.open("GET", "supplychainmanager_homepage_queries.php?q=" + input, true);
+    console.log("Sending request with q=" + input);
+    xhtpp.send();
+}
     </script>
 
 </body>
