@@ -1,5 +1,5 @@
 <?php
-session_start();
+/*session_start();
 
 //Check if the user is NOT logged in (security measure)
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
@@ -9,7 +9,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 }
 
 //If the code reaches here, the user has been authenticated.
-$user_FullName = $_SESSION['FullName'];
+$user_FullName = $_SESSION['FullName']; */
 ?>
 
 <!DOCTYPE html>
@@ -577,10 +577,10 @@ function CheckUserInput() {
         }
     }
     console.log("User Input:", userInput);
-    showCustomer(startDate, endDate, userInput)
+    showCustomer(startDate, endDate, userInput, filterType)
 }
 
-function showCustomer(startDate, endDate, userInput) {
+function showCustomer(startDate, endDate, userInput, filterType) {
     console.log("showCustomer() called");
     // Package parameters
     const q = `${startDate},${endDate}`;
@@ -743,7 +743,7 @@ var layout = {
     };
 
     // Send the request
-    const url = "SCMTransactonQueries.php?q=" + encodeURIComponent(q) + "&g=" + encodeURIComponent(g);
+    const url = "SCMTransactionQueries.php?q=" + encodeURIComponent(q) + "&g=" + encodeURIComponent(g);
     console.log("Opening request to:", url);
     
     xhttp.open("GET", url, true);
