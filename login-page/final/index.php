@@ -203,7 +203,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 function ValidateLogin() {
     const username = document.LoginForm.username.value;
     const password = document.LoginForm.password.value;
-    if (username == "") {  //Don't send PHP requests without a username
+    if (username == "" && password == "") {  //Don't send PHP requests without a username and password
+        alert ("Please provide a username and password!");
+        document.LoginForm.username.focus();
+        return false;
+    }
+    if (username == "") {  //Don't send PHP requests without a username 
         alert ("Please provide a username!");
         document.LoginForm.username.focus();
         return false;
@@ -212,6 +217,12 @@ function ValidateLogin() {
     if (password == "") { //Don't send PHP requests without a password
         alert ("Please provide your password!");
         document.LoginForm.password.focus();
+        return false;
+    }
+
+    if (username.length > 50 && password.length >255) { //both username and password limits
+        alert ("Username can't be longer than 50 characters!\nPassword can't be longer than 255 characters!");
+        document.LoginForm.username.focus();
         return false;
     }
 
@@ -232,5 +243,3 @@ function ValidateLogin() {
 }
 </script>
 </html>
-
-
