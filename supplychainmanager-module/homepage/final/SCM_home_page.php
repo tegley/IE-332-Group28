@@ -93,6 +93,11 @@ $user_FullName = $_SESSION['FullName']; */
             border-radius: 6px;
             background-color: white;
         }
+
+        .far-right-update-column{
+            width: 250px;
+        }
+
     </style>
 </head>
 
@@ -120,74 +125,101 @@ $user_FullName = $_SESSION['FullName']; */
                 </div>
 
                 <!-- Search Bar -->
-                <div class="row justify-content-center">
-                    <div class="col-md-6 d-flex justify-content-center">
-                        <div class="container" style="max-width: 400px; padding: 0;">
-                            <div class="bubble-header text-center">Search Bar</div>
+                <div class="row">
+                    <form action="#" method="post" name="CompanyInfoForm">
 
-                            <form action="#" method="post" name="CompanyInfoForm">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="w-50 me-2 text-end"><label>Company Name</label></div>
-                                    <select class="form-control me-2 w-50" name="CompanyName" id="company_input"></select>
+                        <div class="row justify-content-center mb-2">
+                            <div class="col-md-6 d-flex"> 
+                                <div class="d-flex align-items-center w-100">
+                                    <div class="col-4 text-end pe-2"><label for="company_input">Company Name</label></div>
+                                    <div class="col-8">
+                                        <select class="form-control text-center" name="CompanyName" id="company_input"></select>
+                                    </div>
                                 </div>
-
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="w-50 me-2 text-end"><label>Start Date</label></div>
-                                    <input type="date" class="form-control me-2 w-50" name="StartDate">
-                                </div>
-
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="w-50 me-2 text-end"><label>End Date</label></div>
-                                    <input type="date" class="form-control me-2 w-50" name="EndDate">
-                                </div>
-
-                                <div class="d-flex justify-content-center mb-3">
-                                    <button type="button" onclick="CheckUserInput()" class="btn btn-primary">
-                                        Submit
-                                    </button>
-                                </div>
-                            </form>
+                            </div>
                         </div>
-                    </div>
-                </div>
+
+                        <div class="row justify-content-center mb-2">
+                            <div class="col-md-6 d-flex"> 
+                                
+                                <div class="d-flex align-items-center w-50">
+                                    <div class="col-4 text-end pe-1"><label for="StartDate">Start Date</label></div>
+                                    <div class="col-8">
+                                        <input type="date" class="form-control text-center" name="StartDate" id="StartDate">
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-center w-50">
+                                    <div class="col-4 text-end pe-1"><label for="EndDate">End Date</label></div>
+                                    <div class="col-8">
+                                        <input type="date" class="form-control text-center" name="EndDate" id="EndDate">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row justify-content-center mb-3">
+                            <div class="col-auto"> 
+                                <button type="button" onclick="CheckUserInput()" class="btn btn-primary">
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div> <!-- End overarching row -->
 
                 <!-- This section is redo by bootstrap tabs -->
 
                 <!--     BOOTSTRAP TABS     -->
 
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <!-- Company info tab -->
                     <li class="nav-item" role="presentation">
-                        <!-- new tab button -->
                         <button class="nav-link active" id="company-tab" data-bs-toggle="tab" data-bs-target="#company" type="button" role="tab">
                             Company Info
                         </button>
                     </li>
 
+                    <!-- New tab for transactions -->
                     <li class="nav-item" role="presentation">
-                        <!-- new tab for transactions -->
                         <button class="nav-link" id="trans-tab" data-bs-toggle="tab" data-bs-target="#trans" type="button" role="tab">
                             Transactions
                         </button>
                     </li>
 
+                    <!-- New tab for KPIs -->
                     <li class="nav-item" role="presentation">
                         <!-- new tab for KPI -->
                         <button class="nav-link" id="kpi-tab" data-bs-toggle="tab" data-bs-target="#kpi" type="button" role="tab">
-                            KPI
+                            KPIs
                         </button>
                     </li>
 
+                    <!-- New tab for financial health -->
                     <li class="nav-item" role="presentation">
-                        <!-- new tab for financial health -->
                         <button class="nav-link" id="fin-tab" data-bs-toggle="tab" data-bs-target="#fin" type="button" role="tab">
-                            Financial Health
+                            Financials
                         </button>
                     </li>
 
+                    <!-- New tab for disruption distribution -->
                     <li class="nav-item" role="presentation">
-                        <!-- new tab for disruption distribution -->
                         <button class="nav-link" id="disrupt-tab" data-bs-toggle="tab" data-bs-target="#disrupt" type="button" role="tab">
-                            Disruption Distribution
+                            Disruptions
+                        </button>
+                    </li>
+
+                    <!-- Tab for Updating Company Info -->
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="update-company-tab" data-bs-toggle="tab" data-bs-target="#update-company" type="button" role="tab">
+                            Update Company Info
+                        </button>
+                    </li>
+
+                    <!-- Tab for Updating Transactions -->
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="update-transactions-tab" data-bs-toggle="tab" data-bs-target="#update-transactions" type="button" role="tab">
+                            Update Transactions
                         </button>
                     </li>
                 </ul>
@@ -420,10 +452,80 @@ $user_FullName = $_SESSION['FullName']; */
 
                     </div> <!-- END TAB 5 -->
 
-                </div> <!-- END tab -->
-            </div> <!-- col-md-9 -->
-        </div> <!-- row -->
-    </div> <!-- container -->
+                    <!-- TAB 6: Update Company Info -->
+
+                    <div class="tab-pane fade" id="update-company" role="tabpanel" aria-labelledby="update-company-tab">
+
+                        <div class="area-header">Update Company Information</div>
+                        <div class="card" style="height: 450px;">
+                            <div class="card-body row d-flex justify-content-center">
+                                <div class="col-auto">
+                                <label for="UpdateTier">Update Tier:</label>
+                                <select id="UpdateTier" class="form-select">
+                                    <option value="" disabled selected>New Tier</option>
+                                    <option>Tier 1</option>
+                                    <option>Tier 2</option>
+                                    <option>Tier 3</option>
+                                </select>
+                                </div>
+
+                                <div class="col-auto">
+                                <label for="UpdateAddress">Update Address:</label>
+                                <select id="UpdateAddress" class="form-select">
+                                    <option value="" disabled selected>Update Address</option>
+                                    <option value="city">City</option>
+                                    <option value="country">Country</option>
+                                    <option value="continent">Continent</option>
+                                </select>
+                                </div>
+
+                                <div class="col-auto">
+                                <label for="UpdateCompanyName">Name:</label>
+                                <div id="UpdateCompanyName"> 
+                                    <input type="text" class="form-control" name="CompanyNameUpdate" id="CompanyNameUpdateID">
+                                </div>
+                                </div>
+                               
+                                
+                                <div class="col-auto far-right-update-column" style="display:none">
+                                <label for="UpdateManufacturer">Update Factory Capacity:</label>
+                                <div id="UpdateManufacturer"> 
+                                    <input type="text" class="form-control" name="ManufacturerUpdate" id="ManufacturerUpdateID">
+                                </div>
+                                </div>
+                                
+                                <div class="col-auto far-right-update-column" style="display:none">
+                                <label for="UpdateDistributor">Update A Distributor Route:</label>
+                                <div id="UpdateDistributor"> 
+                                    <input type="text" class="form-control text-center" name="DistributorUpdat" id="DistributorUpdate">
+                                    <input type="text" class="form-control text-center" name="DistributorUpdate" id="DistributorUpdateID">
+                                </div>
+                                </div>
+
+                                <div class="col-auto far-right-update-column" style="display:none">
+                                    <img src="TimmysHeadshot.JPG" height=200></p>
+                                </div>    
+
+                            </div>
+                        </div>
+                    </div> <!-- END TAB 6 -->
+
+                    <div class="tab-pane fade" id="update-transactions" role="tabpanel" aria-labelledby="update-transactions-tab">
+                        <div class="area-header">Disruption Event Distribution</div>
+
+                        <div class="card" style="height: 450px;">
+                            <div class="card-header">Distribution of Disruption Event Counts Over the Past Year</div>
+
+                            <div id="disruptEventsBarChart" style="width: 100%; height: 400px;">
+                                <p class="text-muted">Submit query to see results...</p>
+                            </div>
+                        </div>
+                    </div> <!-- END TAB 7 -->
+
+                </div> <!-- END overarching Tab Wrapper -->
+            </div> <!-- END col-md-9 -->
+        </div> <!-- END overarching row -->
+    </div> <!-- END overarching container -->
 
     <script>
         //Load Company Names when page loads
@@ -485,7 +587,9 @@ $user_FullName = $_SESSION['FullName']; */
 
             xhtpp.onload = function () {
                 if (this.readyState == 4 && this.status == 200) {
+                    console.log(this.responseText);
 
+                    /*
                     my_JSON_object = JSON.parse(this.responseText);
                     console.log(JSON.stringify(my_JSON_object));
 
@@ -660,7 +764,7 @@ $user_FullName = $_SESSION['FullName']; */
                             marker: { color: '#0f6fab' }
                         }]);
                     }
-
+*/
                 } // END readyState if
             } // END onload function
 
