@@ -119,32 +119,6 @@ $user_FullName = $_SESSION['FullName']; */
                     <?php echo "{$user_FullName}'s SM Dashboard" ?>
                 </div>
 
-                <!-- GLOBAL DATE FILTER -->
-                <div class="card mb-3">
-                    <div class="card-body row">
-
-                        <!-- Start Date -->
-                        <div class="col-md-6">
-                            <label>Start Date</label>
-                            <input type="date" class="form-control" id="globalStartDate">
-                        </div>
-
-                        <!-- End Date -->
-                        <div class="col-md-6">
-                            <label>End Date</label>
-                            <input type="date" class="form-control" id="globalEndDate">
-                        </div>
-
-                        <!-- Submit -->
-                        <div class="col-12 mt-3 d-flex justify-content-center">
-                            <button class="btn btn-primary px-4" onclick="ValidateGlobalDates()">
-                                Apply 
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
-
                 <!-- BOOTSTRAP TABS -->
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
 
@@ -497,25 +471,6 @@ $user_FullName = $_SESSION['FullName']; */
                         companyDropdown.appendChild(option);
                     });
                 })
-        }
-    </script>
-
-    <script>
-        function ValidateGlobalDates() {
-            const s = document.getElementById("globalStartDate").value;
-            const e = document.getElementById("globalEndDate").value;
-
-            if (s === "" || e === "") {
-                alert("Please provide a date range!");
-                return false;
-            }
-            if (s >= e) {
-                alert("Start date must be before end date!");
-                return false;
-            }
-
-            alert("Global date applied!");
-            return true;
         }
     </script>
 
