@@ -15,7 +15,7 @@ $tmp = $_GET['q'];
 $quer = $_GET['g']; //User specified filters
 
 // Convert the comma-delimited string into an array of strings.
-$tmp = explode(',', $tmp); //["start year", "initial quarter", "end year", "last quarter"]
+$tmp = explode('|', $tmp); //["start year", "initial quarter", "end year", "last quarter"]
 // print_r($tmp);
 $quer = explode('|', $quer); ////["Region Type"]
 // print_r($quer);
@@ -24,21 +24,35 @@ $quer = explode('|', $quer); ////["Region Type"]
 //We will need to build the queries per user selection, but the added constraints will be the same accross all queries, so we will make additions rn
 $whereDateState = ""; //If user specifies date range
 $orderState = "";
+$whereRegionState = "";
+
 
     //HAVING statement added per user input
     if (!empty($quer[0])) { //Adding ORDERING SO THAT USER CAN SEE COMPANIES WITHIN A REGION
         switch ($quer[0]) {
-            case "country":
+            case "Country":
                 $orderState = "l.CountryName, ";
                 break;
-            case "continent":
+            case "Continent":
                 $orderState = "l.ContinentName, ";
                 break;
             default:
             $orderState = "";
         }
+        if (!empty($quer[1])) { //Adding ORDERING SO THAT USER CAN SEE COMPANIES WITHIN A REGION
+            switch ($quer[0]) {
+                case "Country":
+                    $whereRegionState = " AND l.CountryName = '" . $quer[1] . "'";
+                    break;
+                case "Continent":
+                    $whereRegionState = " AND l.ContinentName = '" . $quer[1] . "'";
+                    break;
+                default:
+                $whereRegionState = "";
+            }
     }
-    // print_r($havingState);
+    }
+    // print_r($whereRegionState);
 
 
     //Time range contstraint added per user input
@@ -50,8 +64,8 @@ $orderState = "";
     $companyFinancialsSelect = "SELECT ROUND(AVG(f.HealthScore), 2) AS avgHealth, c.CompanyName, l.CountryName, l.ContinentName FROM Company c JOIN FinancialReport f ON c.CompanyID = f.CompanyID LEFT JOIN Location l ON l.LocationID = c.LocationID";
 
     //Puting query together and generating result
-    $companyFinancialsQuery = "{$companyFinancialsSelect} {$whereDateState} GROUP BY c.CompanyName ORDER BY {$orderState}avgHealth DESC;";
-     echo $companyFinancialsQuery;
+    $companyFinancialsQuery = "{$companyFinancialsSelect} {$whereDateState}{$whereRegionState} GROUP BY c.CompanyName ORDER BY {$orderState}avgHealth DESC;";
+    //  echo $companyFinancialsQuery;
 
     $resultcompanyFinancials = mysqli_query($conn, $companyFinancialsQuery);
     // Convert the table into individual rows and reformat.
