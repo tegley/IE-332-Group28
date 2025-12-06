@@ -134,9 +134,10 @@ $user_FullName = $_SESSION['FullName']; */
                         </div>
 
                         <div class="col-md-4 d-flex align-items-end">
-                            <button class="btn btn-primary w-100" onclick="ApplyGlobalDates()">
+                            <button class="btn btn-primary w-100" onclick="if(ValidateGlobalDates()) ApplyGlobalDates();">
                                 Apply Date Range
                             </button>
+
                         </div>
 
                     </div>
@@ -396,6 +397,23 @@ $user_FullName = $_SESSION['FullName']; */
         }
     </script>
 
+    <!-- New script for Global Date Filters -->
+    <script>
+        function ValidateGlobalDates() {
+            const start = document.getElementById("globalStartDate").value;
+            const end   = document.getElementById("globalEndDate").value;
+
+            if (start === "" || end === "") {
+                alert("Please provide a date range!");
+                return false;
+            }
+            if (start >= end) {
+                alert("Start date must be before end date!");
+                return false;
+            }
+            return true;
+        }
+    </script>
     <script>
         var my_JSON_object;
 
