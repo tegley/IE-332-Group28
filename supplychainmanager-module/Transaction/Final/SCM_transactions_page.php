@@ -1,15 +1,14 @@
 <?php
 session_start();
-/*session_start();
 
 //Check if the user is NOT logged in (security measure)
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-@@ -9,7 +9,7 @@
+    echo "<h1>Unauthorized Login</h1>";
+    echo "<p>Please visit the <a href='index.php'>login page</a>!</p>";
+    exit();
 }
 
-//If the code reaches here, the user has been authenticated.
 $user_FullName = $_SESSION['FullName'];
-$user_FullName = $_SESSION['FullName']; */
 ?>
 
 <!DOCTYPE html>
@@ -23,6 +22,8 @@ $user_FullName = $_SESSION['FullName']; */
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-3.3.0.min.js" charset="utf-8"></script> <!-- JavaScript for Plotly -->
     
+    <script src="SCM_display_alerts.js"></script> <!-- JavaScript for alerts -->
+
     <style>
         @import "standardized_project_formatting.css";
         #form-box {
