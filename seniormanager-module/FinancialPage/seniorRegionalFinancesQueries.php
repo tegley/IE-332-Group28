@@ -1,62 +1,74 @@
 <?php
 $servername = "mydb.itap.purdue.edu";
-$username   = "cox447";
-$password   = "LunaZuna704";
-$database   = $username;
+
+$username = "cox447";//yourCAREER/groupusername
+$password = "LunaZuna704";//yourgrouppassword
+$database = $username;//ITaPsetupdatabasename=yourcareerlogin
 
 $conn = new mysqli($servername, $username, $password, $database);
-if ($conn->connect_error) { die("Connection failed:" . $conn->connect_error); }
 
-if (!isset($_GET['q'])) {
-    echo json_encode([]);
-    exit();
+if ($conn->connect_error) {
+    die("Connection failed:" . $conn->connect_error);
 }
 
-$tmp = explode('|', $_GET['q']);    // ["Country", "Australia"]
 
-$regionType  = $tmp[0] ?? "";
-$regionName  = $tmp[1] ?? "";
+$quer = $_GET['q']; //User specified filters [Region , Specific Region]
 
-// Build WHERE filters
-$whereRegion = "";
-$orderRegion = "";
+// Convert the comma-delimited string into an array of strings.
+$quer = explode('|', $quer); ////["Region Type"]
+// print_r($quer);
 
-if ($regionType === "Country") {
-    $orderRegion = "l.CountryName, ";
-    if ($regionName !== "") {
-        $whereRegion = "WHERE l.CountryName = '" . $conn->real_escape_string($regionName) . "'";
+
+//We will need to build the queries per user selection, but the added constraints will be the same accross all queries, so we will make additions rn
+$orderState = "";
+$whereRegionState = "";
+
+
+    //HAVING statement added per user input
+    if (!empty($quer[0])) { //Adding ORDERING SO THAT USER CAN SEE COMPANIES WITHIN A REGION
+        switch ($quer[0]) {
+            case "Country":
+                $orderState = "l.CountryName, ";
+                break;
+            case "Continent":
+                $orderState = "l.ContinentName, ";
+                break;
+            default:
+            $orderState = "";
+        }
+        if (!empty($quer[1])) { //Adding WHERE SO THAT USER CAN SEE COMPANIES WITHIN A REGION
+            switch ($quer[0]) {
+                case "Country":
+                    $whereRegionState = " WHERE l.CountryName = '" . $quer[1] . "'";
+                    break;
+                case "Continent":
+                    $whereRegionState = " WHERE l.ContinentName = '" . $quer[1] . "'";
+                    break;
+                default:
+                $whereRegionState = "";
+            }
     }
-}
-elseif ($regionType === "Continent") {
-    $orderRegion = "l.ContinentName, ";
-    if ($regionName !== "") {
-        $whereRegion = "WHERE l.ContinentName = '" . $conn->real_escape_string($regionName) . "'";
     }
-}
+    // print_r($whereRegionState);
 
-$select = "
-    SELECT 
-        ROUND(AVG(f.HealthScore), 2) AS avgHealth,
-        c.CompanyName,
-        l.CountryName,
-        l.ContinentName
-    FROM Company c
-    JOIN FinancialReport f ON c.CompanyID = f.CompanyID
-    LEFT JOIN Location l ON l.LocationID = c.LocationID
-";
+    //Finanical Health by company
+    $companyFinancialsSelect = "SELECT ROUND(AVG(f.HealthScore), 2) AS avgHealth, c.CompanyName, l.CountryName, l.ContinentName FROM Company c JOIN FinancialReport f ON c.CompanyID = f.CompanyID LEFT JOIN Location l ON l.LocationID = c.LocationID";
 
-$query = "$select $whereRegion GROUP BY c.CompanyName ORDER BY {$orderRegion}avgHealth DESC;";
+    //Puting query together and generating result
+    $companyFinancialsQuery = "{$companyFinancialsSelect} {$whereRegionState} GROUP BY c.CompanyName ORDER BY {$orderState}avgHealth DESC;";
+    //  echo $companyFinancialsQuery;
 
-$result = mysqli_query($conn, $query);
-$output = [];
-
-if ($result) {
-    while ($row = mysqli_fetch_assoc($result)) {
-        $output[] = $row;
+    $resultcompanyFinancials = mysqli_query($conn, $companyFinancialsQuery);
+    // Convert the table into individual rows and reformat.
+    $companyFinancials = []; //Creating shipping Array
+    while ($row = mysqli_fetch_array($resultcompanyFinancials, MYSQLI_ASSOC)) {
+        $companyFinancials[] = $row;
     }
-}
+      echo json_encode($companyFinancials);
 
-echo json_encode($output);
+
+
+   
 
 $conn->close();
 ?>
