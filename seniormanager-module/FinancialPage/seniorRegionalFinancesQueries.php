@@ -1,83 +1,62 @@
 <?php
 $servername = "mydb.itap.purdue.edu";
-
-$username = "cox447";//yourCAREER/groupusername
-$password = "LunaZuna704";//yourgrouppassword
-$database = $username;//ITaPsetupdatabasename=yourcareerlogin
+$username   = "cox447";
+$password   = "LunaZuna704";
+$database   = $username;
 
 $conn = new mysqli($servername, $username, $password, $database);
+if ($conn->connect_error) { die("Connection failed:" . $conn->connect_error); }
 
-if ($conn->connect_error) {
-    die("Connection failed:" . $conn->connect_error);
+if (!isset($_GET['q'])) {
+    echo json_encode([]);
+    exit();
 }
 
-$tmp = $_GET['q'];
-$quer = $_GET['g']; //User specified filters
+$tmp = explode('|', $_GET['q']);    // ["Country", "Australia"]
 
-// Convert the comma-delimited string into an array of strings.
-$tmp = explode('|', $tmp); //["start year", "initial quarter", "end year", "last quarter"]
-// print_r($tmp);
-$quer = explode('|', $quer); ////["Region Type"]
-// print_r($quer);
+$regionType  = $tmp[0] ?? "";
+$regionName  = $tmp[1] ?? "";
 
+// Build WHERE filters
+$whereRegion = "";
+$orderRegion = "";
 
-//We will need to build the queries per user selection, but the added constraints will be the same accross all queries, so we will make additions rn
-$whereDateState = ""; //If user specifies date range
-$orderState = "";
-$whereRegionState = "";
-
-
-    //HAVING statement added per user input
-    if (!empty($quer[0])) { //Adding ORDERING SO THAT USER CAN SEE COMPANIES WITHIN A REGION
-        switch ($quer[0]) {
-            case "Country":
-                $orderState = "l.CountryName, ";
-                break;
-            case "Continent":
-                $orderState = "l.ContinentName, ";
-                break;
-            default:
-            $orderState = "";
-        }
-        if (!empty($quer[1])) { //Adding ORDERING SO THAT USER CAN SEE COMPANIES WITHIN A REGION
-            switch ($quer[0]) {
-                case "Country":
-                    $whereRegionState = " AND l.CountryName = '" . $quer[1] . "'";
-                    break;
-                case "Continent":
-                    $whereRegionState = " AND l.ContinentName = '" . $quer[1] . "'";
-                    break;
-                default:
-                $whereRegionState = "";
-            }
+if ($regionType === "Country") {
+    $orderRegion = "l.CountryName, ";
+    if ($regionName !== "") {
+        $whereRegion = "WHERE l.CountryName = '" . $conn->real_escape_string($regionName) . "'";
     }
+}
+elseif ($regionType === "Continent") {
+    $orderRegion = "l.ContinentName, ";
+    if ($regionName !== "") {
+        $whereRegion = "WHERE l.ContinentName = '" . $conn->real_escape_string($regionName) . "'";
     }
-    // print_r($whereRegionState);
+}
 
+$select = "
+    SELECT 
+        ROUND(AVG(f.HealthScore), 2) AS avgHealth,
+        c.CompanyName,
+        l.CountryName,
+        l.ContinentName
+    FROM Company c
+    JOIN FinancialReport f ON c.CompanyID = f.CompanyID
+    LEFT JOIN Location l ON l.LocationID = c.LocationID
+";
 
-    //Time range contstraint added per user input
-    if (!empty($tmp[0])) { //Adding appropriate Having if user inputa specific company/location/etc. Empty built in function check if tmp[o] has no value
-        $whereDateState = "WHERE (f.RepYear * 10 + (CASE f.Quarter WHEN 'Q1' THEN 1 WHEN 'Q2' THEN 2 WHEN 'Q3' THEN 3 WHEN 'Q4' THEN 4 END)) BETWEEN ({$tmp[0]} * 10 + {$tmp[1]}) AND ({$tmp[2]} * 10 + {$tmp[3]})"; //Gets financial health scores from start date to end date
-         }
+$query = "$select $whereRegion GROUP BY c.CompanyName ORDER BY {$orderRegion}avgHealth DESC;";
 
-    //Finanical Health by company
-    $companyFinancialsSelect = "SELECT ROUND(AVG(f.HealthScore), 2) AS avgHealth, c.CompanyName, l.CountryName, l.ContinentName FROM Company c JOIN FinancialReport f ON c.CompanyID = f.CompanyID LEFT JOIN Location l ON l.LocationID = c.LocationID";
+$result = mysqli_query($conn, $query);
+$output = [];
 
-    //Puting query together and generating result
-    $companyFinancialsQuery = "{$companyFinancialsSelect} {$whereDateState}{$whereRegionState} GROUP BY c.CompanyName ORDER BY {$orderState}avgHealth DESC;";
-    //  echo $companyFinancialsQuery;
-
-    $resultcompanyFinancials = mysqli_query($conn, $companyFinancialsQuery);
-    // Convert the table into individual rows and reformat.
-    $companyFinancials = []; //Creating shipping Array
-    while ($row = mysqli_fetch_array($resultcompanyFinancials, MYSQLI_ASSOC)) {
-        $companyFinancials[] = $row;
+if ($result) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $output[] = $row;
     }
-      echo json_encode($companyFinancials);
+}
 
-
-
-   
+echo json_encode($output);
 
 $conn->close();
 ?>
