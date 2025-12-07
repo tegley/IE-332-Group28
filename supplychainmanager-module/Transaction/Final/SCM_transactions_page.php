@@ -1,17 +1,3 @@
-<?php
-/*session_start();
-
-//Check if the user is NOT logged in (security measure)
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    echo "<h1>Unauthorized Login</h1>";
-    echo "<p>Please visit the <a href='index.php'>login page</a>!</p>";
-    exit();
-}
-
-//If the code reaches here, the user has been authenticated.
-$user_FullName = $_SESSION['FullName']; */
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -371,7 +357,6 @@ $user_FullName = $_SESSION['FullName']; */
 //Run this when the page loads to populate drop downs and prefill date with date range examples
 document.addEventListener('DOMContentLoaded', function() {
     loadDistributors();
-    showCustomerDistributors('2020-09-09', '2025-09-09', 'Davis PLC');
 });
 
 </script>
@@ -680,36 +665,36 @@ function showCustomer(startDate, endDate, userInput, filterType) {
             });
 
             // Filter by date range
-const filteredData = data.leavingCompany.filter(item => {
-    const itemDate = new Date(item.ActualDate); // Your date field
-    return itemDate >= new Date(startDate) && itemDate <= new Date(endDate);
-});
+        const filteredData = data.leavingCompany.filter(item => {
+            const itemDate = new Date(item.ActualDate); // Your date field
+            return itemDate >= new Date(startDate) && itemDate <= new Date(endDate);
+        });
 
-const sortedCompanies = Object.entries(companyCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 10);
+        const sortedCompanies = Object.entries(companyCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10);
 
-var trace = {
-    y: sortedCompanies.map(item => item[0]),  // Horizontal bars
-    x: sortedCompanies.map(item => item[1]),
-    type: 'bar',
-    orientation: 'h',
-    marker: { 
-        color: sortedCompanies.map((item, i) => i === 0 ? '#d95f02' : '#0f6fab'),
-        line: { color: '#fff', width: 1 }
-    },
-    hovertemplate: '<b>%{y}</b><br>Quantity: %{x:,}<extra></extra>'
-};
+        var trace = {
+            y: sortedCompanies.map(item => item[0]),  // Horizontal bars
+            x: sortedCompanies.map(item => item[1]),
+            type: 'bar',
+            orientation: 'h',
+            marker: { 
+                color: sortedCompanies.length === 1 ? '#d95f02' : sortedCompanies.map((item, i) => i === 0 ? '#d95f02' : '#0f6fab'),
+                line: { color: '#fff', width: 1 }
+            },
+            hovertemplate: '<b>%{y}</b><br>Quantity: %{x:,}<extra></extra>'
+        };
 
-var layout = {
-    title: {
-        text: `Top 10 Companies by Shipment Volume<br><sub>${startDate} to ${endDate}</sub>`,
-    },
-    xaxis: { title: 'Total Quantity Shipped', tickformat: ',' },
-    yaxis: { title: '', automargin: true },
-    autosize: true,
-    margin: { l: 180, r: 50, t: 80, b: 50 }
-};
+        var layout = {
+            title: {
+                text: `Top Companies by Shipment Volume<br><sub>${startDate} to ${endDate}</sub>`,
+            },
+            xaxis: { title: 'Total Quantity Shipped', tickformat: ',' },
+            yaxis: { title: '', automargin: true },
+            autosize: true,
+            margin: { l: 180, r: 50, t: 80, b: 50 }
+        };
 
             Plotly.newPlot('lineChartAdjustments', [trace], layout, {responsive: true});
         } else {
