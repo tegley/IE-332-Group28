@@ -107,8 +107,8 @@ $havingState = "";
     }
     // echo json_encode($adjustments);
 
-    //Examining Transactions leaving specific companyNO RESTRITIONS, WILL NEED TO ADD DATE RANGE, LOCATION, OR SPECIFIC COMPANY
-    $leavingCompanySelect = "SELECT c.CompanyName, s.ShipmentID, s.Quantity, s.ActualDate, l.City, l.CountryName, l.ContinentName
+    //Examining Transactions leaving specific company and associated adjusments/receivings NO RESTRITIONS, WILL NEED TO ADD DATE RANGE, LOCATION, OR SPECIFIC COMPANY
+    $leavingCompanySelect = "SELECT c.CompanyName, s.ShipmentID, s.Quantity, s.ActualDate, l.City, l.CountryName, l.ContinentName, p.ProductID
     FROM Shipping s JOIN Product p ON s.ProductID = p.ProductID JOIN Company c ON s.SourceCompanyID = c.CompanyID LEFT JOIN Location l ON l.LocationID = c.LocationID JOIN InventoryTransaction t ON s.TransactionID = t.TransactionID LEFT JOIN Receiving r ON r.ShipmentID = s.ShipmentID LEFT JOIN InventoryAdjustment a ON a.TransactionID = t.TransactionID";
     $orderByState = "ORDER BY c.CompanyName;"; //This will be ordered by company name for neat presentation
 
@@ -121,11 +121,11 @@ $havingState = "";
     while ($row = mysqli_fetch_array($resultleavingCompany, MYSQLI_ASSOC)) {
     $leavingCompany[] = $row;
     }
-    // echo json_encode($leavingCompany); 
+    // echo json_encode($leavingCompany); //Concern: There are a lot of nulls because not every transaction involves an adjustment
 
     //Examining Transactions leaving arriving to a company and associated adjusments/receivings 
-    $arrivingCompanySelect = "SELECT c.CompanyName, r.ReceivingID, r.ReceivedDate, r.QuantityReceived, l.City, l.CountryName, l.ContinentName
-    FROM Receiving r JOIN Company c ON r.ReceiverCompanyID = c.CompanyID LEFT JOIN Location l ON l.LocationID = c.LocationID JOIN InventoryTransaction t ON r.TransactionID = t.TransactionID LEFT JOIN Shipping s ON r.ShipmentID = s.ShipmentID
+    $arrivingCompanySelect = "SELECT c.CompanyName, r.ReceivingID, r.ReceivedDate, r.QuantityReceived, l.City, l.CountryName, l.ContinentName, p.ProductID
+    FROM Receiving r JOIN Company c ON r.ReceiverCompanyID = c.CompanyID LEFT JOIN Location l ON l.LocationID = c.LocationID JOIN InventoryTransaction t ON r.TransactionID = t.TransactionID LEFT JOIN Shipping s ON r.ShipmentID = s.ShipmentID JOIN Product p ON s.ProductID = p.ProductID
     ";
     $arrivingCompanyQuery = "{$arrivingCompanySelect} {$whereStateRec} GROUP BY r.ReceivingID, r.ReceivedDate, r.QuantityReceived {$havingState} {$orderByState}";
     // echo $arrivingCompanyQuery;
@@ -136,10 +136,11 @@ $havingState = "";
     while ($row = mysqli_fetch_array($resultarrivingCompany, MYSQLI_ASSOC)) {
     $arrivingCompany[] = $row;
     }
-    // echo json_encode($arrivingCompany); 
+    // echo json_encode($arrivingCompany); //Concern: There are a lot of nulls because not every transaction involves an adjustment
 
     
         
+    //Are the group bys adding value for the disruption exposure queries?
         
         //Making JSON Object
     $SCMTransactionResults = [
