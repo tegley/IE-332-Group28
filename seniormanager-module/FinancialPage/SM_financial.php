@@ -222,7 +222,7 @@ $user_FullName = $_SESSION['FullName']; */
                         <div class="card mb-3">
                             <div class="card-body row">
 
-                                <div class="col-md-3">
+                                <div class="col-md-6">
                                     <label>Region Type</label>
                                     <select class="form-control" id="regionType_input" onchange='LoadRegionList(document.getElementById("regionType_input").value)'>
                                         <option value="">Select Type</option>
@@ -231,25 +231,15 @@ $user_FullName = $_SESSION['FullName']; */
                                     </select>
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-md-6">
                                     <label>Region</label>
                                     <select class="form-control" id="region_input">
                                         <option value="">All Regions</option>
                                     </select>
                                 </div>
 
-                                <div class="col-md-3">
-                                    <label>Start Date</label>
-                                    <input type="date" class="form-control" id="regionStart_input">
-                                </div>
-
-                                <div class="col-md-3">
-                                    <label>End Date</label>
-                                    <input type="date" class="form-control" id="regionEnd_input">
-                                </div>
-
                                 <div class="col-12 mt-3 d-flex justify-content-center">
-                                    <button type="button" class="btn btn-primary" onclick="if (Validate_Tab2()) LoadRegionFinancials(document.getElementById('regionStart_input').value, document.getElementById('regionEnd_input').value, document.getElementById('regionType_input').value, document.getElementById('region_input').value);">
+                                    <button type="button" class="btn btn-primary"onclick="if (Validate_Tab2()) LoadRegionFinancials(document.getElementById('regionType_input').value,document.getElementById('region_input').value);">
                                         Submit
                                     </button>
                                 </div>
@@ -404,7 +394,7 @@ $user_FullName = $_SESSION['FullName']; */
             }
 
             xhtpp.open("GET", "regionOpts.php?q=" + region, true);
-            console.log("regionOpts.php?q=" + region); 
+            console.log("regionOpts.php?q=" + region);
             xhtpp.send();
     } //End LoadRegionList
     </script>
@@ -441,15 +431,14 @@ $user_FullName = $_SESSION['FullName']; */
         // TAB 2 validator
         function Validate_Tab2() {
             const regionType = document.getElementById("regionType_input").value;
-            const start = document.getElementById("regionStart_input").value;
-            const end = document.getElementById("regionEnd_input").value;
+            const region = document.getElementById("region_input").value;
 
             if (regionType === "") {
                 alert("Please select a Region Type (Country or Continent).");
                 return false;
             }
 
-            return Validate_DateRange(start, end);
+            return true;
         }
     </script>
 
@@ -704,69 +693,53 @@ $user_FullName = $_SESSION['FullName']; */
             xhtpp.send();
         } // END CompanyInformationAJAX
 
-        function LoadRegionFinancials(start_date, end_date, regionType, region) {
-            //Break start date and end date into their year and quarter for PHP purposes
-            const start = new Date(start_date);
-            const end = new Date(end_date);
-            let startYear = start.getFullYear();
-            let startMonth = start.getMonth() + 1; // getMonth() built in JavaScript function considers Jan as 0 so add one
-            let startQuarter = Math.ceil(startMonth / 3); //Math.Ciel rounds up, so if the user put something in May, 5/3 = 1.67 will put May as Quarter 2, which we want! In contrast, if it were July 7/3 = 2.33 will get saved as 3, also what we want!
+        function LoadRegionFinancials(regionType, region) {
 
-            let endYear = end.getFullYear();
-            let endMonth = end.getMonth() + 1;
-            let endQuarter = Math.ceil(endMonth / 3);
+    const input = regionType + "|" + region;
 
+    xhtpp = new XMLHttpRequest();
 
-            input = startYear + "|" + startMonth + "|" + endYear + "|" + endQuarter;
-            g = regionType + "|" + region;
+    xhtpp.onload = function () {
 
-            xhtpp = new XMLHttpRequest();
+        if (this.readyState == 4 && this.status == 200) {
 
-            xhtpp.onload = function () {
-                if (this.readyState == 4 && this.status == 200) {
+            data = JSON.parse(this.responseText);
+            console.log(JSON.stringify(data));
 
-                    data = JSON.parse(this.responseText);
-                    console.log("Harro");
-                    console.log(JSON.stringify(data));
+            const finHealthDiv = document.getElementById("regionHealthList");
+            finHealthDiv.innerHTML = "";
 
-                    // Dependencies
-                    const finHealthDiv = document.getElementById("regionHealthList");
-                    finHealthDiv.innerHTML = ""; //Clear out placeholder
+            if (data.length > 0) {
+                data.forEach(item => {
+                    const div = document.createElement("div");
+                    div.className = "list-item";
+                    div.innerHTML = `
+                        <strong>Company Name:</strong> ${item.CompanyName}<br>
+                        <strong>Average Health Score:</strong> ${item.avgHealth}<br>
+                        <strong>Country:</strong> ${item.CountryName}<br>
+                        <strong>Continent:</strong> ${item.ContinentName}
+                    `;
 
-                    if (data.length > 0) {
-                        data.forEach(item => {
-                            const div = document.createElement("div");
-                            div.className = "list-item";
-                            div.innerHTML = `
-                                <strong>Company Name:</strong> ${item.CompanyName}<br>
-                                <strong>Average Health Score:</strong> ${item.avgHealth}<br>
-                                <strong>Country:</strong> ${item.CountryName}<br>
-                                <strong>Continent:</strong> ${item.ContinentName}
-                            `;
-                            // Add click event listener to each item so that senior manager can bring up any company's data
-                            div.addEventListener('click', function() {
-                                // Add visual feedback for selected item
-                                document.querySelectorAll('.list-item').forEach(el => {
-                                    el.style.backgroundColor = '#f8f9fa';
-                                });
-                                this.style.backgroundColor = '#e3f2fd';
-                                
-                                // Call the function with the company name
-                                CompanyInformationAJAX(item.CompanyName);
-                            });
-                            finHealthDiv.appendChild(div);
-                        });
-                    } else {
-                        finHealthDiv.innerHTML = '<p class="text-muted">No health data found</p>';
-                    }
-                   
+                    div.addEventListener('click', function() {
+                        document.querySelectorAll('.list-item').forEach(el => el.style.backgroundColor = '#f8f9fa');
+                        this.style.backgroundColor = '#e3f2fd';
+                        CompanyInformationAJAX(item.CompanyName);
+                    });
 
-                } // END readyState if
-            } // END onload function
-            console.log("Sending: seniorRegionalFinancesQueries.php?q=" + input + "&g=" + g)
-            xhtpp.open("GET", "seniorRegionalFinancesQueries.php?q=" + input + "&g=" + g, true);
-            xhtpp.send();
-        } // END 
+                    finHealthDiv.appendChild(div);
+                });
+            } else {
+                finHealthDiv.innerHTML = '<p class="text-muted">No health data found</p>';
+            }
+
+        }
+    };
+
+    console.log("Sending: seniorRegionalFinancesQueries.php?q=" + input);
+    xhtpp.open("GET", "seniorRegionalFinancesQueries.php?q=" + input, true);
+    xhtpp.send();
+}
+
 
         function CompanyInformationAJAX(company_name) {
             input = company_name;
