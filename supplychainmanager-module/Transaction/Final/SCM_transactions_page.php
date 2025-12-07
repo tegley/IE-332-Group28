@@ -1,3 +1,17 @@
+<?php
+session_start();
+/*session_start();
+
+//Check if the user is NOT logged in (security measure)
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+@@ -9,7 +9,7 @@
+}
+
+//If the code reaches here, the user has been authenticated.
+$user_FullName = $_SESSION['FullName'];
+$user_FullName = $_SESSION['FullName']; */
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
