@@ -70,7 +70,7 @@ while ($row = mysqli_fetch_array($resultTD_AVGShipment, MYSQLI_ASSOC)) {
     // echo json_encode($productsHandled);
 
 //Query that gets shipment dates for plot
-    $shippingSelect = "SELECT s.ShipmentID, s.ActualDate, s.PromisedDate, s.Quantity, c.CompanyName FROM Shipping s JOIN Company c ON s.DistributorID = c.CompanyID";
+    $shippingSelect = "SELECT s.PromisedDate, s.Quantity, c.CompanyName FROM Shipping s JOIN Company c ON s.DistributorID = c.CompanyID";
     $shippingQuery = "{$shippingSelect}{$whereState} ORDER BY c.CompanyName;"; 
     //  echo $shippingQuery;
     //Execute the SQL query
@@ -95,3 +95,4 @@ echo json_encode($DistributorResults);
 
 $conn->close();
 ?>  
+
