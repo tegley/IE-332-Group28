@@ -177,6 +177,8 @@
                         </div>
 
                         <!-- TAB 1: Regional Disruption info -->
+                        <!-- The line below that is commented out is a duplicated line which breaks everything -->
+                    <!-- <div class="tab-pane fade show active" id="countrycontinent" role="tabpanel" aria-labelledby="countrycontinent-tab"> -->
 
                         <div class="area-header">Disruption Events by Region and Frequency</div>
 
