@@ -208,11 +208,11 @@
                     <div class="row mt-3">
                         <div class="col-md-6">
                             <label>Start Date e.g. (XXXX-XX-XX)</label>
-                            <input type="date" class="form-control"  value="2020-09-09" id="startDate">
+                            <input type="date" class="form-control" id="startDate">
                         </div>
                         <div class="col-md-6">
                             <label>End Date e.g. (XXXX-XX-XX)</label>
-                            <input type="date" class="form-control"  value="2025-09-09" id="endDate">
+                            <input type="date" class="form-control" id="endDate">
                         </div>
                     </div>
 
@@ -613,8 +613,9 @@ function showCustomer(startDate, endDate, userInput, filterType) {
                         div.className = "list-item";
                         div.innerHTML = `
                             <strong>Shipment ID:</strong> ${item.ShipmentID}<br>
+                            <strong>Shipment Date:</strong> ${item.ActualDate}<br>
                             <strong>Company:</strong> ${item.CompanyName}<br>
-                            <strong>Quantity:</strong> ${item.Quantity}
+                            <strong>Product ID:</strong> ${item.ProductID} <strong>Quantity:</strong> ${item.Quantity}
                         `;
                         leavingDiv.appendChild(div);
                     });
@@ -629,8 +630,9 @@ function showCustomer(startDate, endDate, userInput, filterType) {
                         div.className = "list-item";
                         div.innerHTML = `
                             <strong>Receiving ID:</strong> ${item.ReceivingID}<br>
+                            <strong>Receiving Date:</strong> ${item.ReceivedDate}<br>
                             <strong>Company:</strong> ${item.CompanyName}<br>
-                            <strong>Quantity:</strong> ${item.QuantityReceived}
+                            <strong>Product ID:</strong> ${item.ProductID} <strong>Quantity:</strong> ${item.QuantityReceived}
                         `;
                         arrivingDiv.appendChild(div);
                     });
@@ -704,7 +706,7 @@ function showCustomer(startDate, endDate, userInput, filterType) {
 
                 // Update status message
                 document.getElementById("statusMessage").innerHTML = 
-                    `<div class="alert alert-success">Data loaded successfully for date range ${startDate} to ${endDate}: ${data.leavingCompany ? data.leavingCompany.length : 0} leaving, ${data.arrivingAt ? data.arrivingAt.length : 0} arriving</div>`;
+                    `<div class="alert alert-success">Data loaded successfully for date range ${startDate} to ${endDate}!</div>`;
                 
             } catch (error) {
                 console.error("Error parsing response:", error);
