@@ -95,4 +95,3 @@ echo json_encode($DistributorResults);
 
 $conn->close();
 ?>  
-
