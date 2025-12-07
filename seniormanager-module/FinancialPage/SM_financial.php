@@ -741,42 +741,42 @@ $user_FullName = $_SESSION['FullName']; */
 }
 
 
-        function CompanyInformationAJAX(company_name) {
-            input = company_name;
-            xhtpp = new XMLHttpRequest();
-            xhtpp.onload = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            my_JSON_object = JSON.parse(this.responseText);
-            console.log(JSON.stringify(my_JSON_object));
-
-            //Company Information - Important Info
-            const companyInfoDiv = document.getElementById("companyInfo");
-            companyInfoDiv.innerHTML = ""; //Clear out placeholder
-            address = String(my_JSON_object.companyInfo[0].City) + ", " + String(my_JSON_object.companyInfo[0].CountryName);
-
-            var div1 = document.createElement("div");
-            div1.className = "list-item";
-            div1.innerHTML = `<strong>Company Name:</strong> ${my_JSON_object.companyInfo[0].CompanyName}`;
-            companyInfoDiv.appendChild(div1);
-            var li5 = document.createElement("div");
-            li5.className = "list-item";
-            li5.innerHTML = `<strong>CompanyID:</strong> ${my_JSON_object.companyInfo[0].CompanyID}`;
-            companyInfoDiv.appendChild(li5);
-            var li2 = document.createElement("div");
-            li2.className = "list-item";
-            li2.innerHTML = `<strong>Company Address:</strong> ${address}`;
-            companyInfoDiv.appendChild(li2);
-            var li3 = document.createElement("div");
-            li3.className = "list-item";
-            li3.innerHTML = `<strong>Company Type:</strong> ${my_JSON_object.companyInfo[0].Type}`;
-            companyInfoDiv.appendChild(li3);
-            var li4 = document.createElement("div");
-            li4.className = "list-item";
-            li4.innerHTML = `<strong>Company Tier:</strong> ${my_JSON_object.companyInfo[0].TierLevel}`;
-            companyInfoDiv.appendChild(li3);    
-        }
+function CompanyInformationAJAX(company_name) {
+    input = company_name;
+    xhtpp = new XMLHttpRequest();
+    xhtpp.onload = function () {
+    if (this.readyState == 4 && this.status == 200) {
+        my_JSON_object = JSON.parse(this.responseText);
+        console.log(JSON.stringify(my_JSON_object));
+    
+        //Company Information - Important Info
+        const companyInfoDiv = document.getElementById("companyInfo");
+        companyInfoDiv.innerHTML = ""; //Clear out placeholder
+        address = String(my_JSON_object.companyInfo[0].City) + ", " + String(my_JSON_object.companyInfo[0].CountryName);
+    
+        var div1 = document.createElement("div");
+        div1.className = "list-item";
+        div1.innerHTML = `<strong>Company Name:</strong> ${my_JSON_object.companyInfo[0].CompanyName}`;
+        companyInfoDiv.appendChild(div1);
+        var li5 = document.createElement("div");
+        li5.className = "list-item";
+        li5.innerHTML = `<strong>CompanyID:</strong> ${my_JSON_object.companyInfo[0].CompanyID}`;
+        companyInfoDiv.appendChild(li5);
+        var li2 = document.createElement("div");
+        li2.className = "list-item";
+        li2.innerHTML = `<strong>Company Address:</strong> ${address}`;
+        companyInfoDiv.appendChild(li2);
+        var li3 = document.createElement("div");
+        li3.className = "list-item";
+        li3.innerHTML = `<strong>Company Type:</strong> ${my_JSON_object.companyInfo[0].Type}`;
+        companyInfoDiv.appendChild(li3);
+        var li4 = document.createElement("div");
+        li4.className = "list-item";
+        li4.innerHTML = `<strong>Company Tier:</strong> ${my_JSON_object.companyInfo[0].TierLevel}`;
+        companyInfoDiv.appendChild(li3);    
+    }
     };
-    xhtpp.open("GET", "supplychainmanager_homepage_queries.php?q=" + input, true);
+    xhtpp.open("GET", "SCMhomepage_queries.php?q=" + input, true);
     console.log("Sending request with q=" + input);
     xhtpp.send();
 }
