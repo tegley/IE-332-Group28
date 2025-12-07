@@ -150,13 +150,6 @@ $user_FullName = $_SESSION['FullName']; */
                         </button>
                     </li>
 
-                    <!-- TAB 5 -->
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="criticality-tab" data-bs-toggle="tab" data-bs-target="#criticality" type="button" role="tab">
-                            Criticality
-                        </button>
-                    </li>
-
                 </ul>
 
                 <!-- Start TAB CONTENT WRAPPER -->
@@ -407,38 +400,6 @@ $user_FullName = $_SESSION['FullName']; */
                         </div>
 
                     </div> <!-- END TAB 4 -->
-
-                    <!-- TAB 5: CRITICALITY -->
-                    <div class="tab-pane fade" id="criticality" role="tabpanel" aria-labelledby="criticality-tab">
-
-                        <div class="area-header">Criticality</div>
-
-                        <!-- Card Container -->
-                        <div class="card">
-                            <div class="card-header fw-bold">
-                                Company's Score
-                            </div>
-                            <div class="card-body" style="max-height: 350px; overflow-y: auto;">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Company</th>
-                                            <th>Score</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="CriticalityTable">
-                                        <tr>
-                                            <td colspan="2" class="text-center text-muted">
-                                                Submit query to see results...
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                    </div> <!-- END TAB 5 -->
-
                 </div> <!-- END tab-content -->
 
             </div> <!-- col-md-9 -->
