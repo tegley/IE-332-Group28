@@ -63,6 +63,15 @@ $user_FullName = $_SESSION['FullName'];
       border-radius: 4px;
     }
 
+    .scroll-box {
+        height: 120px;
+        overflow-y: auto;
+        border: 1px solid #aaa;
+        padding: 10px;
+        border-radius: 6px;
+        background-color: white;
+    }
+
     </style>
 </head>
 
@@ -237,6 +246,21 @@ $user_FullName = $_SESSION['FullName'];
               </button>
             </li>
 
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="rrc-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#rrc"
+                type="button"
+                role="tab"
+                aria-controls="rrc"
+                aria-selected="false"
+              >
+                RRC
+              </button>
+            </li>
+
           </ul>
 
           <div class="tab-content" id="myTabContent">
@@ -264,7 +288,34 @@ $user_FullName = $_SESSION['FullName'];
               role="tabpanel"
               aria-labelledby="hdr-tab"
             >
-              <div class="card mb-2 w-100" id="hdr-pie-chart" style="height: 525px"> </div>
+              <div class="card">
+                <div class="card-body row">
+
+                  <div class="col-md-6">
+                    <div class="card">
+                      <div class="card-header">HDR Values by Company</div>
+                        <div class="card-body">
+                          <div class="scroll-box" id="hdr-company-values">
+                            <p class="text-muted">Submit query to see results...</p>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="card">
+                      <div class="card-header">Overall HDR Statistic</div>
+                        <ul class="list-group list-group-flush" id="overall-hdr-statistic">
+                          <p class="text-muted">Submit query to see results...</p>
+                        </ul>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <div id="hdr-chart-card"> 
+                <div class="card mb-2 w-100" id="hdr-pie-chart" style="height: 525px"> </div>
+              </div>
             </div>
 
             <div
@@ -290,7 +341,17 @@ $user_FullName = $_SESSION['FullName'];
                 <div class="card mb-2 w-100" id="art-td-histogram-chart" style="height: 525px"> </div>
               </div>
             </div>
-          </div>
+
+            <div
+              class="tab-pane fade"
+              id="rrc"
+              role="tabpanel"
+              aria-labelledby="rrc-tab"
+            >
+              <div class="card mb-2 w-100" id="rrc-heatmap-chart" style="height: 525px"> </div>
+            </div>
+
+          </div> <!-- End tab content -->
         </div>
       </div> <!-- Closes col-md-9 -> add divs above this line!! -->
 
@@ -407,6 +468,12 @@ tabElms.forEach(tabElm => {
         }
         else if (targetTabId === '#art-td') {
             const chartContainer = document.getElementById('art-td-histogram-chart');
+            if (chartContainer) {
+                Plotly.relayout(chartContainer, { autosize: true });
+            }
+          }
+        else if (targetTabId === '#rrc') {
+            const chartContainer = document.getElementById('rrc-heatmap-chart');
             if (chartContainer) {
                 Plotly.relayout(chartContainer, { autosize: true });
             }
@@ -610,6 +677,8 @@ function DisruptionEventsAJAX(DisruptionDropDown, user_input, start_date, end_da
     xhtpp.onload = function () {
         if (this.readyState == 4 && this.status == 200) {
           const error_check = this.responseText; //Temporarily store query results
+          console.log(error_check);
+          
           let status = true; //Variable to determine if charts should be executed
           try {
             my_JSON_object = JSON.parse(this.responseText); //Attempt to parse JSON object
@@ -636,7 +705,7 @@ function DisruptionEventsAJAX(DisruptionDropDown, user_input, start_date, end_da
             }
             if(error_check=="Error country tier") {
               document.getElementById("StatusMessage").innerHTML = '<div class="alert alert-warning">There are no companies at the specified tier residing in the selected country</div>';
-            }
+            } 
             if(error_check=="Error continent tier") {
               document.getElementById("StatusMessage").innerHTML = '<div class="alert alert-warning">There are no companies at the specified tier residing in the selected continent</div>';
             }
@@ -645,29 +714,33 @@ function DisruptionEventsAJAX(DisruptionDropDown, user_input, start_date, end_da
               const null_check = my_JSON_object.TD_overall[0]["TD"]; //Account for case where there are no disruption events within time range
               if(null_check == null){ //If there are no disruption events within the time range, don't plot any charts (everything would break)
                 document.getElementById("StatusMessage").innerHTML = '<div class="alert alert-warning">There are no disruption events occuring within the specified time period</div>';
-                status = false //This also means that graphs shouldn't generate
+                status = false; //This also means that graphs shouldn't generate
               }
             }
 
             if(status==false) { //If status is false, meaning there is an error in the query output or there is no data, reset all graphs
               document.getElementById('df').innerHTML = '<div class="card mb-2 w-100" style="height: 525px"> </div>';
               document.getElementById('dsd').innerHTML = '<div class="card mb-2 w-100" style="height: 525px"> </div>';
-              document.getElementById('hdr').innerHTML = '<div class="card mb-2 w-100" style="height: 525px"> </div>';
+              document.getElementById('hdr-chart-card').innerHTML = '<div class="card mb-2 w-100" style="height: 525px"> </div>';
               document.getElementById('OverallART').innerHTML = "--";
               document.getElementById('OverallTD').innerHTML = "--";
               document.getElementById('art-td-card').innerHTML = '<div class="card mb-2 w-100" style="height: 525px"> </div>';
+              document.getElementById('rrc').innerHTML = '<div class="card mb-2 w-100" style="height: 525px"> </div>';
+              document.getElementById('hdr-company-values').innerHTML = '<p class="text-muted">Submit query to see results...</p>'
+              document.getElementById('overall-hdr-statistic').innerHTML = '<p class="text-muted">Submit query to see results...</p>'
             }
 
             if(status==true) { //If status is true, meaning no errors were identified in the query output and the data valid, plot the charts
               document.getElementById('df').innerHTML = '<div class="card mb-2 w-100" id="df-bar-chart" style="height: 525px"> </div>'
               document.getElementById('dsd').innerHTML = '<div class="card mb-2 w-100" id="dsd-stackedbar-chart" style="height: 525px"> </div>'
-              document.getElementById('hdr').innerHTML = '<div class="card mb-2 w-100" id="hdr-pie-chart" style="height: 525px"> </div>'
+              document.getElementById('hdr-chart-card').innerHTML = '<div class="card mb-2 w-100" id="hdr-pie-chart" style="height: 525px"> </div>'
               document.getElementById('art-td-card').innerHTML = '<div class="card mb-2 w-100" id="art-td-histogram-chart" style="height: 525px"> </div>'
-              document.getElementById("StatusMessage").innerHTML = "";
+              document.getElementById('rrc').innerHTML = '<div class="card mb-2 w-100" id="rrc-heatmap-chart" style="height: 525px"> </div>';
+              document.getElementById("StatusMessage").innerHTML = ""; //Clear status message
               
               //To log the raw-data
               console.log(JSON.stringify(my_JSON_object));
-
+              
               //DF - bar chart
               const df_companies = my_JSON_object.DF_chart.map((item) => { return String(item.CompanyName) });
               const df_values = my_JSON_object.DF_chart.map((item) => { return item.DF });
@@ -679,6 +752,29 @@ function DisruptionEventsAJAX(DisruptionDropDown, user_input, start_date, end_da
               const dsd_medium_values = my_JSON_object.DSD_chart.map((item) => { return item.NumMedImpact });
               const dsd_high_values = my_JSON_object.DSD_chart.map((item) => { return item.NumHighImpact });
               CreateDSDStackedBarChart(dsd_companies, dsd_low_values, dsd_medium_values, dsd_high_values);
+
+              //HDR - by company
+              const HDR_by_company_Div = document.getElementById('hdr-company-values');
+              HDR_by_company_Div.innerHTML = '';
+              my_JSON_object.HDR_companies.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "list-item";
+                div.innerHTML = `<strong>Company Name:</strong> ${item.HDRCompanyName} <br>
+                                 <strong>HDR:</strong> ${item.HDR}`;
+                HDR_by_company_Div.appendChild(div);
+              });
+
+              //HDR - overall statistic
+              const HDR_overall_statistic_Div = document.getElementById('overall-hdr-statistic');
+              HDR_overall_statistic_Div.innerHTML = '';
+              if (my_JSON_object.HDR_overall[0].HDRStatistic !== null) {
+                    const li = document.createElement("li");
+                    li.className = "list-group-item";
+                    li.innerHTML = `Overall Statistic: ${my_JSON_object.HDR_overall[0].HDRStatistic}`;
+                    HDR_overall_statistic_Div.appendChild(li);
+              } else {
+                  HDR_overall_statistic_Div.innerHTML = '<p class="text-muted">Invalid input</p>';
+              }
 
               //HDR - pie chart
               const hdr_companies = my_JSON_object.HDR_chart.map((item) => { return String(item.CompanyName) });
@@ -711,6 +807,15 @@ function DisruptionEventsAJAX(DisruptionDropDown, user_input, start_date, end_da
               const TD_overall = my_JSON_object.TD_overall[0]["TD"];
               document.getElementById('OverallART').innerHTML = `${ART_overall} days`;
               document.getElementById('OverallTD').innerHTML = `${TD_overall} days`;
+
+              //RRC - heatmap
+              const RRC_values_object = my_JSON_object.RRC_chart;
+              if (RRC_values_object == null){
+                document.getElementById("rrc-heatmap-chart").innerHTML = '<p class="text-muted" style="margin-top: 125px; font-size: 18px;">Please filter by a region to see the RRC heatmap!</p>'
+              }
+              else{
+                CreateRRCHeatmap(RRC_values_object, DisruptionDropDown);
+              }              
             }
           }
         };
@@ -730,7 +835,7 @@ function CreateDFBarChart(df_companies, df_values){
       },
       xaxis: {
         tickfont: {
-          size: 8, // Adjust this value to your desired font size
+          size: 8,
         }
       },
       yaxis: {
@@ -936,5 +1041,153 @@ function CreateART_TDHistogram(downtime_values) {
 
   Plotly.newPlot(Histogram, [trace], layout, {responsive: true});
 }
+
+function CreateRRCHeatmap(RRC_values_object, DisruptionDropDown) {
+  const continentCountries = {
+    "Africa": [
+      "DZA", "AGO", "BEN", "BWA", "IOT", "BFA", "BDI", "CPV", "CMR", "CAF",
+      "TCD", "COM", "COG", "COD", "CIV", "DJI", "EGY", "GNQ", "ERI", "SWZ",
+      "ETH", "ATF", "GAB", "GMB", "GHA", "GIN", "GNB", "KEN", "LSO", "LBR",
+      "LBY", "MDG", "MWI", "MLI", "MRT", "MUS", "MYT", "MAR", "MOZ", "NAM",
+      "NER", "NGA", "REU", "RWA", "SHN", "STP", "SEN", "SYC", "SLE", "SOM",
+      "ZAF", "SSD", "SDN", "TZA", "TGO", "TUN", "UGA", "ESH", "ZMB", "ZWE"],
+
+    "Europe": [
+      "ALA", "ALB", "AND", "AUT", "BLR", "BEL", "BIH", "BGR", "HRV", "CZE",
+      "DNK", "EST", "FRO", "FIN", "FRA", "DEU", "GIB", "GRC", "GGY", "VAT",
+      "HUN", "ISL", "IRL", "IMN", "ITA", "JEY", "LVA", "LIE", "LTU", "LUX",
+      "MLT", "MDA", "MCO", "MNE", "NLD", "MKD", "NOR", "POL", "PRT", "ROU",
+      "RUS", "SMR", "SRB", "SVK", "SVN", "ESP", "SJM", "SWE", "CHE", "UKR",
+      "GBR"],
+
+    "Asia": [
+      "AFG", "ARM", "AZE", "BHR", "BGD", "BTN", "BRN", "KHM", "CHN", "CYP",
+      "GEO", "HKG", "IND", "IDN", "IRN", "IRQ", "ISR", "JPN", "JOR", "KAZ",
+      "PRK", "KOR", "KWT", "KGZ", "LAO", "LBN", "MAC", "MYS", "MDV", "MNG",
+      "MMR", "NPL", "OMN", "PAK", "PSE", "PHL", "QAT", "SAU", "SGP", "LKA",
+      "SYR", "TJK", "THA", "TLS", "TUR", "TKM", "ARE", "UZB", "VNM", "YEM"],
+      
+    "North America": [
+      "AIA", "ATG", "ABW", "BHS", "BRB", "BLZ", "BMU", "BES", "CAN", "CYM",
+      "CRI", "CUB", "CUW", "DMA", "DOM", "SLV", "GRL", "GRD", "GLP", "GTM",
+      "HTI", "HND", "JAM", "MTQ", "MEX", "MSR", "NIC", "PAN", "PRI", "BLM",
+      "KNA", "LCA", "MAF", "SPM", "VCT", "SXM", "TTO", "TCA", "USA", "VGB",
+      "VIR"],
+      
+    "South America": [
+      "ARG", "BOL", "BVT", "BRA", "CHL", "COL", "ECU", "FLK", "GUF", "GUY",
+      "PRY", "PER", "SGS", "SUR", "URY", "VEN"],
+        
+    "Oceania": [
+      "ASM", "AUS", "CXR", "CCK", "COK", "FJI", "PYF", "GUM", "HMD", "KIR",
+      "MHL", "FSM", "NRU", "NCL", "NZL", "NIU", "NFK", "MNP", "PLW", "PNG",
+      "PCN", "WSM", "SLB", "TKL", "TON", "TUV", "UMI", "VUT", "WLF"]
+  };
+
+
+  const countryToISO3 = {
+    "Algeria":"DZA","Angola":"AGO","Benin":"BEN","Botswana":"BWA","Burkina Faso":"BFA",
+    "Burundi":"BDI","Cabo Verde":"CPV","Cameroon":"CMR","Central African Republic":"CAF","Chad":"TCD",
+    "Comoros":"COM","Congo":"COG","Democratic Republic of the Congo":"COD","Côte d'Ivoire":"CIV","Djibouti":"DJI",
+    "Egypt":"EGY","Equatorial Guinea":"GNQ","Eritrea":"ERI","Eswatini":"SWZ","Ethiopia":"ETH",
+    "Gabon":"GAB","Gambia":"GMB","Ghana":"GHA","Guinea":"GIN","Guinea-Bissau":"GNB",
+    "Kenya":"KEN","Lesotho":"LSO","Liberia":"LBR","Libya":"LBY","Madagascar":"MDG",
+    "Malawi":"MWI","Mali":"MLI","Mauritania":"MRT","Mauritius":"MUS","Mayotte":"MYT",
+    "Morocco":"MAR","Mozambique":"MOZ","Namibia":"NAM","Niger":"NER","Nigeria":"NGA",
+    "Réunion":"REU","Rwanda":"RWA","Saint Helena":"SHN","Sao Tome and Principe":"STP","Senegal":"SEN",
+    "Seychelles":"SYC","Sierra Leone":"SLE","Somalia":"SOM","South Africa":"ZAF","South Sudan":"SSD",
+    "Sudan":"SDN","Tanzania":"TZA","Togo":"TGO","Tunisia":"TUN","Uganda":"UGA",
+    "Western Sahara":"ESH","Zambia":"ZMB","Zimbabwe":"ZWE",
+    "Åland Islands":"ALA","Albania":"ALB","Andorra":"AND","Austria":"AUT","Belarus":"BLR",
+    "Belgium":"BEL","Bosnia and Herzegovina":"BIH","Bulgaria":"BGR","Croatia":"HRV","Czechia":"CZE",
+    "Denmark":"DNK","Estonia":"EST","Faroe Islands":"FRO","Finland":"FIN","France":"FRA",
+    "Germany":"DEU","Gibraltar":"GIB","Greece":"GRC","Guernsey":"GGY","Holy See":"VAT",
+    "Hungary":"HUN","Iceland":"ISL","Ireland":"IRL","Isle of Man":"IMN","Italy":"ITA",
+    "Jersey":"JEY","Latvia":"LVA","Liechtenstein":"LIE","Lithuania":"LTU","Luxembourg":"LUX",
+    "Malta":"MLT","Moldova":"MDA","Monaco":"MCO","Montenegro":"MNE","Netherlands":"NLD",
+    "North Macedonia":"MKD","Norway":"NOR","Poland":"POL","Portugal":"PRT","Romania":"ROU",
+    "Russia":"RUS","San Marino":"SMR","Serbia":"SRB","Slovakia":"SVK","Slovenia":"SVN",
+    "Spain":"ESP","Svalbard and Jan Mayen":"SJM","Sweden":"SWE","Switzerland":"CHE","Ukraine":"UKR",
+    "United Kingdom":"GBR",
+    "Afghanistan":"AFG","Armenia":"ARM","Azerbaijan":"AZE","Bahrain":"BHR","Bangladesh":"BGD",
+    "Bhutan":"BTN","Brunei":"BRN","Cambodia":"KHM","China":"CHN","Cyprus":"CYP",
+    "Georgia":"GEO","Hong Kong":"HKG","India":"IND","Indonesia":"IDN","Iran":"IRN",
+    "Iraq":"IRQ","Israel":"ISR","Japan":"JPN","Jordan":"JOR","Kazakhstan":"KAZ",
+    "North Korea":"PRK","South Korea":"KOR","Kuwait":"KWT","Kyrgyzstan":"KGZ","Laos":"LAO",
+    "Lebanon":"LBN","Macau":"MAC","Malaysia":"MYS","Maldives":"MDV","Mongolia":"MNG",
+    "Myanmar":"MMR","Nepal":"NPL","Oman":"OMN","Pakistan":"PAK","Palestine":"PSE",
+    "Philippines":"PHL","Qatar":"QAT","Saudi Arabia":"SAU","Singapore":"SGP","Sri Lanka":"LKA",
+    "Syria":"SYR","Tajikistan":"TJK","Thailand":"THA","Timor-Leste":"TLS","Turkey":"TUR",
+    "Turkmenistan":"TKM","United Arab Emirates":"ARE","Uzbekistan":"UZB","Vietnam":"VNM","Yemen":"YEM",
+    "Anguilla":"AIA","Antigua and Barbuda":"ATG","Aruba":"ABW","Bahamas":"BHS","Barbados":"BRB",
+    "Belize":"BLZ","Bermuda":"BMU","Bonaire, Sint Eustatius and Saba":"BES","Canada":"CAN","Cayman Islands":"CYM",
+    "Costa Rica":"CRI","Cuba":"CUB","Curaçao":"CUW","Dominica":"DMA","Dominican Republic":"DOM",
+    "El Salvador":"SLV","Greenland":"GRL","Grenada":"GRD","Guadeloupe":"GLP","Guatemala":"GTM",
+    "Haiti":"HTI","Honduras":"HND","Jamaica":"JAM","Martinique":"MTQ","Mexico":"MEX",
+    "Montserrat":"MSR","Nicaragua":"NIC","Panama":"PAN","Puerto Rico":"PRI","Saint Barthélemy":"BLM",
+    "Saint Kitts and Nevis":"KNA","Saint Lucia":"LCA","Saint Martin":"MAF","Saint Pierre and Miquelon":"SPM","Saint Vincent and the Grenadines":"VCT",
+    "Sint Maarten":"SXM","Trinidad and Tobago":"TTO","Turks and Caicos Islands":"TCA","United States":"USA","British Virgin Islands":"VGB","U.S. Virgin Islands":"VIR",
+    "Argentina":"ARG","Bolivia":"BOL","Bouvet Island":"BVT","Brazil":"BRA","Chile":"CHL",
+    "Colombia":"COL","Ecuador":"ECU","Falkland Islands":"FLK","French Guiana":"GUF","Guyana":"GUY",
+    "Paraguay":"PRY","Peru":"PER","South Georgia and the South Sandwich Islands":"SGS","Suriname":"SUR","Uruguay":"URY","Venezuela":"VEN",
+    "American Samoa":"ASM","Australia":"AUS","Christmas Island":"CXR","Cocos (Keeling) Islands":"CCK","Cook Islands":"COK",
+    "Fiji":"FJI","French Polynesia":"PYF","Guam":"GUM","Heard Island and McDonald Islands":"HMD","Kiribati":"KIR",
+    "Marshall Islands":"MHL","Micronesia":"FSM","Nauru":"NRU","New Caledonia":"NCL","New Zealand":"NZL",
+    "Niue":"NIU","Norfolk Island":"NFK","Northern Mariana Islands":"MNP","Palau":"PLW","Papua New Guinea":"PNG",
+    "Pitcairn Islands":"PCN","Samoa":"WSM","Solomon Islands":"SLB","Tokelau":"TKL","Tonga":"TON",
+    "Tuvalu":"TUV","U.S. Minor Outlying Islands":"UMI","Vanuatu":"VUT","Wallis and Futuna":"WLF"
+  };
+
+  let locations = [];
+  let values = [];
+  let hoverTexts = [];
+
+  RRC_values_object.forEach(region => {
+    const rrc = parseFloat(region['RRC']);
+    if(DisruptionDropDown == "continent") {
+      const countries = continentCountries[region['Region']] || [];
+      countries.forEach(c => {
+        locations.push(c);
+        values.push(rrc);
+        hoverTexts.push(`${region['Region']}: ${rrc}%`);
+      });
+    }
+    else if(DisruptionDropDown == "country") {
+      const iso = countryToISO3[region['Region']];
+      locations.push(iso);
+      values.push(rrc);
+      hoverTexts.push(`${region['Region']}: ${rrc}`);
+    }
+  });
+
+  const data = [{
+    type: 'choropleth',
+    locations: locations,
+    z: values,
+    locationmode: 'ISO-3',
+    colorscale: 'Reds',
+    autocolorscale: false,
+    zmin: 0,
+    zmax: 1, 
+    colorbar: { 
+      title: 'RRC'
+    },
+    text: hoverTexts,
+    hoverinfo: 'text'
+  }];
+
+  const layout = {
+    title: { text: 'Regional Risk Concentration' },
+    geo: {
+      showframe: false,
+      showcoastlines: true,
+      projection: { type: 'natural earth' }
+    },
+    margin: { t: 50 }
+  };
+
+  Plotly.newPlot('rrc-heatmap-chart', data, layout);
+}
+
 </script>
 </html>
