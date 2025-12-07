@@ -1,4 +1,3 @@
-
 <?php
 $servername = "mydb.itap.purdue.edu";
 
@@ -58,7 +57,7 @@ $tmp = explode('|', $tmp);
 
     $distRoutes = []; //Creating Distributor Routes Array so that it will always be in JSON object
     if (strcmp($result[0], 'Distributor') == 0) {
-        $distRoutesQuery = "SELECT o.FromCompanyID, o.ToCompanyID FROM Company c JOIN OperatesLogistics o ON c.CompanyID = o.DistributorID WHERE c.CompanyName = '" . $tmp[0] . "';";
+        $distRoutesQuery = "SELECT o.FromCompanyID, (SELECT CompanyName FROM Company WHERE CompanyID = o.FromCompanyID) AS FromCompanyName, o.ToCompanyID, (SELECT CompanyName FROM Company WHERE CompanyID = o.ToCompanyID) AS ToCompanyName FROM Company c JOIN OperatesLogistics o ON c.CompanyID = o.DistributorID WHERE c.CompanyName = '{$tmp[0]}'";
         // echo $distRoutesQuery;
         //Execute the SQL query
         $resultdistRoutes = mysqli_query($conn, $distRoutesQuery);
@@ -96,7 +95,7 @@ $tmp = explode('|', $tmp);
     }
     // echo json_encode($productDiversity);
     
-    $dependedOnQuery = "SELECT DISTINCT d.DownStreamCompanyID FROM Company c JOIN DependsOn d ON c.companyid = d.UpStreamCompanyID WHERE c.CompanyName = '" . $tmp[0] . "';";
+    $dependedOnQuery = "SELECT DISTINCT(d.DownStreamCompanyID), (SELECT CompanyName FROM Company WHERE CompanyID = d.DownStreamCompanyID) AS CompanyName FROM Company c JOIN DependsOn d ON c.CompanyID = d.UpStreamCompanyID WHERE c.CompanyName = '{$tmp[0]}'";
     // echo $dependedOnQuery;
     //Execute the SQL query
     $resultdependedOn = mysqli_query($conn, $dependedOnQuery);
@@ -107,7 +106,7 @@ $tmp = explode('|', $tmp);
     }
     // echo json_encode($dependedOn);
 
-    $dependsOnQuery = "SELECT DISTINCT d.UpStreamCompanyID FROM Company c JOIN DependsOn d ON c.companyid = d.DownStreamCompanyID  WHERE c.CompanyName = '" . $tmp[0] . "';";
+    $dependsOnQuery = "SELECT DISTINCT DISTINCT(d.UpStreamCompanyID), (SELECT CompanyName FROM Company WHERE CompanyID = d.UpStreamCompanyID) AS CompanyName FROM Company c JOIN DependsOn d ON c.CompanyID = d.DownStreamCompanyID  WHERE c.CompanyName = '{$tmp[0]}'";
     //  echo $dependsOnQuery;
     //Execute the SQL query
     $resultdependsOn = mysqli_query($conn, $dependsOnQuery);
@@ -164,7 +163,7 @@ $tmp = explode('|', $tmp);
     $company_type = "SELECT Type FROM Company WHERE CompanyName = '{$tmp[0]}'";
     $result_company_type = mysqli_query($conn, $company_type);
     $user_company_type = mysqli_fetch_array($result_company_type, MYSQLI_NUM); //Capture query result
-    echo $user_company_type[0];
+    //echo $user_company_type[0];
     if ($user_company_type[0] == "Distributor") { //Distributors - shipments they handle
         //On time delivery rate
         $otrSELECT = "SELECT ROUND(((SUM(CASE WHEN s.ActualDate <= s.PromisedDate THEN 1 ELSE 0 END) / COUNT(DISTINCT s.ShipmentID)) * 100), 2) AS OTR
@@ -187,8 +186,8 @@ $tmp = explode('|', $tmp);
         FROM Company c JOIN Shipping s ON c.CompanyID = s.SourceCompanyID
         WHERE c.CompanyName = '" . $tmp[0] . "' AND s.ActualDate BETWEEN '" . $tmp[1] . "' AND '" . $tmp[2] . "' AND s.PromisedDate <= s.ActualDate;";
     }
-    echo $otrQuery;
-    echo $shipmentDetialsQuery;
+    //echo $otrQuery;
+    //echo $shipmentDetialsQuery;
 
     //Execute on time rate SQL query
     $resultotr = mysqli_query($conn, $otrQuery);
