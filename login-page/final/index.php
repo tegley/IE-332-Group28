@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         //If the user is a senior manager, redirect them to the ERP home page
         if ($result_array[0]=="SeniorManager") {
             echo "<script>";
-            echo "alert('Work in progress');";
+            echo "window.location.href = 'SM_financial.php';";
             echo "</script>";
         }
     }
