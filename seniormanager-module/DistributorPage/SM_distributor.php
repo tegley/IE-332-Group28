@@ -166,15 +166,9 @@ $user_FullName = $_SESSION['FullName']; */
 
                                 <div class="col-md-12">
                                     <label>Select Distributor</label>
-                                    <select class="form-control" id="CountDistributor_input">
+                                    <select class="form-control" id="CountDistributor_input" onchange="loadResultsTransactions(document.getElementById('CountDistributor_input').value)">
                                         <option value="">All Distributors</option>
                                     </select>
-                                </div>
-
-                                <div class="col-12 mt-3 d-flex justify-content-center">
-                                    <button class="btn btn-primary px-4" onclick="ValidateTab('CountDistributor_input', LoadTopDistributorCount)">
-                                        Submit
-                                    </button>
                                 </div>
 
                             </div>
@@ -182,22 +176,13 @@ $user_FullName = $_SESSION['FullName']; */
 
                         <!-- TABLE CARD -->
                         <div class="card">
-                            <div class="card-body" style="max-height: 350px; overflow-y: auto;">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Distributor</th>
-                                            <th>Total Transactions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="TopDistributorCountTable">
-                                        <tr>
-                                            <td colspan="2" class="text-center text-muted">
-                                                Submit query to see results...
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <div class="card-body" style="max-height: 550px; overflow-y: auto;">
+                                <div class="card-header fw-bold text-center">Top Distributors By Shipment Volume</div>
+                                <div class="card-body">
+                                    <div id="DistributorTransactionVolumeChart" style="height: 500px;">
+                                        <p class="text-muted">Submit query to see results...</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -214,15 +199,9 @@ $user_FullName = $_SESSION['FullName']; */
 
                                 <div class="col-md-12">
                                     <label>Select Distributor</label>
-                                    <select class="form-control" id="VolumeDistributor_input">
+                                    <select class="form-control" id="VolumeDistributor_input" onchange="loadResultsVolume(document.getElementById('VolumeDistributor_input').value)">
                                         <option value="">All Distributors</option>
                                     </select>
-                                </div>
-
-                                <div class="col-12 mt-3 d-flex justify-content-center">
-                                    <button class="btn btn-primary px-4" onclick="ValidateTab('VolumeDistributor_input', LoadTopDistributorVolume)">
-                                        Submit
-                                    </button>
                                 </div>
 
                             </div>
@@ -242,9 +221,6 @@ $user_FullName = $_SESSION['FullName']; */
                                                 </tr>
                                             </thead>
                                             <tbody id="TopDistributorVolumeTable">
-                                                <tr>
-                                                    <td colspan="2" class="text-center text-muted">Submit query to see results...</td>
-                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -254,7 +230,7 @@ $user_FullName = $_SESSION['FullName']; */
                             <!-- RIGHT CHART -->
                             <div class="col-md-6">
                                 <div class="card" style="height: 350px;">
-                                    <div class="card-header fw-bold text-center">Shipment Volume Chart</div>
+                                    <div class="card-header fw-bold text-center">Top Distributors By Shipment Volume</div>
                                     <div class="card-body">
                                         <div id="DistributorVolumeChart" style="height: 280px;">
                                             <p class="text-muted">Submit query to see results...</p>
@@ -278,15 +254,9 @@ $user_FullName = $_SESSION['FullName']; */
 
                                 <div class="col-md-12">
                                     <label>Select Distributor</label>
-                                    <select class="form-control" id="AvgDelayDistributor_input">
+                                    <select class="form-control" id="AvgDelayDistributor_input" onchange="loadResultsAVGDelay(document.getElementById('AvgDelayDistributor_input').value)">
                                         <option value="">All Distributors</option>
                                     </select>
-                                </div>
-
-                                <div class="col-12 mt-3 d-flex justify-content-center">
-                                    <button class="btn btn-primary px-4" onclick="ValidateTab('AvgDelayDistributor_input', LoadAvgDelay)">
-                                        Submit
-                                    </button>
                                 </div>
 
                             </div>
@@ -306,11 +276,6 @@ $user_FullName = $_SESSION['FullName']; */
                                                 </tr>
                                             </thead>
                                             <tbody id="AvgDelayTable">
-                                                <tr>
-                                                    <td colspan="2" class="text-center text-muted">
-                                                        Submit query to see results...
-                                                    </td>
-                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -320,7 +285,7 @@ $user_FullName = $_SESSION['FullName']; */
                             <!-- RIGHT CHART -->
                             <div class="col-md-6">
                                 <div class="card" style="height: 350px;">
-                                    <div class="card-header fw-bold text-center">Average Delay Chart</div>
+                                    <div class="card-header fw-bold text-center">Companies with Least </div>
                                     <div class="card-body">
                                         <div id="AvgDelayChart" style="height: 280px;">
                                             <p class="text-muted">Submit query to see results...</p>
@@ -344,15 +309,9 @@ $user_FullName = $_SESSION['FullName']; */
 
                                 <div class="col-md-12">
                                     <label>Select Distributor</label>
-                                    <select class="form-control" id="ProductDistributor_input">
+                                    <select class="form-control" id="ProductDistributor_input" onchange="loadResultsProduct(document.getElementById('ProductDistributor_input').value)">
                                         <option value="">All Distributors</option>
                                     </select>
-                                </div>
-
-                                <div class="col-12 mt-3 d-flex justify-content-center">
-                                    <button class="btn btn-primary px-4" onclick="ValidateTab('ProductDistributor_input', LoadProductDistribution)">
-                                        Submit
-                                    </button>
                                 </div>
 
                             </div>
@@ -374,7 +333,7 @@ $user_FullName = $_SESSION['FullName']; */
                                             <tbody id="ProductDistTable">
                                                 <tr>
                                                     <td colspan="2" class="text-center text-muted">
-                                                        Submit query to see results...
+                                                        Select Distributor of Interest
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -411,255 +370,450 @@ $user_FullName = $_SESSION['FullName']; */
         //Load Company Names when page loads
         document.addEventListener('DOMContentLoaded', function() {
             loadCompanies();
+            loadResultsTransactions("");
+            loadResultsVolume("");
+            loadResultsAVGDelay("");
         });
 
         function loadCompanies() {
             fetch('distributorList.php')
                 .then(response => response.json())
                 .then(data => {
-                    const companyDropdown = document.getElementById('company_input');
-                    companyDropdown.innerHTML = '';
                     
-                    const defaultCompanyOption = document.createElement('option');
-                    defaultCompanyOption.value = '';
-                    defaultCompanyOption.textContent = 'Select a company';
-                    companyDropdown.appendChild(defaultCompanyOption);
+                    // Populate Distributor Count dropdown
+                    const distCountDropdown = document.getElementById('CountDistributor_input');
+                    distCountDropdown.innerHTML = '';
+                    distCountDropdown.appendChild(createDefaultOption());
                     
-                    data.company.forEach(company => {
+                    data.distributors.forEach(distributor => {
                         const option = document.createElement('option');
-                        option.value = company.CompanyName;
-                        option.textContent = company.CompanyName;
-                        companyDropdown.appendChild(option);
+                        option.value = distributor.CompanyName;
+                        option.textContent = distributor.CompanyName;
+                        distCountDropdown.appendChild(option);
+                    });
+
+                    //Popluate Distributor Volume Drop Down
+                    const distVolDropdown = document.getElementById('VolumeDistributor_input');
+                    distVolDropdown.innerHTML = '';
+                    distVolDropdown.appendChild(createDefaultOption());
+                    
+                    data.distributors.forEach(distributor => {
+                        const option = document.createElement('option');
+                        option.value = distributor.CompanyName;
+                        option.textContent = distributor.CompanyName;
+                        distVolDropdown.appendChild(option);
+                    });
+
+                    //Populate Average Delay Drop Down
+                    const distDelayDropdown = document.getElementById('AvgDelayDistributor_input');
+                    distDelayDropdown.innerHTML = '';
+                    distDelayDropdown.appendChild(createDefaultOption());
+                    
+                    data.distributors.forEach(distributor => {
+                        const option = document.createElement('option');
+                        option.value = distributor.CompanyName;
+                        option.textContent = distributor.CompanyName;
+                        distDelayDropdown.appendChild(option);
+                    });
+
+                    //Populate Product Drop Down
+                    const distProductDropdown = document.getElementById('ProductDistributor_input');
+                    distProductDropdown.innerHTML = '';
+                    
+                    data.distributors.forEach(distributor => {
+                        const option = document.createElement('option');
+                        option.value = distributor.CompanyName;
+                        option.textContent = distributor.CompanyName;
+                        distProductDropdown.appendChild(option);
                     });
                 })
         }
-    </script>
 
-    <script>
-        function ValidateTab(dropdownID, ajaxFunctionName) {
-
-            const s = document.getElementById("globalStartDate").value;
-            const e = document.getElementById("globalEndDate").value;
-            const selected = document.getElementById(dropdownID).value;
-
-            // Global dates must be applied first
-            if (s === "" || e === "") {
-                alert("Please apply global date range first!");
-                return false;
-            }
-            if (s >= e) {
-                alert("Start date must be before end date!");
-                return false;
-            }
-
-            // Tab-specific dropdown requirement
-            if (selected === "") {
-                alert("Please select a distributor!");
-                return false;
-            }
-
-            // Run the correct AJAX function
-            window[ajaxFunctionName]();
-            return true;
+        //Need to create the default option seperately cuz a DOM object can only exist in one place at a time
+        function createDefaultOption() {
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'All Distributors';
+            return defaultOption;
         }
+
     </script>
 
+
     <script>
-        var my_JSON_object;
 
-        function CompanyInformationAJAX(company_name, start_date, end_date) {
-
-            let todays_date = new Date().toJSON().slice(0, 10);
-            one_year_ago = String(todays_date.slice(0, 4) - 1);
-            month = todays_date.slice(5, 7);
-            day = todays_date.slice(8, 10);
-            one_year_ago_from_today_date = `${one_year_ago}-${month}-${day}`;
-
-            input = company_name + "|" + start_date + "|" + end_date + "|" + todays_date + "|" + one_year_ago_from_today_date;
+        function loadResultsTransactions(company_name){
 
             xhtpp = new XMLHttpRequest();
 
-            xhtpp.onload = function() {
+            xhtpp.onload = function () {
                 if (this.readyState == 4 && this.status == 200) {
 
                     my_JSON_object = JSON.parse(this.responseText);
+                    console.log("Data loaded successfully");
                     console.log(JSON.stringify(my_JSON_object));
 
-                    //Financial Health Line chart
-                    const x_vals = my_JSON_object.pastHealthScores.map((item) => { 
-                        return String(item.Quarter + " " + item.RepYear) 
-                    }).map(String).reverse()
-                    const y_vals = my_JSON_object.pastHealthScores.map((item) => { 
-                        return item.HealthScore 
-                    }).map(Number).reverse();
+                    const chart = document.getElementById("DistributorTransactionVolumeChart");
+                    chart.innerHTML = ""; //Clear out placeholder
 
-                    var layout = {
-                        title: { text: 'Financial Health Status Over Past Year from Today' },
-                        xaxis: { title: { text: 'Quarter & Year' } },
-                        yaxis: { range: [25, 100], title: { text: 'Financial Health Score' } }
+                    // Filter data if user specified
+                    let data = "";
+                    if(!company_name || company_name.length === 0) {
+                        data = my_JSON_object.shipping;
+                    } else {
+                        data = my_JSON_object.shipping.filter(item => item.CompanyName === company_name);
+                    }
+
+                    if (!data || data.length === 0) {
+                        chart.innerHTML = '<p class="text-muted text-center">No data available for selected distributor</p>';
+                        return;
+                    }
+
+                    // Aggregate quantity by date
+                    const dateQuantities = {};
+                    
+                    data.forEach(item => {
+                        const date = item.PromisedDate;
+                        const quantity = parseInt(item.Quantity) || 0;
+                        
+                        if (dateQuantities[date]) {
+                            dateQuantities[date] += quantity;
+                        } else {
+                            dateQuantities[date] = quantity;
+                        }
+                    });
+                    
+                    // Convert to arrays and sort by date
+                    const dates = Object.keys(dateQuantities).sort();
+                    const quantities = dates.map(date => dateQuantities[date]);
+                    
+                    // Convert dates to Date objects for Plotly
+                    const dateObjects = dates.map(d => new Date(d));
+
+                    // Create the plot
+                    var trace = {
+                        mode: 'lines+markers',
+                        x: dateObjects,
+                        y: quantities,
+                        type: 'scatter',
+                        line: {
+                            color: '#0f6fab',
+                            width: 2
+                        },
+                        marker: {
+                            size: 6,
+                            color: '#0f6fab'
+                        },
+                        hovertemplate: '<b>%{x|%Y-%m-%d}</b><br>Quantity: %{y:,}<extra></extra>'
                     };
-
-                    const TESTER = document.getElementById('finHealthPastYear');
-                    TESTER.innerHTML = "";
-                    Plotly.newPlot(TESTER, [{ x: x_vals, y: y_vals }], layout);
-
-                    // Company Information
-                    document.getElementById("address").innerHTML = my_JSON_object.companyInfo[0].City + ", " + my_JSON_object.companyInfo[0].CountryName;
-
-                    document.getElementById("company-type").innerHTML = my_JSON_object.companyInfo[0].Type;
-
-                    document.getElementById("tier-level").innerHTML = my_JSON_object.companyInfo[0].TierLevel;
-
-                    document.getElementById("financial-health-score").innerHTML = my_JSON_object.companyInfo[0].HealthScore;
-
-                    // Other Info
-                    const otherInfoLabel = document.getElementById("otherInfoHeader");
-                    const otherInfoDiv = document.getElementById("otherInfo");
-                    otherInfoDiv.innerHTML = "";
-
-                    if (my_JSON_object.companyInfo[0].Type === "Distributor") {
-                        otherInfoLabel.innerHTML = "Unique Routes Operated";
-                        my_JSON_object.distRoutes.forEach(item => {
-                            const li = document.createElement("li");
-                            li.className = "list-group-item";
-                            li.textContent = `From Company ID: ${item.FromCompanyID} To Company ID: ${item.ToCompanyID}`;
-                            otherInfoDiv.appendChild(li);
-                        });
-                    }
-                    if (my_JSON_object.companyInfo[0].Type === "Manufacturer") {
-                        otherInfoLabel.innerHTML = "Manufacturer Capacity";
-                        const li = document.createElement("li");
-                        li.className = "list-group-item";
-                        li.textContent = `Factory Capacity: ${my_JSON_object.companyInfo[0].FactoryCapacity}`;
-                        otherInfoDiv.appendChild(li);
-                    }
-
-                    // Dependencies
-                    const dependsOnDiv = document.getElementById("dependsOn");
-                    const dependedOnDiv = document.getElementById("dependedOn");
-                    dependsOnDiv.innerHTML = "";
-                    dependedOnDiv.innerHTML = "";
-
-                    if (my_JSON_object.dependsOn.length > 0) {
-                        my_JSON_object.dependsOn.forEach(item => {
-                            const li = document.createElement("li");
-                            li.className = "list-group-item";
-                            li.textContent = `UpStream Company ID: ${item.UpStreamCompanyID}`;
-                            dependsOnDiv.appendChild(li);
-                        });
-                    } else {
-                        dependsOnDiv.innerHTML = '<p class="text-muted">No dependencies found</p>';
-                    }
-
-                    if (my_JSON_object.dependedOn.length > 0) {
-                        my_JSON_object.dependedOn.forEach(item => {
-                            const li = document.createElement("li");
-                            li.className = "list-group-item";
-                            li.textContent = `DownStream Company ID: ${item.DownStreamCompanyID}`;
-                            dependedOnDiv.appendChild(li);
-                        });
-                    } else {
-                        dependedOnDiv.innerHTML = '<p class="text-muted">No dependencies found</p>';
-                    }
-
-                    // Products
-                    const productsDiv = document.getElementById("productsSupplied");
-                    productsDiv.innerHTML = "";
-                    my_JSON_object.productsSupplied.forEach(item => {
-                        const li = document.createElement("li");
-                        li.className = "list-group-item";
-                        li.textContent = `Product Name: ${item.ProductName} Product ID: ${item.ProductID}`;
-                        productsDiv.appendChild(li);
-                    });
-
-                    // Product Diversity Pie
-                    const pieDiv = document.getElementById("ProductDiversityPieChart");
-                    pieDiv.innerHTML = "";
-                    if (my_JSON_object.productDiversity.length > 0) {
-                        const categories = my_JSON_object.productDiversity.map(item => item.Category);
-                        const counts = my_JSON_object.productDiversity.map(item => parseInt(item["COUNT(*)"]));
-                        Plotly.newPlot('ProductDiversityPieChart', [{
-                            values: counts,
-                            labels: categories,
-                            type: 'pie'
-                        }]);
-                    }
-
-                    // Shipping
-                    const shippingDiv = document.getElementById("shipmentDetails");
-                    shippingDiv.innerHTML = "";
-                    my_JSON_object.shipping.forEach(item => {
-                        const div = document.createElement("div");
-                        div.className = "list-item";
-                        div.innerHTML = `<strong>Shipment ID:</strong> ${item.ShipmentID}<br>
-                                         <strong>Date Delivered:</strong> ${item.ActualDate}<br>
-                                         <strong>Product & Quantity:</strong> ${item.ProductID}, ${item.Quantity}`;
-                        shippingDiv.appendChild(div);
-                    });
-
-                    // Receiving
-                    const receivingDiv = document.getElementById("receivingDetails");
-                    receivingDiv.innerHTML = "";
-                    my_JSON_object.receivings.forEach(item => {
-                        const div = document.createElement("div");
-                        div.className = "list-item";
-                        div.innerHTML = `<strong>Receiving ID:</strong> ${item.ReceivingID}<br>
-                                         <strong>Date Received:</strong> ${item.ReceivedDate}<br>
-                                         <strong>Product & Quantity:</strong> ${item.ProductID}, ${item.QuantityReceived}`;
-                        receivingDiv.appendChild(div);
-                    });
-
-                    // Adjustments
-                    const adjustmentsDiv = document.getElementById("adjustmentDetails");
-                    adjustmentsDiv.innerHTML = "";
-                    my_JSON_object.adjustments.forEach(item => {
-                        const div = document.createElement("div");
-                        div.className = "list-item";
-                        div.innerHTML = `<strong>Adjustment ID:</strong> ${item.AdjustmentID}<br>
-                                         <strong>Date:</strong> ${item.AdjustmentDate}<br>
-                                         <strong>Product & Quantity:</strong> ${item.ProductID}, ${item.QuantityChange}<br>
-                                         <strong>Reason:</strong> ${item.Reason}`;
-                        adjustmentsDiv.appendChild(div);
-                    });
-
-                    // KPI
-                    document.getElementById("onTimeRate").innerHTML = (my_JSON_object.otr[0].OTR || "N/A") + "%";
-
-                    document.getElementById("avgDelay").innerHTML = (my_JSON_object.shipmentDetails[0].avgDelay || "N/A") + " days";
-
-                    document.getElementById("stdDelay").innerHTML = (my_JSON_object.shipmentDetails[0].stdDelay || "N/A") + " days";
-
-                    // Disruption Events
-                    const disruptionDiv = document.getElementById("disruptEvents");
-                    disruptionDiv.innerHTML = "";
-                    my_JSON_object.disruptionEvents.forEach(item => {
-                        const li = document.createElement("li");
-                        li.className = "list-group-item";
-                        li.textContent = `${item.CategoryName} | ID: ${item.EventID} | Date: ${item.EventDate} → Recovery: ${item.EventRecoveryDate}`;
-                        disruptionDiv.appendChild(li);
-                    });
-
-                    // Disruption Distribution Bar Chart
-                    const distDiv = document.getElementById("disruptEventsBarChart");
-                    distDiv.innerHTML = "";
-                    if (my_JSON_object.disruptionEventsDistribution.length > 0) {
-                        const categories = my_JSON_object.disruptionEventsDistribution.map(item => item.CategoryName);
-                        const counts = my_JSON_object.disruptionEventsDistribution.map(item => parseInt(item.NumEvents));
-                        Plotly.newPlot('disruptEventsBarChart', [{
-                            x: categories,
-                            y: counts,
-                            type: 'bar',
-                            marker: { color: '#0f6fab' }
-                        }]);
-                    }
+                    
+                    var selectorOptions = {
+                        buttons: [
+                            {
+                                step: 'month',
+                                stepmode: 'backward',
+                                count: 1,
+                                label: '1m'
+                            },
+                            {
+                                step: 'month',
+                                stepmode: 'backward',
+                                count: 6,
+                                label: '6m'
+                            },
+                            {
+                                step: 'year',
+                                stepmode: 'todate',
+                                count: 1,
+                                label: 'YTD'
+                            },
+                            {
+                                step: 'year',
+                                stepmode: 'backward',
+                                count: 1,
+                                label: '1y'
+                            },
+                            {
+                                step: 'all',
+                                label: 'All'
+                            }
+                        ]
+                    };
+                    
+                    var layout = {
+                        title: {
+                            text: company_name && company_name.length > 0 ? 
+                                `Shipment Quantity Over Time - ${company_name}` : 
+                                'Shipment Quantity Over Time (All Distributors)'
+                        },
+                        xaxis: {
+                            rangeselector: selectorOptions,
+                            rangeslider: {
+                                visible: true,
+                                thickness: 0.1,
+                                bgcolor: '#f8f9fa',
+                                bordercolor: '#dee2e6',
+                                borderwidth: 1
+                            },
+                            title: 'Shipment Date: Use Slider to Adjust Date Range',
+                            type: 'date'
+                        },
+                        yaxis: {
+                            fixedrange: false,
+                            title: 'Total Quantity Shipped',
+                            tickformat: ','
+                        },
+                        hovermode: 'closest',
+                        autosize: true,
+                        height: 500,
+                        margin: { l: 80, r: 50, t: 80, b: 120 }
+                    };
+                    
+                    Plotly.newPlot('DistributorTransactionVolumeChart', [trace], layout, {responsive: true});
 
                 } // END readyState if
+                else{
+                    console.log("Error loading data")
+                }
             } // END onload function
-
-            xhtpp.open("GET", "SCMhomepage_queries.php?q=" + input, true);
+            
+            console.log("Sending: seniorDistributorQueries.php" + (company_name ? "?q=" + company_name : ""));
+            xhtpp.open("GET", "seniorDistributorQueries.php" + (company_name ? "?q=" + company_name : ""), true);
             xhtpp.send();
-        } // END CompanyInformationAJAX
+
+        }
+
+        function loadResultsVolume(company_name){
+
+            xhtpp = new XMLHttpRequest();
+
+            xhtpp.onload = function () {
+                if (this.readyState == 4 && this.status == 200) {
+
+                    my_JSON_object = JSON.parse(this.responseText);
+                    console.log("Katya is rad");
+                    let data = "";
+                    console.log(JSON.stringify(my_JSON_object));
+
+                    const TopDistributorVolumeTable = document.getElementById("TopDistributorVolumeTable");
+                    TopDistributorVolumeTable.innerHTML = ""; //Clear out placeholder
+
+                    //Filter data if user specified
+                    if(!company_name || company_name.length === 0) { //If selection not selected or value is null, display all data
+                        data = my_JSON_object.TD_AVGShipment;
+                        console.log("Why aren't you working");
+                    } else{
+                        data = my_JSON_object.TD_AVGShipment.filter(item => item.CompanyName === company_name);
+                        console.log(data);
+                    }
+
+                    if (data && data.length > 0) {
+                        for (let i = 0; i < data.length; i++){
+                                const row = TopDistributorVolumeTable.insertRow();
+                                row.innerHTML = `
+                                    <td>${data[i].CompanyName}</td>
+                                    <td>${data[i].AVGVolume}</td>
+                                    `;
+                            }
+                        } else {
+                            const row = TopDistributorVolumeTable.insertRow();
+                                row.innerHTML = `
+                                    <td>No company data</td>
+                                    <td>N/A</td>
+                                    `;
+                        }
+                    //Plot top Distributors by Shipment Volume
+                    const chart = document.getElementById("DistributorVolumeChart");
+                    chart.innerHTML = ""; //Clear out placeholder
+                    const avgVol = my_JSON_object.TD_AVGShipment.slice(0, 10).map((item) => { return item.AVGVolume }); //Limit to top 10
+                    console.log(avgVol);
+                    const topCompanies = my_JSON_object.TD_AVGShipment.slice(0, 10).map((item) => { return item.CompanyName}); //Limit to top 10
+                    console.log(topCompanies);
+                    var trace = {
+                    y: topCompanies,  // Horizontal bars
+                    x: avgVol,
+                    type: 'bar',
+                    orientation: 'h',
+                    marker: { 
+                        color: topCompanies.map((item, i) => i === 0 ? '#d95f02' : '#0f6fab'),
+                        line: { color: '#fff', width: 1 }
+                    },
+                    hovertemplate: '<b>%{y}</b><br>Quantity: %{x:,}<extra></extra>'
+                    };
+
+                    var layout = {
+                        title: {
+                            text: `Top 10 Distributors by Average Shipment Volume<br>`,
+                        },
+                        xaxis: { title: 'Average Quantity Shipped', tickformat: ',' },
+                        yaxis: { title: '', automargin: true },
+                        autosize: true,
+                        margin: { l: 180, r: 50, t: 80, b: 50 }
+                    };
+
+                    Plotly.newPlot('DistributorVolumeChart', [trace], layout, {responsive: true});
+
+                } // END readyState if
+                else{
+                    console.log("Bad bad bad")
+                }
+            } // END onload function
+            console.log("Sending: seniorDistributorQueries.php")
+            xhtpp.open("GET", "seniorDistributorQueries.php", true);
+            xhtpp.send();
+
+        }
+
+        function loadResultsAVGDelay(company_name){
+
+            xhtpp = new XMLHttpRequest();
+
+            xhtpp.onload = function () {
+                if (this.readyState == 4 && this.status == 200) {
+
+                    my_JSON_object = JSON.parse(this.responseText);
+                    console.log("Katya is rad");
+                    let data = "";
+                    console.log(JSON.stringify(my_JSON_object));
+
+                    const AvgDelayTable = document.getElementById("AvgDelayTable");
+                    AvgDelayTable.innerHTML = ""; //Clear out placeholder
+
+                    //Filter data if user specified
+                    if(!company_name || company_name.length === 0) { //If selection not selected or value is null, display all data
+                        data = my_JSON_object.distributor_delay;
+                        console.log("Why aren't you working");
+                    } else{
+                        data = my_JSON_object.distributor_delay.filter(item => item.CompanyName === company_name);
+                        console.log(data);
+                    }
+
+                    if (data && data.length > 0) {
+                        for (let i = 0; i < data.length; i++){
+                                const row = AvgDelayTable.insertRow();
+                                row.innerHTML = `
+                                    <td>${data[i].CompanyName} </td>
+                                    <td>${data[i].AverageDelay}</td>
+                                    `;
+                            }
+                        } else {
+                            const row = AvgDelayTable.insertRow();
+                                row.innerHTML = `
+                                    <td>No company data</td>
+                                    <td>N/A</td>
+                                    `;
+                        }
+                    //Plot top Distributors by Shipment Volume
+                    const chart = document.getElementById("AvgDelayChart");
+                    chart.innerHTML = ""; //Clear out placeholder
+                    const avgDelay = my_JSON_object.distributor_delay.slice(0, 10).map((item) => { return item.AverageDelay }); //Limit to 10 companies with the least delay
+                    console.log(avgDelay);
+                    const topCompanies = my_JSON_object.distributor_delay.slice(0, 10).map((item) => { return item.CompanyName}); //Limit to 10 companies with the least delay
+                    console.log(topCompanies);
+                    var trace = {
+                    y: topCompanies,  // Horizontal bars
+                    x: avgDelay,
+                    type: 'bar',
+                    orientation: 'h',
+                    marker: { 
+                        color: topCompanies.map((item, i) => i === 0 ? '#355E3B' : '#0f6fab'),
+                        line: { color: '#fff', width: 1 }
+                    },
+                    hovertemplate: '<b>%{y}</b><br>Delay: %{x:,}<extra></extra>'
+                    };
+
+                    var layout = {
+                        title: {
+                            text: `Top 10 Distributors with Least Delay<br>`,
+                        },
+                        xaxis: { title: 'Average Delay in Days', tickformat: ',' },
+                        yaxis: { title: '', automargin: true },
+                        autosize: true,
+                        margin: { l: 180, r: 50, t: 80, b: 50 }
+                    };
+
+                    Plotly.newPlot('AvgDelayChart', [trace], layout, {responsive: true});
+
+                } // END readyState if
+                else{
+                    console.log("Bad bad bad")
+                }
+            } // END onload function
+            console.log("Sending: seniorDistributorQueries.php")
+            xhtpp.open("GET", "seniorDistributorQueries.php", true);
+            xhtpp.send();
+
+        }
+
+        function loadResultsProduct(company_name){
+
+            xhtpp = new XMLHttpRequest();
+
+            xhtpp.onload = function () {
+                if (this.readyState == 4 && this.status == 200) {
+
+                    data = JSON.parse(this.responseText);
+                    console.log("Katya is rad");
+                    console.log(JSON.stringify(data));
+
+                    const ProductDistTable = document.getElementById("ProductDistTable");
+                    ProductDistTable.innerHTML = ""; //Clear out placeholder
+
+
+                    if (data.productsHandled && data.productsHandled.length > 0) {
+                        data.productsHandled.forEach(item => {
+                                const row = ProductDistTable.insertRow();
+                                row.innerHTML = `
+                                    <td>${item.ProductName} </td>
+                                    <td>${item.Quantity}</td>
+                                    `;
+                            }
+                        )} else {
+                            const row = ProductDistTable.insertRow();
+                                row.innerHTML = `
+                                    <td>No company data</td>
+                                    <td>N/A</td>
+                                    `;
+                        }
+                    //Pie chart of Product Shipped Distribution
+                    const ProductDistPie = document.getElementById("ProductDistPie");
+                    ProductDistPie.innerHTML = ""; //Clear out placeholder
+                        var products = data.productsHandled
+                        var labels = products.map(item => item.ProductName);
+                        console.log(labels);
+
+                    // Calculate delivered shipments (within user specified itme range)
+                    var productQuantity = products.map(item => item.Quantity);
+                    console.log(productQuantity);
+
+                    //Plot Details
+                    var pieData = [{
+                        values: productQuantity,
+                        labels: labels,
+                        type: 'pie'
+                        }];
+                    var layout = {
+                        title: 'Products Delievered Distribution',
+                        autosize: true,
+                        margin: { l: 20, r: 20, t: 40, b: 20 },
+                        hovertemplate: '<b>%{labels}</b><br>Quantity: %{values:,}<extra></extra>'
+                        };
+
+                    Plotly.newPlot('ProductDistPie', pieData, layout, {responsive: true});
+
+                } // END readyState if
+                else{
+                    console.log("Bad bad bad")
+                }
+            } // END onload function
+            console.log("Sending: seniorDistributorQueries.php?q=" + company_name)
+            xhtpp.open("GET", "seniorDistributorQueries.php?q=" + company_name, true);
+            xhtpp.send();
+
+        }
+
     </script>
 
 </body>
+</html>
 </html>
