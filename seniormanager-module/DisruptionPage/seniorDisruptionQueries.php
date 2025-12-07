@@ -24,8 +24,10 @@ $quer = explode('|', $quer); ////["Region Type", "Region Selected]
 //We will need to build the queries per user selection, but the added constraints will be the same accross all queries, so we will make additions rn
 $groupByRegion = ""; //Group By
 $whereState = "";
-$whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "') OR (e.EventRecoveryDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "') OR (e.EventDate < '" . $tmp[0] . "' AND e.EventRecoveryDate > '" . $tmp[1] . "'))";
-
+$whereStateEvents = "";
+if (!empty($tmp[0])) {
+    $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "') OR (e.EventRecoveryDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "') OR (e.EventDate < '" . $tmp[0] . "' AND e.EventRecoveryDate > '" . $tmp[1] . "'))";
+}
     //Group By statement added per user input
     if (!empty($quer[0])) { 
         switch ($quer[0]) {
