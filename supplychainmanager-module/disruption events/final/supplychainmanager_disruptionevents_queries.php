@@ -26,6 +26,13 @@ $filter_option = $_GET['g']; //Selected filter option, start date, end date
 $user_input = explode('|', $user_input);
 $filter_option = explode('|', $filter_option);
 
+//Common FROM statement
+$from = "FROM Company c JOIN ImpactsCompany i ON i.AffectedCompanyID = c.CompanyID JOIN DisruptionEvent e ON e.EventID = i.EventID JOIN Location l ON l.LocationID = c.LocationID";
+
+//Common WHERE statement
+$where = "WHERE ((e.EventDate BETWEEN '{$filter_option[1]}' AND '{$filter_option[2]}') OR (e.EventRecoveryDate BETWEEN '{$filter_option[1]}' AND '{$filter_option[2]}') OR (e.EventDate < '{$filter_option[1]}' AND e.EventRecoveryDate > '{$filter_option[2]}'))";
+$where_2 = "WHERE ((e2.EventDate BETWEEN '{$filter_option[1]}' AND '{$filter_option[2]}') OR (e2.EventRecoveryDate BETWEEN '{$filter_option[1]}' AND '{$filter_option[2]}') OR (e2.EventDate < '{$filter_option[1]}' AND e2.EventRecoveryDate > '{$filter_option[2]}'))";
+
 //Chart data - SELECT statements
 $DF_chart_query = "SELECT c.CompanyName, (COUNT(*) / TIMESTAMPDIFF(MONTH, '{$filter_option[1]}', '{$filter_option[2]}')) As DF";
 
@@ -41,11 +48,16 @@ $TD_ART_chart_query = "SELECT DATEDIFF(e.EventRecoveryDate, e.EventDate) AS Down
 $TD_statistic_query = "SELECT SUM(MyTable.Downtime) AS TD FROM (SELECT DISTINCT(e.EventID), DATEDIFF(e.EventRecoveryDate, e.EventDate) AS Downtime"; 
 $ART_statistic_query = "SELECT SUM(MyTable.Downtime) * 1.0 / COUNT(*) AS ART FROM (SELECT DISTINCT(e.EventID), DATEDIFF(e.EventRecoveryDate, e.EventDate) AS Downtime"; 
 
-//Common FROM statement
-$from = "FROM Company c JOIN ImpactsCompany i ON i.AffectedCompanyID = c.CompanyID JOIN DisruptionEvent e ON e.EventID = i.EventID JOIN Location l ON l.LocationID = c.LocationID";
+$RRC_setup = "COUNT(DISTINCT(e.EventID)) / (SELECT COUNT(DISTINCT(e.EventID)) FROM DisruptionEvent e WHERE e.EventDate <= '2025-12-31' AND e.EventRecoveryDate >= '2019-01-01') AS RRC
+FROM DisruptionEvent e JOIN DisruptionCategory x ON e.CategoryID = x.CategoryID JOIN ImpactsCompany i ON e.EventID = i.EventID JOIN Company c ON i.AffectedCompanyID = c.CompanyID JOIN Location l ON l.LocationID = c.LocationID
+{$where}";
 
-//Common WHERE statement
-$where = "WHERE ((e.EventDate BETWEEN '{$filter_option[1]}' AND '{$filter_option[2]}') OR (e.EventRecoveryDate BETWEEN '{$filter_option[1]}' AND '{$filter_option[2]}') OR (e.EventDate < '{$filter_option[1]}' AND e.EventRecoveryDate > '{$filter_option[2]}'))";
+//Additional HDR queries
+$HDR_overall_query_setup = "(SELECT SUM(CASE WHEN i2.ImpactLevel = 'High' THEN 1 ELSE 0 END) FROM Company c2 JOIN ImpactsCompany i2 ON i2.AffectedCompanyID = c2.CompanyID JOIN DisruptionEvent e2 ON e2.EventID = i2.EventID JOIN Location l2 ON l2.LocationID = c2.LocationID";
+
+$HDR_companies_query = "SELECT c.CompanyName AS HDRCompanyName, (SELECT SUM(CASE WHEN i2.ImpactLevel = 'High' THEN 1 ELSE 0 END) 
+                        FROM Company c2 JOIN ImpactsCompany i2 ON i2.AffectedCompanyID = c2.CompanyID JOIN DisruptionEvent e2 ON e2.EventID = i2.EventID JOIN Location l2 ON l2.LocationID = c2.LocationID 
+                        {$where_2} AND c2.CompanyName = HDRCompanyName GROUP BY c2.CompanyName) / COUNT(e.EventID) AS HDR";
 
 //Option 1 - Country
 if($filter_option[0] == 'country'){
@@ -75,6 +87,18 @@ if($filter_option[0] == 'country'){
 
     //Country - overall ART & TD statistic statement
     $statistic_statement = " {$where} AND l.CountryName = '{$user_input[0]}'";
+
+    //Country - HDR for companies
+    $HDR_companies_where = "AND l.CountryName = '{$user_input[0]}'";
+
+    //Country - HDR overall
+    $HDR_overall_select = "SELECT l.CountryName As HDROverall,";
+    $HDR_overall_subquery = "GROUP BY l2.CountryName HAVING l2.CountryName = HDROverall) / COUNT(e.EventID) AS HDRStatistic";
+    $HDR_overall_endgroupby = "GROUP BY l.CountryName HAVING l.CountryName = '{$user_input[0]}'";
+
+    //Country - RRC query modifications
+    $RRC_select = "SELECT l.CountryName AS Region,";
+    $RRC_group_by = "GROUP BY l.CountryName HAVING l.CountryName = '{$user_input[0]}'";
 }
 
 //Option 2 - Continent
@@ -106,6 +130,17 @@ if($filter_option[0] == 'continent'){
     //Continent - overall ART & TD statistic statement
     $statistic_statement = " {$where} AND l.ContinentName = '{$user_input[0]}'";
 
+    //Contient - HDR for companies
+    $HDR_companies_where = "AND l.ContinentName = '{$user_input[0]}'";
+
+    //Continent - HDR overall
+    $HDR_overall_select = "SELECT l.ContinentName As HDROverall,";
+    $HDR_overall_subquery = "GROUP BY l2.ContinentName HAVING l2.ContinentName = HDROverall) / COUNT(e.EventID) AS HDRStatistic";
+    $HDR_overall_endgroupby = "GROUP BY l.ContinentName HAVING l.ContinentName = '{$user_input[0]}'";
+
+    //Continent - RRC query modifications
+    $RRC_select = "SELECT l.ContinentName AS Region,";
+    $RRC_group_by = "GROUP BY l.ContinentName HAVING l.ContinentName = '{$user_input[0]}'";
 }
 
 //Option 3 - Company
@@ -123,6 +158,14 @@ if($filter_option[0] == 'company'){
     //Company - GROUP BY and HAVING statements
     $group_by = "GROUP BY c.CompanyName";
     $having = "HAVING c.CompanyName = '{$user_input[0]}'";
+
+    //Company - HDR of the company
+    $HDR_companies_where = "AND c.CompanyName = '{$user_input[0]}'";
+
+    //Company - HDR overall
+    $HDR_overall_select = "SELECT c.CompanyName As HDROverall,";
+    $HDR_overall_subquery = "GROUP BY c2.CompanyName HAVING c2.CompanyName = HDROverall) / COUNT(e.EventID) AS HDRStatistic";
+    $HDR_overall_endgroupby = "GROUP BY c.CompanyName HAVING c.CompanyName = '{$user_input[0]}'";
 
     //Company - overall ART & TD statistic statement
     $statistic_statement = " {$where} AND c.CompanyName = '{$user_input[0]}'";
@@ -143,6 +186,14 @@ if($filter_option[0] == 'tier'){
     //Tier - GROUP BY and HAVING statements
     $group_by = "GROUP BY c.CompanyName, c.TierLevel";
     $having = "HAVING c.TierLevel = '{$user_input[0]}'";
+
+    //Tier - HDR for companies
+    $HDR_companies_where = "AND c.TierLevel = '{$user_input[0]}'";
+
+    //Tier - HDR overall
+    $HDR_overall_select = "SELECT c.TierLevel As HDROverall,";
+    $HDR_overall_subquery = "GROUP BY c2.TierLevel HAVING c2.TierLevel = HDROverall) / COUNT(e.EventID) AS HDRStatistic";
+    $HDR_overall_endgroupby = "GROUP BY c.TierLevel HAVING c.TierLevel = '{$user_input[0]}'";
 
     //Tier - overall ART & TD statistic statement
     $statistic_statement = " {$where} AND c.TierLevel = '{$user_input[0]}'";
@@ -184,6 +235,14 @@ if($filter_option[0] == 'country-tier'){
     $group_by = "GROUP BY c.CompanyName, c.TierLevel, l.CountryName";
     $having = "HAVING c.TierLevel = '{$user_input[1]}' AND l.CountryName = '{$user_input[0]}'";
 
+    //Country & tier - HDR for companies
+    $HDR_companies_where = "AND c.TierLevel = '{$user_input[1]}' AND l.CountryName = '{$user_input[0]}'";
+
+    //Country & tier - HDR overall
+    $HDR_overall_select = "SELECT c.TierLevel As HDROverall,";
+    $HDR_overall_subquery = "GROUP BY c2.TierLevel, l2.CountryName HAVING c2.TierLevel = '{$user_input[1]}' AND l2.CountryName = '{$user_input[0]}') / COUNT(e.EventID) AS HDRStatistic";
+    $HDR_overall_endgroupby = "GROUP BY c.TierLevel, l.CountryName HAVING c.TierLevel = '{$user_input[1]}' AND l.CountryName = '{$user_input[0]}'";
+
     //Country & tier - overall ART & TD statistic statement
     $statistic_statement = " {$where} AND c.TierLevel = '{$user_input[1]}' AND l.CountryName = '{$user_input[0]}'";
 }
@@ -224,6 +283,14 @@ if($filter_option[0] == 'continent-tier'){
     $group_by = "GROUP BY c.CompanyName, c.TierLevel, l.ContinentName";
     $having = "HAVING c.TierLevel = '{$user_input[1]}' AND l.ContinentName = '{$user_input[0]}'";
 
+    //Country & tier - HDR overall
+    $HDR_overall_select = "SELECT c.TierLevel As HDROverall,";
+    $HDR_overall_subquery = "GROUP BY c2.TierLevel, l2.ContinentName HAVING c2.TierLevel = '{$user_input[1]}' AND l2.ContinentName = '{$user_input[0]}') / COUNT(e.EventID) AS HDRStatistic";
+    $HDR_overall_endgroupby = "GROUP BY c.TierLevel, l.ContinentName HAVING c.TierLevel = '{$user_input[1]}' AND l.ContinentName = '{$user_input[0]}'";
+
+    //Contient & tier - HDR for companies
+    $HDR_companies_where = "AND c.TierLevel = '{$user_input[1]}' AND l.ContinentName = '{$user_input[0]}'";
+
     //Continent & tier - overall ART & TD statistic statement
     $statistic_statement = " {$where} AND c.TierLevel = '{$user_input[1]}' AND l.ContinentName = '{$user_input[0]}'";
 }
@@ -262,6 +329,15 @@ $TD_ART_chart_query .= " {$from} {$where} {$group_by} {$having}";
 $TD_statistic_query .= " {$from} {$statistic_statement}) As MyTable";
 $ART_statistic_query .= " {$from} {$statistic_statement}) As MyTable";
 
+//Build RRC query
+$RRC_query = "{$RRC_select} {$RRC_setup} {$RRC_group_by}";
+
+//Build HDR by companies query
+$HDR_companies_query .= " {$from} {$where} {$HDR_companies_where} GROUP BY c.CompanyName";
+
+//Build HDR overall query
+$HDR_overall_query = "{$HDR_overall_select} {$HDR_overall_query_setup} {$where_2} {$HDR_overall_subquery} {$from} {$where} {$HDR_overall_endgroupby}";
+
 //Run all queries
 $DF_chart_query_result = mysqli_query($conn, $DF_chart_query);
 while ($row = mysqli_fetch_array($DF_chart_query_result, MYSQLI_ASSOC)) {
@@ -276,6 +352,16 @@ while ($row = mysqli_fetch_array($DSD_chart_query_result, MYSQLI_ASSOC)) {
 $HDR_chart_query_result = mysqli_query($conn, $HDR_chart_query);
 while ($row = mysqli_fetch_array($HDR_chart_query_result, MYSQLI_ASSOC)) {
     $HDR_chart[] = $row;
+}
+
+$HDR_by_companies_result = mysqli_query($conn, $HDR_companies_query);
+while ($row = mysqli_fetch_array($HDR_by_companies_result, MYSQLI_ASSOC)) {
+    $HDR_companies[] = $row;
+}
+
+$HDR_overall_result = mysqli_query($conn, $HDR_overall_query);
+while ($row = mysqli_fetch_array($HDR_overall_result, MYSQLI_ASSOC)) {
+    $HDR_overall[] = $row;
 }
 
 $TD_ART_chart_query_result = mysqli_query($conn, $TD_ART_chart_query);
@@ -293,14 +379,22 @@ while ($row = mysqli_fetch_array($ART_statistic_query_result, MYSQLI_ASSOC)) {
     $ART_statistic[] = $row;
 }
 
+$RRC_query_result = mysqli_query($conn, $RRC_query);
+while ($row = mysqli_fetch_array($RRC_query_result, MYSQLI_ASSOC)) {
+    $RRC_chart[] = $row;
+}
+
 //Create and encode JSON object
 $SCMDisruptionEventResults = [
     "DF_chart" => $DF_chart,
     "DSD_chart" => $DSD_chart,
     "HDR_chart" => $HDR_chart,
+    "HDR_companies" => $HDR_companies,
+    "HDR_overall" => $HDR_overall,
     "TD_ART_chart" => $TD_ART_chart,
     "TD_overall" => $TD_statistic,
     "ART_overall" => $ART_statistic,
+    "RRC_chart" => $RRC_chart
 ];
 
 echo json_encode($SCMDisruptionEventResults);
