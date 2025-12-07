@@ -1,5 +1,5 @@
 <?php 
-/*session_start();
+session_start();
 
 //Check if the user is NOT logged in (security measure)
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
@@ -8,7 +8,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit();
 }
 
-$user_FullName = $_SESSION['FullName']; */
+$user_FullName = $_SESSION['FullName'];
 ?>
 
 <!DOCTYPE html>
@@ -216,12 +216,6 @@ $user_FullName = $_SESSION['FullName']; */
                         </button>
                     </li>
 
-                    <!-- Tab for Updating Transactions -->
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="update-transactions-tab" data-bs-toggle="tab" data-bs-target="#update-transactions" type="button" role="tab">
-                            Update Transactions
-                        </button>
-                    </li>
                 </ul>
 
                 <!-- START TAB CONTENT WRAPPER -->
@@ -241,34 +235,7 @@ $user_FullName = $_SESSION['FullName']; */
                                     <div class="card">
                                         <div class="card-header">Important Info</div>
 
-                                        <div class="card-body row">
-                                            <div class="col-4">
-                                                <div class="card"><div class="card-body">Address</div></div>
-                                            </div>
-                                            <div class="col-8">
-                                                <div class="card"><div class="card-body" id="address"></div></div>
-                                            </div>
-
-                                            <div class="col-6">
-                                                <div class="card"><div class="card-body">Company Type</div></div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="card"><div class="card-body" id="company-type"></div></div>
-                                            </div>
-
-                                            <div class="col-6">
-                                                <div class="card"><div class="card-body">Tier Level</div></div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="card"><div class="card-body" id="tier-level"></div></div>
-                                            </div>
-
-                                            <div class="col-6">
-                                                <div class="card"><div class="card-body">Financial Health Score</div></div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="card"><div class="card-body" id="financial-health-score"></div></div>
-                                            </div>
+                                        <div class="card-body" id="important-info-id">
                                         </div>
                                     </div>
                                 </div>
@@ -384,7 +351,7 @@ $user_FullName = $_SESSION['FullName']; */
 
                     </div> <!-- END TAB 2 -->
 
-                    <!-- TAB 3: KEY PERFORMANCE INDICATORS              -->
+                    <!-- TAB 3: KEY PERFORMANCE INDICATORS -->
 
                     <div class="tab-pane fade" id="kpi" role="tabpanel" aria-labelledby="kpi-tab">
 
@@ -458,320 +425,538 @@ $user_FullName = $_SESSION['FullName']; */
 
                         <div class="area-header">Update Company Information</div>
                         <div class="card" style="height: 450px;">
-                            <div class="card-body row d-flex justify-content-center">
-                                <div class="col-auto">
-                                <label for="UpdateTier">Update Tier:</label>
-                                <select id="UpdateTier" class="form-select">
-                                    <option value="" disabled selected>New Tier</option>
-                                    <option>Tier 1</option>
-                                    <option>Tier 2</option>
-                                    <option>Tier 3</option>
-                                </select>
-                                </div>
+                            <div class="card-body"> 
+                                <div class="row d-flex justify-content-center">
+                                    <div class="col-auto" style="height: 140px;">
+                                    <label for="UpdateTier">Update Tier:</label>
+                                    <select id="UpdateTier" class="form-select">
+                                        <option>Maintain Tier</option>
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                    </select>
+                                    </div>
 
-                                <div class="col-auto">
-                                <label for="UpdateAddress">Update Address:</label>
-                                <select id="UpdateAddress" class="form-select">
-                                    <option value="" disabled selected>Update Address</option>
-                                    <option value="city">City</option>
-                                    <option value="country">Country</option>
-                                    <option value="continent">Continent</option>
-                                </select>
-                                </div>
-
-                                <div class="col-auto">
-                                <label for="UpdateCompanyName">Name:</label>
-                                <div id="UpdateCompanyName"> 
-                                    <input type="text" class="form-control" name="CompanyNameUpdate" id="CompanyNameUpdateID">
-                                </div>
-                                </div>
-                               
+                                    <div class="col-auto" style="height: 140px;">
+                                    <label for="CompanyNameUpdateID">Name:</label>
+                                    <div id="UpdateCompanyName"> 
+                                        <input type="text" class="form-control" name="CompanyNameUpdate" id="CompanyNameUpdateID">
+                                    </div>
+                                    </div>
                                 
-                                <div class="col-auto far-right-update-column" style="display:none">
-                                <label for="UpdateManufacturer">Update Factory Capacity:</label>
-                                <div id="UpdateManufacturer"> 
-                                    <input type="text" class="form-control" name="ManufacturerUpdate" id="ManufacturerUpdateID">
-                                </div>
-                                </div>
-                                
-                                <div class="col-auto far-right-update-column" style="display:none">
-                                <label for="UpdateDistributor">Update A Distributor Route:</label>
-                                <div id="UpdateDistributor"> 
-                                    <input type="text" class="form-control text-center" name="DistributorUpdat" id="DistributorUpdate">
-                                    <input type="text" class="form-control text-center" name="DistributorUpdate" id="DistributorUpdateID">
-                                </div>
+                                    <div class="col-auto" style="display:none; height:140px;" id="far-right-option-manufacturer">
+                                    <label for="ManufacturerUpdateID">Update Factory Capacity:</label>
+                                    <div id="UpdateManufacturer"> 
+                                        <input type="number" class="form-control" name="ManufacturerUpdate" id="ManufacturerUpdateID">
+                                    </div>
+                                    </div>
+                                    
+                                    <div class="col-auto" style="display:none; height:140px;" id="far-right-option-distributor">
+                                    <form id="UpdateDistributor"> 
+                                        <label> Update A Distributor Route: </label>
+                                        <select class="form-control mb-1" id="Select_FromCompanyID_input">
+                                            <option value="">Select From Company</option>
+                                        </select>
+                                        <select class="form-control mb-1 mt-1" id="Select_ToCompanyID_input">
+                                            <option value="">Select Current To Company</option>
+                                        </select>
+                                        <select class="form-select form-select-sm mt-1" id="Update_ToCompanyID_input">
+                                            <option value="">Change To Company</option>
+                                        </select>
+                                    </form>
+                                    </div>
+
+                                    <div class="col-auto" style="display:block; height:140px;" id="far-right-option-retailer">
+                                        <i class="fs-1 bi-shop"></i>
+                                    </div>    
                                 </div>
 
-                                <div class="col-auto far-right-update-column" style="display:none">
-                                    <img src="TimmysHeadshot.JPG" height=200></p>
-                                </div>    
+                                <div class="row d-flex justify-content-center">
+                                    <div class="col-auto"> 
+                                        <div class="alert alert-success mt-4" id="verification-update-company-info"> Submit query to see results... </div>
+                                    </div>
+                                </div>
 
+                                <div class="row d-flex justify-content-center">
+                                    <div class="col-auto"> 
+                                        <button type="button" onclick="UpdateCompanyInfoAJAX()" class="btn btn-primary disabled" id="update-company-info-button">
+                                        Update
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div> <!-- END TAB 6 -->
-
-                    <div class="tab-pane fade" id="update-transactions" role="tabpanel" aria-labelledby="update-transactions-tab">
-                        <div class="area-header">Disruption Event Distribution</div>
-
-                        <div class="card" style="height: 450px;">
-                            <div class="card-header">Distribution of Disruption Event Counts Over the Past Year</div>
-
-                            <div id="disruptEventsBarChart" style="width: 100%; height: 400px;">
-                                <p class="text-muted">Submit query to see results...</p>
-                            </div>
-                        </div>
-                    </div> <!-- END TAB 7 -->
 
                 </div> <!-- END overarching Tab Wrapper -->
             </div> <!-- END col-md-9 -->
         </div> <!-- END overarching row -->
     </div> <!-- END overarching container -->
 
-    <script>
-        //Load Company Names when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            loadCompanies();
-        });
+<script> //JavaScript for resizing Plotly graphs
 
-        function loadCompanies() {
-            fetch('distributorList.php')
-                .then(response => response.json())
-                .then(data => {
-                    const companyDropdown = document.getElementById('company_input');
-                    companyDropdown.innerHTML = '';
-                    
-                    const defaultCompanyOption = document.createElement('option');
-                    defaultCompanyOption.value = '';
-                    defaultCompanyOption.textContent = 'Select a company';
-                    companyDropdown.appendChild(defaultCompanyOption);
-                    
-                    data.company.forEach(company => {
-                        const option = document.createElement('option');
-                        option.value = company.CompanyName;
-                        option.textContent = company.CompanyName;
-                        companyDropdown.appendChild(option);
-                    });
-                })
+//Ensure graphs are properly sized when other tabs are clicked
+//Achieve this by looping through all tabs and triggering the autosize function for all tabs
+const tabElms = document.querySelectorAll('button[data-bs-toggle="tab"]');
+
+tabElms.forEach(tabElm => {
+    tabElm.addEventListener('shown.bs.tab', event => {
+        
+        const targetTabId = event.target.getAttribute('data-bs-target');
+        
+        //If the tab is active, resize the chart to fit to card dimensions
+        if (targetTabId === '#fin') {
+            const chartContainer = document.getElementById('finHealthPastYear');
+            if (chartContainer) {
+                Plotly.relayout(chartContainer, { autosize: true });
+            }
+        } 
+        else if (targetTabId === '#disrupt') {
+            const chartContainer = document.getElementById('disruptEventsBarChart');
+            if (chartContainer) {
+                Plotly.relayout(chartContainer, { autosize: true });
+            }
         }
-    </script>
-
-    <script>
-        function CheckUserInput() {
-            const company_name = document.CompanyInfoForm.CompanyName.value;
-            const start_date = document.CompanyInfoForm.StartDate.value;
-            const end_date = document.CompanyInfoForm.EndDate.value;
-
-            if (company_name == "") { alert("Please provide a company!"); return false; }
-            if (start_date == "" || end_date == "") { alert("Please provide date range!"); return false; }
-            if (start_date >= end_date) { alert("Start date must be before end date!"); return false; }
-
-            CompanyInformationAJAX(company_name, start_date, end_date);
-            return true;
+        else if (targetTabId == '#company') {
+            Plotly.relayout('ProductDiversityPieChart', { autosize: true });
         }
-    </script>
+    });
+});
+</script>
 
-    <script>
-        var my_JSON_object;
+<script>
+    //Initially disable update company info button
 
-        function CompanyInformationAJAX(company_name, start_date, end_date) {
 
-            let todays_date = new Date().toJSON().slice(0, 10);
-            one_year_ago = String(todays_date.slice(0, 4) - 1);
-            month = todays_date.slice(5, 7);
-            day = todays_date.slice(8, 10);
-            one_year_ago_from_today_date = `${one_year_ago}-${month}-${day}`;
+    //Load Company Names when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        loadCompanies();
+    });
 
-            input = company_name + "|" + start_date + "|" + end_date + "|" + todays_date + "|" + one_year_ago_from_today_date;
+    function loadCompanies() {
+        fetch('distributorList.php')
+            .then(response => response.json())
+            .then(data => {
+                const companyDropdown = document.getElementById('company_input');
+                companyDropdown.innerHTML = '';
+                
+                const defaultCompanyOption = document.createElement('option');
+                defaultCompanyOption.value = '';
+                defaultCompanyOption.textContent = 'Select a company';
+                companyDropdown.appendChild(defaultCompanyOption);
+                
+                data.company.forEach(company => {
+                    const option = document.createElement('option');
+                    option.value = company.CompanyName;
+                    option.textContent = company.CompanyName;
+                    companyDropdown.appendChild(option);
+                });
+            })
+    }
+</script>
 
-            xhtpp = new XMLHttpRequest();
+<script>
+function CheckUserInput() {
+    const company_name = document.CompanyInfoForm.CompanyName.value;
+    const start_date = document.CompanyInfoForm.StartDate.value;
+    const end_date = document.CompanyInfoForm.EndDate.value;
 
-            xhtpp.onload = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    console.log(this.responseText);
+    if (company_name == "") { alert("Please provide a company!"); return false; }
+    if (start_date == "" || end_date == "") { alert("Please provide date range!"); return false; }
+    if (start_date >= end_date) { alert("Start date must be before end date!"); return false; }
 
-                    /*
-                    my_JSON_object = JSON.parse(this.responseText);
-                    console.log(JSON.stringify(my_JSON_object));
+    CompanyInformationAJAX(company_name, start_date, end_date);
+    return true;
+}
+</script>
 
-                    //Financial Health Line chart
-                    const x_vals = my_JSON_object.pastHealthScores.map((item) => { return String(item.Quarter + " " + item.RepYear) }).map(String).reverse()
-                    const y_vals = my_JSON_object.pastHealthScores.map((item) => { return item.HealthScore }).map(Number).reverse();
+<script>
+//JSON objects
+var my_JSON_object;
+var update_companyinfo_object;
 
-                    var layout = {
-                        title: { text: 'Financial Health Status Over Past Year from Today' },
-                        xaxis: { title: { text: 'Quarter & Year' } },
-                        yaxis: { range: [25, 100], title: { text: 'Financial Health Score' } }
-                    };
+//Initiallly selected values
+var initally_selected_company_type;
+var initally_selected_company_name;
+var initally_selected_company_id;
+var initally_selected_company_tier;
+var initally_selected_factory_capacity;
 
-                    const TESTER = document.getElementById('finHealthPastYear');
-                    TESTER.innerHTML = "";
-                    Plotly.newPlot(TESTER, [{ x: x_vals, y: y_vals }], layout);
+//AJAX to call company information queries
+function CompanyInformationAJAX(company_name, start_date, end_date) {
 
-                    // Company Information
-                    document.getElementById("address").innerHTML =
-                        my_JSON_object.companyInfo[0].City + ", " + my_JSON_object.companyInfo[0].CountryName;
+    let todays_date = new Date().toJSON().slice(0, 10);
+    one_year_ago = String(todays_date.slice(0, 4) - 1);
+    month = todays_date.slice(5, 7);
+    day = todays_date.slice(8, 10);
+    one_year_ago_from_today_date = `${one_year_ago}-${month}-${day}`;
 
-                    document.getElementById("company-type").innerHTML =
-                        my_JSON_object.companyInfo[0].Type;
+    input = company_name + "|" + start_date + "|" + end_date + "|" + todays_date + "|" + one_year_ago_from_today_date;
 
-                    document.getElementById("tier-level").innerHTML =
-                        my_JSON_object.companyInfo[0].TierLevel;
+    xhtpp = new XMLHttpRequest();
 
-                    document.getElementById("financial-health-score").innerHTML =
-                        my_JSON_object.companyInfo[0].HealthScore;
+    xhtpp.onload = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            //console.log(this.responseText);
 
-                    // Other Info
-                    const otherInfoLabel = document.getElementById("otherInfoHeader");
-                    const otherInfoDiv = document.getElementById("otherInfo");
-                    otherInfoDiv.innerHTML = "";
+            //Reset all Update Company Info dropdown forms
+            document.getElementById('UpdateDistributor').querySelector('select[id="Select_FromCompanyID_input"]').innerHTML = '';
+            document.getElementById('UpdateDistributor').querySelector('select[id="Select_ToCompanyID_input"]').innerHTML = '';
+            document.getElementById('UpdateDistributor').querySelector('select[id="Update_ToCompanyID_input"]').innerHTML = '';
 
-                    if (my_JSON_object.companyInfo[0].Type === "Distributor") {
-                        otherInfoLabel.innerHTML = "Unique Routes Operated";
-                        my_JSON_object.distRoutes.forEach(item => {
-                            const li = document.createElement("li");
-                            li.className = "list-group-item";
-                            li.textContent = `From Company ID: ${item.FromCompanyID} To Company ID: ${item.ToCompanyID}`;
-                            otherInfoDiv.appendChild(li);
-                        });
-                    }
-                    if (my_JSON_object.companyInfo[0].Type === "Manufacturer") {
-                        otherInfoLabel.innerHTML = "Manufacturer Capacity";
-                        const li = document.createElement("li");
-                        li.className = "list-group-item";
-                        li.textContent = `Factory Capacity: ${my_JSON_object.companyInfo[0].FactoryCapacity}`;
-                        otherInfoDiv.appendChild(li);
-                    }
+            document.getElementById('UpdateDistributor').querySelector('select[id="Select_FromCompanyID_input"]').selectedIndex = 0;
+            document.getElementById('UpdateDistributor').querySelector('select[id="Select_ToCompanyID_input"]').selectedIndex = 0;
+            document.getElementById('UpdateDistributor').querySelector('select[id="Update_ToCompanyID_input"]').selectedIndex = 0;
+            document.getElementById('UpdateCompanyName').querySelector('input[name="CompanyNameUpdate"]').value ='';
+            document.getElementById('UpdateTier').selectedIndex = 0;
+            document.getElementById('UpdateManufacturer').querySelector('input[name="ManufacturerUpdate"]').value = '';
 
-                    // Dependencies
-                    const dependsOnDiv = document.getElementById("dependsOn");
-                    const dependedOnDiv = document.getElementById("dependedOn");
-                    dependsOnDiv.innerHTML = "";
-                    dependedOnDiv.innerHTML = "";
+            my_JSON_object = JSON.parse(this.responseText);
+            console.log(JSON.stringify(my_JSON_object));
 
-                    if (my_JSON_object.dependsOn.length > 0) {
-                        my_JSON_object.dependsOn.forEach(item => {
-                            const li = document.createElement("li");
-                            li.className = "list-group-item";
-                            li.textContent = `UpStream Company ID: ${item.UpStreamCompanyID}`;
-                            dependsOnDiv.appendChild(li);
-                        });
-                    } else {
-                        dependsOnDiv.innerHTML = '<p class="text-muted">No dependencies found</p>';
-                    }
+            //Enable user to update company info & transaction data
+            document.getElementById('update-company-info-button').className = "btn btn-primary";
 
-                    if (my_JSON_object.dependedOn.length > 0) {
-                        my_JSON_object.dependedOn.forEach(item => {
-                            const li = document.createElement("li");
-                            li.className = "list-group-item";
-                            li.textContent = `DownStream Company ID: ${item.DownStreamCompanyID}`;
-                            dependedOnDiv.appendChild(li);
-                        });
-                    } else {
-                        dependedOnDiv.innerHTML = '<p class="text-muted">No dependencies found</p>';
-                    }
+            //Save information of initially selected company
+            initally_selected_company_type = my_JSON_object.companyInfo[0]["Type"];
+            initally_selected_company_name = my_JSON_object.companyInfo[0]["CompanyName"];
+            initally_selected_company_id = my_JSON_object.companyInfo[0]["CompanyID"];
+            initally_selected_company_tier = my_JSON_object.companyInfo[0]["TierLevel"];
+            address_country = my_JSON_object.companyInfo[0]["CountryName"];
+            address_city = my_JSON_object.companyInfo[0]["City"];
+            financial_score = my_JSON_object.companyInfo[0]["HealthScore"];
 
-                    // Products
-                    const productsDiv = document.getElementById("productsSupplied");
-                    productsDiv.innerHTML = "";
-                    my_JSON_object.productsSupplied.forEach(item => {
-                        const li = document.createElement("li");
-                        li.className = "list-group-item";
-                        li.textContent = `Product Name: ${item.ProductName} Product ID: ${item.ProductID}`;
-                        productsDiv.appendChild(li);
-                    });
+            const infoDiv = document.getElementById('important-info-id');
+            infoDiv.innerHTML = "";
+            const div = document.createElement("div");
+                div.className = "list-item";
+                div.innerHTML = `<strong>Address:</strong> ${address_city}, ${address_country}<br>
+                                    <strong>Company Type:</strong> ${initally_selected_company_type}<br>
+                                    <strong>Tier Level:</strong> ${initally_selected_company_tier}<br>
+                                    <strong>Most Recent Financial Health Score:</strong> ${financial_score}`;
+                infoDiv.appendChild(div);
 
-                    // Product Diversity Pie
-                    const pieDiv = document.getElementById("ProductDiversityPieChart");
-                    pieDiv.innerHTML = "";
-                    if (my_JSON_object.productDiversity.length > 0) {
-                        const categories = my_JSON_object.productDiversity.map(item => item.Category);
-                        const counts = my_JSON_object.productDiversity.map(item => parseInt(item["COUNT(*)"]));
-                        Plotly.newPlot('ProductDiversityPieChart', [{
-                            values: counts,
-                            labels: categories,
-                            type: 'pie'
-                        }]);
-                    }
+            //Depending on type, enable user to update the factory capacity, update the distributor routes, or see a retailer picture
+            if (initally_selected_company_type == "Manufacturer") {
+                initally_selected_factory_capacity = my_JSON_object.companyInfo[0]["FactoryCapacity"];
+                document.getElementById('far-right-option-manufacturer').style.display = "block";
+                document.getElementById('far-right-option-distributor').style.display = "none";
+                document.getElementById('far-right-option-retailer').style.display = "none";
+            }
 
-                    // Shipping
-                    const shippingDiv = document.getElementById("shipmentDetails");
-                    shippingDiv.innerHTML = "";
-                    my_JSON_object.shipping.forEach(item => {
-                        const div = document.createElement("div");
-                        div.className = "list-item";
-                        div.innerHTML = `<strong>Shipment ID:</strong> ${item.ShipmentID}<br>
-                                         <strong>Date Delivered:</strong> ${item.ActualDate}<br>
-                                         <strong>Product & Quantity:</strong> ${item.ProductID}, ${item.Quantity}`;
-                        shippingDiv.appendChild(div);
-                    });
+            if (initally_selected_company_type == "Distributor") {
+                document.getElementById('far-right-option-manufacturer').style.display = "none";
+                document.getElementById('far-right-option-distributor').style.display = "block";
+                document.getElementById('far-right-option-retailer').style.display = "none";
+                LoadDistributorDropDownAJAX();
+            }
 
-                    // Receiving
-                    const receivingDiv = document.getElementById("receivingDetails");
-                    receivingDiv.innerHTML = "";
-                    my_JSON_object.receivings.forEach(item => {
-                        const div = document.createElement("div");
-                        div.className = "list-item";
-                        div.innerHTML = `<strong>Receiving ID:</strong> ${item.ReceivingID}<br>
-                                         <strong>Date Received:</strong> ${item.ReceivedDate}<br>
-                                         <strong>Product & Quantity:</strong> ${item.ProductID}, ${item.QuantityReceived}`;
-                        receivingDiv.appendChild(div);
-                    });
+            if (initally_selected_company_type == "Retailer") {
+                document.getElementById('far-right-option-manufacturer').style.display = "none";
+                document.getElementById('far-right-option-distributor').style.display = "none";
+                document.getElementById('far-right-option-retailer').style.display = "block";
+            }
 
-                    // Adjustments
-                    const adjustmentsDiv = document.getElementById("adjustmentDetails");
-                    adjustmentsDiv.innerHTML = "";
-                    my_JSON_object.adjustments.forEach(item => {
-                        const div = document.createElement("div");
-                        div.className = "list-item";
-                        div.innerHTML = `<strong>Adjustment ID:</strong> ${item.AdjustmentID}<br>
-                                         <strong>Date:</strong> ${item.AdjustmentDate}<br>
-                                         <strong>Product & Quantity:</strong> ${item.ProductID}, ${item.QuantityChange}<br>
-                                         <strong>Reason:</strong> ${item.Reason}`;
-                        adjustmentsDiv.appendChild(div);
-                    });
+            //Financial Health Line chart
+            const x_vals = my_JSON_object.pastHealthScores.map((item) => { return String(item.Quarter + " " + item.RepYear) }).map(String).reverse()
+            const y_vals = my_JSON_object.pastHealthScores.map((item) => { return item.HealthScore }).map(Number).reverse();
 
-                    // KPI
-                    document.getElementById("onTimeRate").innerHTML =
-                        (my_JSON_object.otr[0].OTR || "N/A") + "%";
+            var layout = {
+                title: { text: 'Financial Health Status Over Past Year from Today' },
+                xaxis: { title: { text: 'Quarter & Year' } },
+                yaxis: { range: [25, 100], title: { text: 'Financial Health Score' } }
+            };
 
-                    document.getElementById("avgDelay").innerHTML =
-                        (my_JSON_object.shipmentDetails[0].avgDelay || "N/A") + " days";
+            const TESTER = document.getElementById('finHealthPastYear');
+            TESTER.innerHTML = "";
+            Plotly.newPlot(TESTER, [{ x: x_vals, y: y_vals }], layout);
 
-                    document.getElementById("stdDelay").innerHTML =
-                        (my_JSON_object.shipmentDetails[0].stdDelay || "N/A") + " days";
+            // Other Info
+            const otherInfoLabel = document.getElementById("otherInfoHeader");
+            const otherInfoDiv = document.getElementById("otherInfo");
+            otherInfoDiv.innerHTML = "";
 
-                    // Disruption Events
-                    const disruptionDiv = document.getElementById("disruptEvents");
-                    disruptionDiv.innerHTML = "";
-                    my_JSON_object.disruptionEvents.forEach(item => {
-                        const li = document.createElement("li");
-                        li.className = "list-group-item";
-                        li.textContent =
-                            `${item.CategoryName} | ID: ${item.EventID} | Date: ${item.EventDate} → Recovery: ${item.EventRecoveryDate}`;
-                        disruptionDiv.appendChild(li);
-                    });
+            if (my_JSON_object.companyInfo[0].Type === "Distributor") {
+                otherInfoLabel.innerHTML = "Unique Routes Operated";
+                my_JSON_object.distRoutes.forEach(item => {
+                    const li = document.createElement("li");
+                    li.className = "list-group-item";
+                    li.innerHTML = `From Company ID: ${item.FromCompanyID} | To Company ID: ${item.ToCompanyID} <br>
+                                    From ${item.FromCompanyName} To ${item.ToCompanyName}`;
+                    otherInfoDiv.appendChild(li);
+                });
+            }
+            if (my_JSON_object.companyInfo[0].Type === "Manufacturer") {
+                otherInfoLabel.innerHTML = "Manufacturer Capacity";
+                const li = document.createElement("li");
+                li.className = "list-group-item";
+                li.textContent = `Factory Capacity: ${my_JSON_object.companyInfo[0].FactoryCapacity}`;
+                otherInfoDiv.appendChild(li);
+            }
 
-                    // Disruption Distribution Bar Chart
-                    const distDiv = document.getElementById("disruptEventsBarChart");
-                    distDiv.innerHTML = "";
-                    if (my_JSON_object.disruptionEventsDistribution.length > 0) {
-                        const categories = my_JSON_object.disruptionEventsDistribution.map(item => item.CategoryName);
-                        const counts = my_JSON_object.disruptionEventsDistribution.map(item => parseInt(item.NumEvents));
-                        Plotly.newPlot('disruptEventsBarChart', [{
-                            x: categories,
-                            y: counts,
-                            type: 'bar',
-                            marker: { color: '#0f6fab' }
-                        }]);
-                    }
-*/
-                } // END readyState if
-            } // END onload function
+            if (my_JSON_object.companyInfo[0].Type === "Retailer") {
+                otherInfoLabel.innerHTML = "No Additional Information for This Retailer";
+            }
 
-            xhtpp.open("GET", "SCMhomepage_queries.php?q=" + input, true);
-            xhtpp.send();
-        } // END CompanyInformationAJAX
-    </script>
+            // Dependencies
+            const dependsOnDiv = document.getElementById("dependsOn");
+            const dependedOnDiv = document.getElementById("dependedOn");
+            dependsOnDiv.innerHTML = "";
+            dependedOnDiv.innerHTML = "";
+
+            if (my_JSON_object.dependsOn.length > 0) {
+                my_JSON_object.dependsOn.forEach(item => {
+                    const li = document.createElement("li");
+                    li.className = "list-group-item";
+                    li.innerHTML = `Upstream Company ID: ${item.UpStreamCompanyID}<br>
+                                    Upstream Company Name: ${item.CompanyName}`;
+                    dependsOnDiv.appendChild(li);
+                });
+            } else {
+                dependsOnDiv.innerHTML = '<p class="text-muted">No dependencies found</p>';
+            }
+
+            if (my_JSON_object.dependedOn.length > 0) {
+                my_JSON_object.dependedOn.forEach(item => {
+                    const li = document.createElement("li");
+                    li.className = "list-group-item";
+                    li.innerHTML = `Downstream Company ID: ${item.DownStreamCompanyID}<br>
+                                    Downstream Company Name: ${item.CompanyName}`;
+                    dependedOnDiv.appendChild(li);
+                });
+            } else {
+                dependedOnDiv.innerHTML = '<p class="text-muted">No dependencies found</p>';
+            }
+
+            // Products
+            const productsDiv = document.getElementById("productsSupplied");
+            productsDiv.innerHTML = "";
+            my_JSON_object.productsSupplied.forEach(item => {
+                const li = document.createElement("li");
+                li.className = "list-group-item";
+                li.textContent = `Product Name: ${item.ProductName} Product ID: ${item.ProductID}`;
+                productsDiv.appendChild(li);
+            });
+
+            // Product Diversity Pie
+            const pieDiv = document.getElementById("ProductDiversityPieChart");
+            pieDiv.innerHTML = "";
+            if (my_JSON_object.productDiversity.length > 0) {
+                const categories = my_JSON_object.productDiversity.map(item => item.Category);
+                const counts = my_JSON_object.productDiversity.map(item => parseInt(item["COUNT(*)"]));
+                Plotly.newPlot('ProductDiversityPieChart', [{
+                    values: counts,
+                    labels: categories,
+                    type: 'pie'
+                }]);
+            }
+
+            // Shipping
+            const shippingDiv = document.getElementById("shipmentDetails");
+            shippingDiv.innerHTML = "";
+            my_JSON_object.shipping.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "list-item";
+                div.innerHTML = `<strong>Shipment ID:</strong> ${item.ShipmentID}<br>
+                                    <strong>Date Delivered:</strong> ${item.ActualDate}<br>
+                                    <strong>Product & Quantity:</strong> ${item.ProductID}, ${item.Quantity}`;
+                shippingDiv.appendChild(div);
+            });
+
+            // Receiving
+            const receivingDiv = document.getElementById("receivingDetails");
+            receivingDiv.innerHTML = "";
+            my_JSON_object.receivings.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "list-item";
+                div.innerHTML = `<strong>Receiving ID:</strong> ${item.ReceivingID}<br>
+                                    <strong>Date Received:</strong> ${item.ReceivedDate}<br>
+                                    <strong>Product & Quantity:</strong> ${item.ProductID}, ${item.QuantityReceived}`;
+                receivingDiv.appendChild(div);
+            });
+
+            // Adjustments
+            const adjustmentsDiv = document.getElementById("adjustmentDetails");
+            adjustmentsDiv.innerHTML = "";
+            my_JSON_object.adjustments.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "list-item";
+                div.innerHTML = `<strong>Adjustment ID:</strong> ${item.AdjustmentID}<br>
+                                    <strong>Date:</strong> ${item.AdjustmentDate}<br>
+                                    <strong>Product & Quantity:</strong> ${item.ProductID}, ${item.QuantityChange}<br>
+                                    <strong>Reason:</strong> ${item.Reason}`;
+                adjustmentsDiv.appendChild(div);
+            });
+
+            // KPI
+            document.getElementById("onTimeRate").innerHTML =
+                (my_JSON_object.otr[0].OTR || "N/A") + "%";
+
+            document.getElementById("avgDelay").innerHTML =
+                (my_JSON_object.shipmentDetails[0].avgDelay || "N/A") + " days";
+
+            document.getElementById("stdDelay").innerHTML =
+                (my_JSON_object.shipmentDetails[0].stdDelay || "N/A") + " days";
+
+            // Disruption Events
+            const disruptionDiv = document.getElementById("disruptEvents");
+            disruptionDiv.innerHTML = "";
+            my_JSON_object.disruptionEvents.forEach(item => {
+                const li = document.createElement("li");
+                li.className = "list-group-item";
+                li.textContent =
+                    `${item.CategoryName} | ID: ${item.EventID} | Date: ${item.EventDate} → Recovery: ${item.EventRecoveryDate}`;
+                disruptionDiv.appendChild(li);
+            });
+
+            // Disruption Distribution Bar Chart
+            const distDiv = document.getElementById("disruptEventsBarChart");
+            distDiv.innerHTML = "";
+            if (my_JSON_object.disruptionEventsDistribution.length > 0) {
+                const categories = my_JSON_object.disruptionEventsDistribution.map(item => item.CategoryName);
+                const counts = my_JSON_object.disruptionEventsDistribution.map(item => parseInt(item.NumEvents));
+                Plotly.newPlot('disruptEventsBarChart', [{
+                    x: categories,
+                    y: counts,
+                    type: 'bar',
+                    marker: { color: '#0f6fab' }
+                }]);
+            }
+
+        } // END readyState if
+    } // END onload function
+
+    xhtpp.open("GET", "SCMhomepage_queries.php?q=" + input, true);
+    xhtpp.send();
+} // END CompanyInformationAJAX
+
+function UpdateCompanyInfoAJAX() {
+    let update_tier = document.getElementById('UpdateTier').value;
+    let update_name = document.getElementById('UpdateCompanyName').querySelector('input[name="CompanyNameUpdate"]').value;
+
+    //Maintain the tier & name if they aren't selected
+    if (update_tier == "Maintain Tier"){
+        update_tier = initally_selected_company_tier;
+    }
+
+    if (update_name == ""){
+        update_name = initally_selected_company_name;
+    }
+
+    if (initally_selected_company_type == "Manufacturer") {
+        update_factory_capacity = document.getElementById('UpdateManufacturer').querySelector('input[name="ManufacturerUpdate"]').value;
+        if (update_factory_capacity == ""){
+            update_factory_capacity = initally_selected_factory_capacity;
+        }
+
+        q_input = initally_selected_company_type + "|" + initally_selected_company_id + "|" + update_name + "|" + update_tier + "|" + update_factory_capacity;
+    }
+
+    else if (initally_selected_company_type == "Distributor") {
+        same_from_company = document.getElementById('UpdateDistributor').querySelector('select[id="Select_FromCompanyID_input"]').value;
+        prior_to_company = document.getElementById('UpdateDistributor').querySelector('select[id="Select_ToCompanyID_input"]').value;
+        update_to_company = document.getElementById('UpdateDistributor').querySelector('select[id="Update_ToCompanyID_input"]').value;
+
+        if (same_from_company == "Select From Company" || prior_to_company == "Select Current To Company" || update_to_company == "Change To Company") {
+            q_input = "DistributorMaintainRoutes" + "|" + initally_selected_company_id + "|" + update_name + "|" + update_tier;
+        }
+        else{
+            q_input = "DistributorUpdateRoutes" + "|" + initally_selected_company_id + "|" + update_name + "|" + update_tier + "|" + same_from_company + "|" + prior_to_company + "|" + update_to_company;
+        }
+    }
+
+    else if (initally_selected_company_type == "Retailer") {
+        q_input = initally_selected_company_type + "|" + initally_selected_company_id + "|" + update_name + "|" + update_tier;
+    }
+
+    console.log(q_input);
+
+    xhtpp = new XMLHttpRequest();
+    xhtpp.onload = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+            document.getElementById('verification-update-company-info').innerText = 'Company Information Updated Successfully!'
+        };
+    }
+    const url = "SCM_update_queries.php?q=" + encodeURIComponent(q_input);
+    xhtpp.open("GET", url, true);
+    xhtpp.send(); 
+}
+
+function LoadDistributorDropDownAJAX() {
+    const from_id_dropdown = document.getElementById('UpdateDistributor').querySelector('select[id="Select_FromCompanyID_input"]');
+    const to_id_dropdown = document.getElementById('UpdateDistributor').querySelector('select[id="Select_ToCompanyID_input"]');
+    const update_to_id_dropdown = document.getElementById('UpdateDistributor').querySelector('select[id="Update_ToCompanyID_input"]');
+    
+    const distributor_id = initally_selected_company_id; //Pass DistributorID into the query
+    q_input = distributor_id + '|' + "Distributor";
+
+    xhtpp = new XMLHttpRequest();
+    xhtpp.onload = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+            const data = JSON.parse(this.responseText);
+            
+            //From Company
+            const initial_from = document.createElement('option');
+            initial_from.textContent="Select From Company";
+            from_id_dropdown.appendChild(initial_from);
+            if(data.FromCompany.length > 0){ //If the distributor has routes, list their partners
+                data.FromCompany.forEach(FromID => {
+                    const from_id_option = document.createElement('option');
+                    from_id_option.value = FromID.CompanyName;
+                    from_id_option.textContent = FromID.CompanyName;
+                    from_id_dropdown.appendChild(from_id_option);
+                });
+            } else{ //If the distributor has no routes, state such
+            const from_id_option = document.createElement('option');
+            from_id_option.value = '';
+            from_id_option.textContent = 'There are no routes to update';
+            from_id_dropdown.appendChild(from_id_option);
+            }
+
+            //To Company
+            const initial_to = document.createElement('option');
+            initial_to.textContent="Select Current To Company";
+            to_id_dropdown.appendChild(initial_to);
+            if(data.ToCompany.length > 0){ //If the distributor has routes, list the current destinations
+                data.ToCompany.forEach(ToID => {
+                    const to_id_option = document.createElement('option');
+                    to_id_option.value = ToID.CompanyName;
+                    to_id_option.textContent = ToID.CompanyName;
+                    to_id_dropdown.appendChild(to_id_option);
+                });
+            } else{ //If the distributor has no routes, state such
+            const to_id_option = document.createElement('option');
+            to_id_option.value = '';
+            to_id_option.textContent = 'There are no routes to update';
+            to_id_dropdown.appendChild(from_id_option);
+            }
+
+            //Update To Company
+            const update_initial_from = document.createElement('option');
+            update_initial_from.textContent="Change To Company";
+            update_to_id_dropdown.appendChild(update_initial_from);
+            if(data.UpdateToCompany.length > 0){ //If the distributor has routes, list all non-distributor companies as potential destinations
+                data.UpdateToCompany.forEach(UpdateID => {
+                    const update_id_option = document.createElement('option');
+                    update_id_option.value = UpdateID.CompanyName;
+                    update_id_option.textContent = UpdateID.CompanyName;
+                    update_to_id_dropdown.appendChild(update_id_option);
+                });
+            } else{ //If the distributor has no routes, state such
+            const update_id_option = document.createElement('option');
+            update_id_option.value = '';
+            update_id_option.textContent = 'There are no routes to update';
+            update_to_id_dropdown.appendChild(update_id_option);
+            }
+        };
+    }
+    const url = "SCM_home_dropdown_queries.php?q=" + encodeURIComponent(q_input);
+    xhtpp.open("GET", url, true);
+    xhtpp.send();
+}
+</script>
 
 </body>
 </html>
