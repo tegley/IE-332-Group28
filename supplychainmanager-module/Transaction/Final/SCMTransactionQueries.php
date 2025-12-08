@@ -1,8 +1,8 @@
 <?php
 $servername = "mydb.itap.purdue.edu";
 
-$username = "cox447";//yourCAREER/groupusername
-$password = "LunaZuna704";//yourgrouppassword
+$username = "g1151938";//yourCAREER/groupusername
+$password = "Purdue28";//yourgrouppassword
 $database = $username;//ITaPsetupdatabasename=yourcareerlogin
 
 $conn = new mysqli($servername, $username, $password, $database);
