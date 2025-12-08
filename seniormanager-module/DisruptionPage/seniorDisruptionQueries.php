@@ -102,12 +102,49 @@ if (!empty($tmp[0])) { //NOT ALL TABS NEED THIS FILTER WHICH IS WHY IT IS OPTION
     }
     //   echo json_encode($frequency);
 
+    //Criticality Query
+    $companyQuery = "SELECT c.CompanyID, c.CompanyName FROM Company c;";
+    //  echo $companyNameQuery;
+    //Execute the SQL query
+    $resultcompany = mysqli_query($conn, $companyQuery);
+    // Convert the table into individual rows and reformat.
+    $company = []; //Creating shipping Array
+    while ($row = mysqli_fetch_array($resultcompany, MYSQLI_ASSOC)) {
+    $company[] = $row;
+    }
+    // echo json_encode($company);
+    $length = count($company);
+    // echo $length;
+    $final_results = []; //Array of results
+    for ($i = 0; $i< $length; $i++){
+        $my_i_result = []; //resetting array
+        $companyID = $company[$i]['CompanyID'];
+    $query_statement = "SELECT c.CompanyName, COUNT( DISTINCT d.DownstreamCompanyID) * (SELECT COUNT(*) FROM Company x 
+        JOIN ImpactsCompany i ON i.AffectedCompanyID = x.CompanyID JOIN DisruptionEvent e ON e.EventID = i.EventID WHERE x.CompanyID = '{$companyID}' AND i.ImpactLevel = 'High') AS Criticality
+        FROM Company c JOIN DependsOn d ON d.UpstreamCompanyID = c.CompanyID WHERE c.CompanyID = '{$companyID}';";
+    $result = mysqli_query($conn, $query_statement);
+    while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+        $my_i_result[] = $row;
+        }
+    $final_results[$i] = [
+        "CompanyID" => $companyID,
+        "CompanyName" => $company[$i]['CompanyName'],
+        "Criticality" => $my_i_result[0]['Criticality']
+    ];
+    }
+    // echo $my_i_result[0];
+    // for ($j=0; $j < count($final_results); $j++){
+    //     echo "'{$final_results[$j]}'";
+    // }
+    // echo json_encode($final_results);
+
 
          //Making JSON Object
     $seniorDisruptionResults = [
         "companyAffectedByEvent" => $companyAffectedByEvent,
         "regionalOverview" => $regionalOverview,
-        "frequency" => $frequency
+        "frequency" => $frequency,
+        "criticality" => $final_results
     ];
 
     echo json_encode($seniorDisruptionResults);
