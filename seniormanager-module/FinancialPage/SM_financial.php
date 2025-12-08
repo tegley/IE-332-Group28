@@ -192,7 +192,7 @@ $user_FullName = $_SESSION['FullName'];
                         <div class="row">
 
                             <div class="col-md-6">
-                                <div class="card" style="height: 350px;">
+                                <div class="card" style="height: 800px;">
                                     <div class="card-header">Average Financial Health of Companies</div>
                                     <ul class="list-group list-group-flush" id="typeHealthList" style="max-height:700px; overflow-y: auto;">
                                         <p class="text-muted">Submit query to see results...</p>
@@ -201,7 +201,7 @@ $user_FullName = $_SESSION['FullName'];
                             </div>
 
                             <div class="col-md-6">
-                                <div class="card" style="height: 350px;">
+                                <div class="card" style="height: 800px;">
                                     <div class="card-header">Visualization of Average Financial Health Scores</div>
                                     <div id="typeHealthBarChart" style="height: 300px;">
                                         <p class="text-muted">Submit query to see results...</p>
@@ -353,7 +353,8 @@ $user_FullName = $_SESSION['FullName'];
     <script>
         //Load Company Names when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            loadCompanies();
+            LoadTypeHealth('2019-09-09', '2025-09-09', '');
+            LoadRegionFinancials('Continent', '')
         });
 
         function LoadRegionList(region) {
@@ -695,90 +696,90 @@ $user_FullName = $_SESSION['FullName'];
 
         function LoadRegionFinancials(regionType, region) {
 
-    const input = regionType + "|" + region;
+            const input = regionType + "|" + region;
 
-    xhtpp = new XMLHttpRequest();
+            xhtpp = new XMLHttpRequest();
 
-    xhtpp.onload = function () {
+            xhtpp.onload = function () {
 
-        if (this.readyState == 4 && this.status == 200) {
+                if (this.readyState == 4 && this.status == 200) {
 
-            data = JSON.parse(this.responseText);
-            console.log(JSON.stringify(data));
+                    data = JSON.parse(this.responseText);
+                    console.log(JSON.stringify(data));
 
-            const finHealthDiv = document.getElementById("regionHealthList");
-            finHealthDiv.innerHTML = "";
+                    const finHealthDiv = document.getElementById("regionHealthList");
+                    finHealthDiv.innerHTML = "";
 
-            if (data.length > 0) {
-                data.forEach(item => {
-                    const div = document.createElement("div");
-                    div.className = "list-item";
-                    div.innerHTML = `
-                        <strong>Company Name:</strong> ${item.CompanyName}<br>
-                        <strong>Average Health Score:</strong> ${item.avgHealth}<br>
-                        <strong>Country:</strong> ${item.CountryName}<br>
-                        <strong>Continent:</strong> ${item.ContinentName}
-                    `;
+                    if (data.length > 0) {
+                        data.forEach(item => {
+                            const div = document.createElement("div");
+                            div.className = "list-item";
+                            div.innerHTML = `
+                                <strong>Company Name:</strong> ${item.CompanyName}<br>
+                                <strong>Average Health Score:</strong> ${item.avgHealth}<br>
+                                <strong>Country:</strong> ${item.CountryName}<br>
+                                <strong>Continent:</strong> ${item.ContinentName}
+                            `;
 
-                    div.addEventListener('click', function() {
-                        document.querySelectorAll('.list-item').forEach(el => el.style.backgroundColor = '#f8f9fa');
-                        this.style.backgroundColor = '#e3f2fd';
-                        CompanyInformationAJAX(item.CompanyName);
-                    });
+                            div.addEventListener('click', function() {
+                                document.querySelectorAll('.list-item').forEach(el => el.style.backgroundColor = '#f8f9fa');
+                                this.style.backgroundColor = '#e3f2fd';
+                                CompanyInformationAJAX(item.CompanyName);
+                            });
 
-                    finHealthDiv.appendChild(div);
-                });
-            } else {
-                finHealthDiv.innerHTML = '<p class="text-muted">No health data found</p>';
-            }
+                            finHealthDiv.appendChild(div);
+                        });
+                    } else {
+                        finHealthDiv.innerHTML = '<p class="text-muted">No health data found</p>';
+                    }
 
+                }
+            };
+
+            console.log("Sending: seniorRegionalFinancesQueries.php?q=" + input);
+            xhtpp.open("GET", "seniorRegionalFinancesQueries.php?q=" + input, true);
+            xhtpp.send();
         }
-    };
-
-    console.log("Sending: seniorRegionalFinancesQueries.php?q=" + input);
-    xhtpp.open("GET", "seniorRegionalFinancesQueries.php?q=" + input, true);
-    xhtpp.send();
-}
 
 
-function CompanyInformationAJAX(company_name) {
-    input = company_name;
-    xhtpp = new XMLHttpRequest();
-    xhtpp.onload = function () {
-    if (this.readyState == 4 && this.status == 200) {
-        my_JSON_object = JSON.parse(this.responseText);
-        console.log(JSON.stringify(my_JSON_object));
-    
-        //Company Information - Important Info
-        const companyInfoDiv = document.getElementById("companyInfo");
-        companyInfoDiv.innerHTML = ""; //Clear out placeholder
-        address = String(my_JSON_object.companyInfo[0].City) + ", " + String(my_JSON_object.companyInfo[0].CountryName);
-    
-        var div1 = document.createElement("div");
-        div1.className = "list-item";
-        div1.innerHTML = `<strong>Company Name:</strong> ${my_JSON_object.companyInfo[0].CompanyName}`;
-        companyInfoDiv.appendChild(div1);
-        var li5 = document.createElement("div");
-        li5.className = "list-item";
-        li5.innerHTML = `<strong>CompanyID:</strong> ${my_JSON_object.companyInfo[0].CompanyID}`;
-        companyInfoDiv.appendChild(li5);
-        var li2 = document.createElement("div");
-        li2.className = "list-item";
-        li2.innerHTML = `<strong>Company Address:</strong> ${address}`;
-        companyInfoDiv.appendChild(li2);
-        var li3 = document.createElement("div");
-        li3.className = "list-item";
-        li3.innerHTML = `<strong>Company Type:</strong> ${my_JSON_object.companyInfo[0].Type}`;
-        companyInfoDiv.appendChild(li3);
-        var li4 = document.createElement("div");
-        li4.className = "list-item";
-        li4.innerHTML = `<strong>Company Tier:</strong> ${my_JSON_object.companyInfo[0].TierLevel}`;
-        companyInfoDiv.appendChild(li3);    
-    }
-    };
-    xhtpp.open("GET", "SCMhomepage_queries.php?q=" + input, true);
-    console.log("Sending request with q=" + input);
-    xhtpp.send();
+        function CompanyInformationAJAX(company_name) {
+            input = company_name;
+            xhtpp = new XMLHttpRequest();
+            xhtpp.onload = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                my_JSON_object = JSON.parse(this.responseText);
+                console.log(JSON.stringify(my_JSON_object));
+
+                //Company Information - Important Info
+                const companyInfoDiv = document.getElementById("companyInfo");
+                companyInfoDiv.innerHTML = ""; //Clear out placeholder
+                address = String(my_JSON_object.companyInfo[0].City) + ", " + String(my_JSON_object.companyInfo[0].CountryName);
+
+                var div1 = document.createElement("div");
+                div1.className = "list-item";
+                div1.innerHTML = `<strong>Company Name:</strong> ${my_JSON_object.companyInfo[0].CompanyName}`;
+                companyInfoDiv.appendChild(div1);
+                var li5 = document.createElement("div");
+                li5.className = "list-item";
+                li5.innerHTML = `<strong>CompanyID:</strong> ${my_JSON_object.companyInfo[0].CompanyID}`;
+                companyInfoDiv.appendChild(li5);
+                var li2 = document.createElement("div");
+                li2.className = "list-item";
+                li2.innerHTML = `<strong>Company Address:</strong> ${address}`;
+                companyInfoDiv.appendChild(li2);
+                var li3 = document.createElement("div");
+                li3.className = "list-item";
+                li3.innerHTML = `<strong>Company Type:</strong> ${my_JSON_object.companyInfo[0].Type}`;
+                companyInfoDiv.appendChild(li3);
+                var li4 = document.createElement("div");
+                li4.className = "list-item";
+                li4.innerHTML = `<strong>Company Tier:</strong> ${my_JSON_object.companyInfo[0].TierLevel}`;
+                companyInfoDiv.appendChild(li3);    
+            }
+            };
+            xhtpp.open("GET", "supplychainmanager_homepage_queries.php?q=" + input, true);
+            console.log("Sending request with q=" + input);
+            xhtpp.send();
 }
     </script>
 
