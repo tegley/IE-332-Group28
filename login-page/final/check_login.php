@@ -1,8 +1,8 @@
 <?php
 $servername="mydb.itap.purdue.edu";
 
-$username="tegley";//yourCAREER/groupusername
-$password="#TurboCoder6412!!";//yourgrouppassword
+$username = "g1151938";//yourCAREER/groupusername
+$password = "Purdue28";//yourgrouppassword
 $database=$username;//ITaPsetupdatabasename=yourcareerlogin
 
 $conn=new mysqli($servername,$username,$password,$database);
@@ -44,3 +44,4 @@ else {
     }
 }
 ?>
+
