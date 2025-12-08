@@ -7,8 +7,8 @@ echo $query;
 
 $servername = "mydb.itap.purdue.edu";
 
-$username = "tegley";//yourCAREER/groupusername
-$password = "#TurboCoder6412!!";//yourgrouppassword
+$username = "g1151938";//yourCAREER/groupusername
+$password = "Purdue28";//yourgrouppassword
 $database = $username;//ITaPsetupdatabasename=yourcareerlogin
 
 $conn = new mysqli($servername, $username, $password, $database);
@@ -36,4 +36,5 @@ for ($j=0; $j < count($final_results); $j++){
     echo "'{$final_results[$j]}'";
 }
 echo json_encode($final_results);
+
 ?>
