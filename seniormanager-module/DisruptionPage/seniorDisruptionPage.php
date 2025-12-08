@@ -737,5 +737,3 @@
             Plotly.newPlot(StackedBarChart, data, layout);
             }
     </script>
-
-
