@@ -233,7 +233,7 @@ $user_FullName = $_SESSION['FullName'];
                                 <!-- Important Info -->
                                 <div class="col-md-6">
                                     <div class="card">
-                                        <div class="card-header">Important Info</div>
+                                        <div class="card-header">Important Information</div>
 
                                         <div class="card-body" id="important-info-id">
                                         </div>
