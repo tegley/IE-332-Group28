@@ -168,7 +168,7 @@
                                 </div>
 
                                 <div class="col-12 mt-3 d-flex justify-content-center">
-                                    <button type="button" class="btn btn-primary" onclick="if (CheckUserInput()) updateDropDowns(); LoadRegionDisruptions(document.getElementById('regionType_input').value, document.getElementById('region_input').value);">
+                                    <button type="button" class="btn btn-primary" onclick="if (CheckUserInput()) LoadRegionDisruptions(document.getElementById('regionType_input').value, document.getElementById('region_input').value);">
                                         Submit
                                     </button>
                                 </div>
@@ -298,16 +298,16 @@
 
                                 <div class="col-md-6">
                                     <label class="form-label">Start Date</label>
-                                    <input type="month" id="freqStartDate" class="form-control">
+                                    <input type="date" id="freqStartDate" class="form-control">
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label">End Date</label>
-                                    <input type="month" id="freqEndDate" class="form-control">
+                                    <input type="date" id="freqEndDate" class="form-control">
                                 </div>
 
                                 <div class="col-12 mt-3 d-flex justify-content-center">
-                                    <button class="btn btn-primary px-4" onclick="if (ValidateFrequencyTab()) LoadDisruptionFrequency();">
+                                    <button class="btn btn-primary px-4" onclick="if (ValidateFrequencyTab()) LoadDisruptionFrequency(document.getElementById('freqStartDate').value,document.getElementById('freqEndDate').value);">
                                         Submit
                                     </button>
                                 </div>
@@ -316,12 +316,12 @@
                         </div>
 
                         <!-- Frequency Line Chart -->
-                        <div class="card" style="height: 350px;">
+                        <div class="card" style="height: 600px;">
                             <div class="card-header fw-bold text-center">
                                 Disruption Frequency Line Chart
                             </div>
                             <div class="card-body">
-                                <div id="DisruptionFreqChart" style="height: 280px;">
+                                <div id="DisruptionFreqChart" style="height: 600px;">
                                     <p class="text-muted">Submit query to see results...</p>
                                 </div>
                             </div>
@@ -371,6 +371,8 @@
         //Load Company Names when page loads
         document.addEventListener('DOMContentLoaded', function() {
             loadCompanies();
+            updateDropDowns();
+            LoadDisruptionFrequency('2020-09-09', '2025-09-09');
         });
 
         function LoadRegionList(region) {
@@ -459,9 +461,9 @@
          // Update Dropdown List
         function updateDropDowns(){
             xhtpp = new XMLHttpRequest();
-            const regionType = document.getElementById("regionType_input").value;
-            const region = document.getElementById("region_input").value;
-            const input = regionType + ',' + region;
+            // const regionType = document.getElementById("regionType_input").value;
+            // const region = document.getElementById("region_input").value;
+            // const input = regionType + ',' + region;
             console.log("updateRegionsCalled!");
             
 
@@ -520,8 +522,8 @@
                     console.log("Failed");
                 }
                 }
-                xhtpp.open("GET", "regionSelectionOptions.php?q=" + input, true);
-                console.log("regionSelectionOptions.php?q=" + input); 
+                xhtpp.open("GET", "regionSelectionOptions.php", true);
+                console.log("regionSelectionOptions.php"); 
                 xhtpp.send();
         }
     </script>
@@ -629,68 +631,212 @@
         } // END AJAX
         // Filter based on disruption drop down
         function SearchByDisruptionID(disruptionID) {
-            if(!disruptionID || disruptionID.length === 0) { //If selection not selected or value is null, display all data
-                data = my_JSON_object.companyAffectedByEvent;
-                return false;
-            }
-            if(my_JSON_object.length === 0){
-                alert("Submit Query First!");
-                return false;
-            }
+            xhtpp = new XMLHttpRequest();
 
-            const data = my_JSON_object.companyAffectedByEvent.filter(item => item.EventID === disruptionID);
-            const disruptionIDtBody = document.getElementById("tbodyDisruptID");
+            xhtpp.onload = function () {
+                if (this.readyState == 4 && this.status == 200) {
+
+                    my_JSON_object = JSON.parse(this.responseText); //This JSON object is ALL of the data from the queries, not limited by region
+                    console.log("Katya is rad");
+                    console.log(JSON.stringify(my_JSON_object));
+                    const data = my_JSON_object.companyAffectedByEvent.filter(item => item.EventID === disruptionID); //Companies affected by disruption ID
+                    const disruptionIDtBody = document.getElementById("tbodyDisruptID");
                     disruptionIDtBody.innerHTML = ""; //Clear out placeholder
 
-            if (data && data.length > 0) {
-                for (let i = 0; i < data.length; i++){
-                    const row = disruptionIDtBody.insertRow();
-                    row.innerHTML = `
-                        <td>${data[i].CompanyName}</td>
-                        <td>${data[i].ImpactLevel}</td>
-                        `;
+                    if (data && data.length > 0) {
+                        for (let i = 0; i < data.length; i++){
+                            const row = disruptionIDtBody.insertRow();
+                            row.innerHTML = `
+                                <td>${data[i].CompanyName}</td>
+                                <td>${data[i].ImpactLevel}</td>
+                                `;
+                        }
+                    } else {
+                        const row = disruptionIDtBody.insertRow();
+                            row.innerHTML = `
+                                <td>No company affected</td>
+                                <td>N/A</td>
+                                `;
+                    }
                 }
-            } else {
-                const row = disruptionIDtBody.insertRow();
-                    row.innerHTML = `
-                        <td>No company affected</td>
-                        <td>N/A</td>
-                        `;
             }
+            console.log("Sending: seniorDisruptionQueries.php")
+            xhtpp.open("GET", "seniorDisruptionQueries.php", true);
+            xhtpp.send();
 
         }
         // Filter based on disruption drop down
         function SearchByCompanyName(companyName) {
-            if(!companyName || companyName.length === 0) { //If selection not selected or value is null, display all data
-                data = my_JSON_object.companyAffectedByEvent;
-                return false;
-            }
-            if(my_JSON_object.length === 0){
-                alert("Submit Query First!");
-                return false;
-            }
 
-            const data = my_JSON_object.companyAffectedByEvent.filter(item => item.CompanyName === companyName);
-            const disruptionIDtBody = document.getElementById("tbodyCompany");
-                    disruptionIDtBody.innerHTML = ""; //Clear out placeholder
+            xhtpp.onload = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    my_JSON_object = JSON.parse(this.responseText); //This JSON object is ALL of the data from the queries, not limited by region
+                    console.log("Katya is rad");
+                    console.log(JSON.stringify(my_JSON_object));
+                    const data = my_JSON_object.companyAffectedByEvent.filter(item => item.CompanyName === companyName); //Getting data ONLY regarding user's choice of company
+                    const disruptionIDtBody = document.getElementById("tbodyCompany");
+                            disruptionIDtBody.innerHTML = ""; //Clear out placeholder
 
-            if (data && data.length > 0) {
-                for (let i = 0; i < data.length; i++){
-                    const row = disruptionIDtBody.insertRow();
-                    row.innerHTML = `
-                        <td>${data[i].EventID}</td>
-                        <td>${data[i].EventDate}</td>
-                        <td>${data[i].ImpactLevel}</td>
-                        `;
+                    if (data && data.length > 0) {
+                        for (let i = 0; i < data.length; i++){
+                            const row = disruptionIDtBody.insertRow();
+                            row.innerHTML = `
+                                <td>${data[i].EventID}</td>
+                                <td>${data[i].EventDate}</td>
+                                <td>${data[i].ImpactLevel}</td>
+                                `;
+                        }
+                    } else {
+                        const row = disruptionIDtBody.insertRow();
+                            row.innerHTML = `
+                                <td>No company affected</td>
+                                <td>N/A</td>
+                                `;
+                    }
                 }
-            } else {
-                const row = disruptionIDtBody.insertRow();
-                    row.innerHTML = `
-                        <td>No company affected</td>
-                        <td>N/A</td>
-                        `;
             }
+            console.log("Sending: seniorDisruptionQueries.php")
+            xhtpp.open("GET", "seniorDisruptionQueries.php", true);
+            xhtpp.send();
         }
+         // LineChart
+        function LoadDisruptionFrequency(start_date, end_date) {
+            const input = start_date + "|" + end_date;
+            //Get DIV for display
+            const freqChartDiv = document.getElementById("DisruptionFreqChart");
+            freqChartDiv.innerHTML = ""; //Clear out placeholder
+
+            xhtpp.onload = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    my_JSON_object = JSON.parse(this.responseText);
+                    console.log("Katya is rad");
+                    console.log(JSON.stringify(my_JSON_object));
+                    
+                    // Extract the frequency data array
+                    const frequencyData = my_JSON_object.frequency;
+                    
+                    // Prepare data arrays for plotting
+                    var dates = [];
+                    var eventCounts = [];
+                    var avgDurations = [];
+                    var maxDurations = [];
+                    
+                    frequencyData.forEach(function(datum) {
+                        dates.push(new Date(datum.StartDate));
+                        eventCounts.push(parseInt(datum.EventCount));
+                        avgDurations.push(parseFloat(datum.avgDuration));
+                        maxDurations.push(parseInt(datum.maxDuration));
+                    });
+                    
+                    // Define traces for the plot
+                    var traces = [
+                        {
+                            name: 'Event Count',
+                            mode: 'lines+markers',
+                            x: dates,
+                            y: eventCounts,
+                            yaxis: 'y1',
+                            line: { color: '#1f77b4' },
+                            marker: { size: 6 }
+                        },
+                        {
+                            name: 'Avg Duration (days)',
+                            mode: 'lines+markers',
+                            x: dates,
+                            y: avgDurations,
+                            yaxis: 'y2',
+                            line: { color: '#ff7f0e' },
+                            marker: { size: 6 }
+                        },
+                        {
+                            name: 'Max Duration (days)',
+                    mode: 'lines',
+                    x: dates,
+                    y: maxDurations,
+                    yaxis: 'y2',
+                    line: { color: '#2ca02c', dash: 'dash' },
+                    opacity: 0.6
+                        }
+                    ];
+                    
+                    // Define range selector options
+                    var selectorOptions = {
+                        buttons: [
+                            {
+                                step: 'month',
+                                stepmode: 'backward',
+                                count: 1,
+                                label: '1m'
+                            },
+                            {
+                                step: 'month',
+                                stepmode: 'backward',
+                                count: 6,
+                                label: '6m'
+                            },
+                            {
+                                step: 'year',
+                                stepmode: 'todate',
+                                count: 1,
+                                label: 'YTD'
+                            },
+                            {
+                                step: 'year',
+                                stepmode: 'backward',
+                                count: 1,
+                                label: '1y'
+                            },
+                            {
+                                step: 'all',
+                                label: 'All'
+                            }
+                        ]
+                    };
+                    
+                    // Define layout
+                    var layout = {
+                        title: {
+                            text: 'Disruption Event Frequency and Duration'
+                        },
+                        xaxis: {
+                            title: 'Adjust Slide Bar to Explore Date Ranges',
+                            rangeselector: selectorOptions,
+                            rangeslider: {}
+                        },
+                        yaxis: {
+                            title: 'Number of Events',
+                            fixedrange: true,
+                            side: 'left'
+                        },
+                        yaxis2: {
+                            title: 'Average Duration (days)',
+                            overlaying: 'y',
+                            side: 'right',
+                            fixedrange: true
+                        },
+                        hovermode: 'x unified',
+                        height: 500,
+                        width: 950,
+                        showlegend: true,
+                        legend: {
+                            x: 0.01,
+                            y: 0.99,
+                            bgcolor: 'rgba(255, 255, 255, 0.8)'
+                        }
+                    };
+                    
+                    // Create the plot
+                    Plotly.newPlot('DisruptionFreqChart', traces, layout);
+                }
+                else {
+                    freqChartDiv.innerHTML = "No data in provided time range!";
+                }
+            }
+    
+    console.log("Sending: seniorDisruptionQueries.php?q=" + input);
+    xhtpp.open("GET", "seniorDisruptionQueries.php?q=" + input, true);
+    xhtpp.send();
+}
         function CreateDSDStackedBarChart(dsd_regions, dsd_other_values, dsd_high_values){
             //Placement  
             const StackedBarChart = document.getElementById('disruptionLevelChart');
