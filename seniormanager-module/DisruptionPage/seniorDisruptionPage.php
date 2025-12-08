@@ -370,8 +370,7 @@
     <script>
         //Load Company Names when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            loadCompanies();
-            updateDropDowns();
+            loadTab2Dropdowns();
             LoadDisruptionFrequency('2020-09-09', '2025-09-09');
             CriticalityFunc();
         });
@@ -424,7 +423,7 @@
             xhtpp.send();
     } //End LoadRegionList
 
-        function loadCompanies() {
+        function loadTab2Dropdowns() {
             fetch('distributorList.php')
                 .then(response => response.json())
                 .then(data => {
@@ -459,74 +458,7 @@
                     });
                 })
         }
-         // Update Dropdown List
-        function updateDropDowns(){
-            xhtpp = new XMLHttpRequest();
-            // const regionType = document.getElementById("regionType_input").value;
-            // const region = document.getElementById("region_input").value;
-            // const input = regionType + ',' + region;
-            console.log("updateRegionsCalled!");
-            
-
-            xhtpp.onload = function () {
-                if (this.readyState == 4 && this.status == 200) {
-
-                    const data = JSON.parse(this.responseText);
-                    console.log(JSON.stringify(data));
-                     const companyDropdown = document.getElementById('CompanyName_input');
-                    companyDropdown.innerHTML = '';
-                    const disruptionDropdown = document.getElementById('DisruptionID_input');
-                    disruptionDropdown.innerHTML = '';
-
-                    if(data.company.length > 0){
-                    //Populate Company Options
-                    const defaultCompanyOption = document.createElement('option');
-                    defaultCompanyOption.value = '';
-                    defaultCompanyOption.textContent = 'Select a company';
-                    companyDropdown.appendChild(defaultCompanyOption);
-                    
-                    data.company.forEach(company => {
-                        const option = document.createElement('option');
-                        option.value = company.CompanyName;
-                        option.textContent = company.CompanyName;
-                        companyDropdown.appendChild(option);
-                    });}else{
-                        const defaultCompanyOption = document.createElement('option');
-                        defaultCompanyOption.value = '';
-                        defaultCompanyOption.textContent = 'No Companies in Filter';
-                        companyDropdown.appendChild(defaultCompanyOption);
-                        const disruptionDropdown = document.getElementById('DisruptionID_input');
-                        disruptionDropdown.innerHTML = '';
-                    }
-                    if(data.disruptionID.length > 0){
-                    //Population Disruption Event IDs
-                    const defaultdisruptionOption = document.createElement('option');
-                    defaultdisruptionOption.value = '';
-                    defaultdisruptionOption.textContent = 'Select a disruptionID';
-                    disruptionDropdown.appendChild(defaultdisruptionOption);
-                    data.disruptionID.forEach(disruptionID => {
-                        const option = document.createElement('option');
-                        option.value = disruptionID.EventID;
-                        option.textContent = disruptionID.EventID;
-                        disruptionDropdown.appendChild(option);
-                    });
-                    } else{
-                    const defaultdisruptionOption = document.createElement('option');
-                    defaultdisruptionOption.value = '';
-                    defaultdisruptionOption.textContent = 'No Disruptions within Filter';
-                    disruptionDropdown.appendChild(defaultdisruptionOption);
-                    }
-
-
-                } // END onload function
-                else{
-                    console.log("Failed");
-                }
-                }
-                xhtpp.open("GET", "regionSelectionOptions.php", true);
-                console.log("regionSelectionOptions.php"); 
-                xhtpp.send();
-        }
+    
     </script>
 
     <script>
@@ -700,139 +632,141 @@
             xhtpp.open("GET", "seniorDisruptionQueries.php", true);
             xhtpp.send();
         }
-                // LineChart
-                function LoadDisruptionFrequency(start_date, end_date) {
-                    const input = start_date + "|" + end_date;
-                    //Get DIV for display
-                    const freqChartDiv = document.getElementById("DisruptionFreqChart");
-                    freqChartDiv.innerHTML = ""; //Clear out placeholder
+        // LineChart
+        function LoadDisruptionFrequency(start_date, end_date) {
+            const input = start_date + "|" + end_date;
+            console.log("Load Line Chart Called");
+            var xhtpp = new XMLHttpRequest();
+            //Get DIV for display
+            const freqChartDiv = document.getElementById("DisruptionFreqChart");
+            freqChartDiv.innerHTML = ""; //Clear out placeholder
 
-                    xhtpp.onload = function () {
-                        if (this.readyState == 4 && this.status == 200) {
-                            my_JSON_object = JSON.parse(this.responseText);
-                            console.log("Katya is rad");
-                            console.log(JSON.stringify(my_JSON_object));
-                            
-                            // Extract the frequency data array
-                            const frequencyData = my_JSON_object.frequency;
-                            
-                            // Prepare data arrays for plotting
-                            var dates = [];
-                            var eventCounts = [];
-                            var avgDurations = [];
-                            var maxDurations = [];
-                            
-                            frequencyData.forEach(function(datum) {
-                                dates.push(new Date(datum.StartDate));
-                                eventCounts.push(parseInt(datum.EventCount));
-                                avgDurations.push(parseFloat(datum.avgDuration));
-                                maxDurations.push(parseInt(datum.maxDuration));
-                            });
-                            
-                            // Define traces for the plot
-                            var traces = [
-                                {
-                                    name: 'Event Count',
-                                    mode: 'lines+markers',
-                                    x: dates,
-                                    y: eventCounts,
-                                    yaxis: 'y1',
-                                    line: { color: '#1f77b4' },
-                                    marker: { size: 6 }
-                                },
-                                {
-                                    name: 'Avg Duration (days)',
-                                    mode: 'lines+markers',
-                                    x: dates,
-                                    y: avgDurations,
-                                    yaxis: 'y2',
-                                    line: { color: '#ff7f0e' },
-                                    marker: { size: 6 }
-                                },
-                                {
-                                    name: 'Max Duration (days)',
-                            mode: 'lines',
+            xhtpp.onload = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    my_JSON_object = JSON.parse(this.responseText);
+                    console.log("Katya is rad");
+                    console.log(JSON.stringify(my_JSON_object));
+                    
+                    // Extract the frequency data array
+                    const frequencyData = my_JSON_object.frequency;
+                    
+                    // Prepare data arrays for plotting
+                    var dates = [];
+                    var eventCounts = [];
+                    var avgDurations = [];
+                    var maxDurations = [];
+                    
+                    frequencyData.forEach(function(datum) {
+                        dates.push(new Date(datum.StartDate));
+                        eventCounts.push(parseInt(datum.EventCount));
+                        avgDurations.push(parseFloat(datum.avgDuration));
+                        maxDurations.push(parseInt(datum.maxDuration));
+                    });
+                    
+                    // Define traces for the plot
+                    var traces = [
+                        {
+                            name: 'Event Count',
+                            mode: 'lines+markers',
                             x: dates,
-                            y: maxDurations,
+                            y: eventCounts,
+                            yaxis: 'y1',
+                            line: { color: '#1f77b4' },
+                            marker: { size: 6 }
+                        },
+                        {
+                            name: 'Avg Duration (days)',
+                            mode: 'lines+markers',
+                            x: dates,
+                            y: avgDurations,
                             yaxis: 'y2',
-                            line: { color: '#2ca02c', dash: 'dash' },
-                            opacity: 0.6
-                                }
-                            ];
-                            
-                            // Define range selector options
-                            var selectorOptions = {
-                                buttons: [
-                                    {
-                                        step: 'month',
-                                        stepmode: 'backward',
-                                        count: 1,
-                                        label: '1m'
-                                    },
-                                    {
-                                        step: 'month',
-                                        stepmode: 'backward',
-                                        count: 6,
-                                        label: '6m'
-                                    },
-                                    {
-                                        step: 'year',
-                                        stepmode: 'todate',
-                                        count: 1,
-                                        label: 'YTD'
-                                    },
-                                    {
-                                        step: 'year',
-                                        stepmode: 'backward',
-                                        count: 1,
-                                        label: '1y'
-                                    },
-                                    {
-                                        step: 'all',
-                                        label: 'All'
-                                    }
-                                ]
-                            };
-                            
-                            // Define layout
-                            var layout = {
-                                title: {
-                                    text: 'Disruption Event Frequency and Duration'
-                                },
-                                xaxis: {
-                                    title: 'Adjust Slide Bar to Explore Date Ranges',
-                                    rangeselector: selectorOptions,
-                                    rangeslider: {}
-                                },
-                                yaxis: {
-                                    title: 'Number of Events',
-                                    fixedrange: true,
-                                    side: 'left'
-                                },
-                                yaxis2: {
-                                    title: 'Average Duration (days)',
-                                    overlaying: 'y',
-                                    side: 'right',
-                                    fixedrange: true
-                                },
-                                hovermode: 'x unified',
-                                height: 500,
-                                width: 950,
-                                showlegend: true,
-                                legend: {
-                                    x: 0.01,
-                                    y: 0.99,
-                                    bgcolor: 'rgba(255, 255, 255, 0.8)'
-                                }
-                            };
-                            
-                            // Create the plot
-                            Plotly.newPlot('DisruptionFreqChart', traces, layout);
+                            line: { color: '#ff7f0e' },
+                            marker: { size: 6 }
+                        },
+                        {
+                            name: 'Max Duration (days)',
+                    mode: 'lines',
+                    x: dates,
+                    y: maxDurations,
+                    yaxis: 'y2',
+                    line: { color: '#2ca02c', dash: 'dash' },
+                    opacity: 0.6
                         }
-                        else {
-                            freqChartDiv.innerHTML = "No data in provided time range!";
+                    ];
+                    
+                    // Define range selector options
+                    var selectorOptions = {
+                        buttons: [
+                            {
+                                step: 'month',
+                                stepmode: 'backward',
+                                count: 1,
+                                label: '1m'
+                            },
+                            {
+                                step: 'month',
+                                stepmode: 'backward',
+                                count: 6,
+                                label: '6m'
+                            },
+                            {
+                                step: 'year',
+                                stepmode: 'todate',
+                                count: 1,
+                                label: 'YTD'
+                            },
+                            {
+                                step: 'year',
+                                stepmode: 'backward',
+                                count: 1,
+                                label: '1y'
+                            },
+                            {
+                                step: 'all',
+                                label: 'All'
+                            }
+                        ]
+                    };
+                    
+                    // Define layout
+                    var layout = {
+                        title: {
+                            text: 'Disruption Event Frequency and Duration'
+                        },
+                        xaxis: {
+                            title: 'Adjust Slide Bar to Explore Date Ranges',
+                            rangeselector: selectorOptions,
+                            rangeslider: {}
+                        },
+                        yaxis: {
+                            title: 'Number of Events',
+                            fixedrange: true,
+                            side: 'left'
+                        },
+                        yaxis2: {
+                            title: 'Average Duration (days)',
+                            overlaying: 'y',
+                            side: 'right',
+                            fixedrange: true
+                        },
+                        hovermode: 'x unified',
+                        height: 500,
+                        width: 950,
+                        showlegend: true,
+                        legend: {
+                            x: 0.01,
+                            y: 0.99,
+                            bgcolor: 'rgba(255, 255, 255, 0.8)'
                         }
-                    }
+                    };
+                    
+                    // Create the plot
+                    Plotly.newPlot('DisruptionFreqChart', traces, layout);
+                }
+                else {
+                    freqChartDiv.innerHTML = "No data in provided time range!";
+                }
+            }
             
             console.log("Sending: seniorDisruptionQueries.php?q=" + input);
             xhtpp.open("GET", "seniorDisruptionQueries.php?q=" + input, true);
@@ -840,6 +774,8 @@
         }
 
         function CriticalityFunc(){
+            console.log("CriticalityC Called");
+            var xhtpp = new XMLHttpRequest();
             xhtpp.onload = function () {
                 if (this.readyState == 4 && this.status == 200) {
 
