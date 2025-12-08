@@ -1,8 +1,8 @@
 <?php
 $servername = "mydb.itap.purdue.edu";
 
-$username = "g1151938";//yourCAREER/groupusername
-$password = "Purdue28";//yourgrouppassword
+$username = "cox447";//yourCAREER/groupusername
+$password = "LunaZuna704";//yourgrouppassword
 $database = $username;//ITaPsetupdatabasename=yourcareerlogin
 
 $conn = new mysqli($servername, $username, $password, $database);
@@ -82,7 +82,7 @@ $whereStateTab2 = "";
 
     //Puting query together and generating result
     $companyAffectedByEventQuery = "{$companyAffectedByEventSelect}{$whereState}{$whereStateTab2} ORDER BY e.EventID;";
-     echo $companyAffectedByEventQuery;
+    //  echo $companyAffectedByEventQuery;
 
     $resultcompanyAffectedByEvent = mysqli_query($conn, $companyAffectedByEventQuery);
     // Convert the table into individual rows and reformat.
@@ -159,13 +159,37 @@ $whereStateTab2 = "";
     // echo json_encode($final_results);
 
 
-         //Making JSON Object
-    $seniorDisruptionResults = [
-        "companyAffectedByEvent" => $companyAffectedByEvent,
-        "regionalOverview" => $regionalOverview,
-        "frequency" => $frequency,
-        "criticality" => $final_results
-    ];
+         //Making JSON Object based on user need
+
+    if (!empty($num[0])) { 
+        switch ($num[0]) {
+            case "1":
+                $seniorDisruptionResults = [
+                    "companyAffectedByEvent" => $companyAffectedByEvent,
+                    "regionalOverview" => $regionalOverview
+                ];
+                break;
+            case "2":
+                $seniorDisruptionResults = [
+                    "frequency" => $frequency
+                ];
+                break;
+            case "3":
+                $seniorDisruptionResults = [
+                    "criticality" => $final_results
+                ];
+                break;
+            default:
+            $seniorDisruptionResults = "";
+        }
+    }
+
+    // $seniorDisruptionResults = [
+    //     "companyAffectedByEvent" => $companyAffectedByEvent,
+    //     "regionalOverview" => $regionalOverview,
+    //     "frequency" => $frequency,
+    //     "criticality" => $final_results
+    // ];
 
     echo json_encode($seniorDisruptionResults);
    
