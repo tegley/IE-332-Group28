@@ -11,23 +11,30 @@ if ($conn->connect_error) {
     die("Connection failed:" . $conn->connect_error);
 }
 
-$tmp = $_GET['q'];
+$tmp = $_GET['q']; //['Start Date', 'End Date']
 $quer = $_GET['g']; //['Region','What drop Down was Selected']
+$info = $_GET['a']; //['Disruption or Company','ID or Name']
+$num = $_GET['b']; //['Query Needed']
 
 // Convert the comma-delimited string into an array of strings.
 $tmp = explode('|', $tmp); //["start date"| "end date"]
 // print_r($tmp);
 $quer = explode('|', $quer); ////["Region Type", "Region Selected]
 // print_r($quer);
-
+$info = explode('|', $info); ////['Disruption or Company','ID or Name']
+// print_r($info);
+$num = explode('|', $num); ////['Query Needed']
+// print_r($info);
 
 //We will need to build the queries per user selection, but the added constraints will be the same accross all queries, so we will make additions rn
 $groupByRegion = ""; //Group By
 $whereState = "";
 $whereStateEvents = "";
-if (!empty($tmp[0])) { //NOT ALL TABS NEED THIS FILTER WHICH IS WHY IT IS OPTIONAL
-    $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "') OR (e.EventRecoveryDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "') OR (e.EventDate < '" . $tmp[0] . "' AND e.EventRecoveryDate > '" . $tmp[1] . "'))";
-}
+$whereStateTab2 = "";
+
+    if (!empty($tmp[0])) { //NOT ALL TABS NEED THIS FILTER WHICH IS WHY IT IS OPTIONAL
+        $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "') OR (e.EventRecoveryDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "') OR (e.EventDate < '" . $tmp[0] . "' AND e.EventRecoveryDate > '" . $tmp[1] . "'))";
+    }
     //Group By statement added per user input USER HAS OPTION TO NOT SELECT THESE FILTERS
     if (!empty($quer[0])) { 
         switch ($quer[0]) {
@@ -46,23 +53,36 @@ if (!empty($tmp[0])) { //NOT ALL TABS NEED THIS FILTER WHICH IS WHY IT IS OPTION
         if (!empty($quer[1])) { //Adding appropriate where if user input a specific region.
             switch ($quer[0]) {
                 case "Country":
-                    $whereState = " AND l.CountryName = '" . $quer[1] . "'";
+                    $whereState = " WHERE l.CountryName = '" . $quer[1] . "'";
                     break;
                 case "Continent":
-                    $whereState = " AND l.ContinentName = '" . $quer[1] . "'";
+                    $whereState = " WHERE l.ContinentName = '" . $quer[1] . "'";
                     break;
                 default:
                 $whereState = "";
             }
         }
         // print_r($whereState);
+        if (!empty($info[0])) { 
+        switch ($info[0]) {
+            case "Disruption":
+                $whereStateTab2 = " WHERE e.EventID = '" . $info[1] . "'";
+                break;
+            case "Company":
+                $whereStateTab2 = " WHERE c.CompanyName = '" . $info[1] . "'";
+                break;
+            default:
+            $whereStateTab2 = "";
+        }
+    }
+    // print_r($whereStateTab2);
 
     //Disruption Events Impacting Companies
     $companyAffectedByEventSelect = "SELECT i.AffectedCompanyID,  c.CompanyName, i.ImpactLevel, e.EventID, e.EventDate, y.CategoryName, l.CountryName, l.ContinentName FROM ImpactsCompany i JOIN Company c ON i.AffectedCompanyID = c.CompanyID JOIN DisruptionEvent e ON e.EventID = i.EventID JOIN DisruptionCategory y ON y.CategoryID = e.CategoryID JOIN Location l ON l.LocationID = c.LocationID";
 
     //Puting query together and generating result
-    $companyAffectedByEventQuery = "{$companyAffectedByEventSelect} {$whereStateEvents}{$whereState} ORDER BY e.EventID;";
-    //  echo $companyAffectedByEventQuery;
+    $companyAffectedByEventQuery = "{$companyAffectedByEventSelect}{$whereState}{$whereStateTab2} ORDER BY e.EventID;";
+     echo $companyAffectedByEventQuery;
 
     $resultcompanyAffectedByEvent = mysqli_query($conn, $companyAffectedByEventQuery);
     // Convert the table into individual rows and reformat.
@@ -76,7 +96,7 @@ if (!empty($tmp[0])) { //NOT ALL TABS NEED THIS FILTER WHICH IS WHY IT IS OPTION
     $regionalOverviewSelect = "SELECT l.CountryName, l.ContinentName, COUNT(CASE WHEN i.ImpactLevel = 'High' THEN 0 ELSE 1 END) AS leftOverDisruption, COUNT(CASE WHEN i.ImpactLevel = 'High' THEN 1 ELSE 0 END) AS HighImpactCount FROM Company c JOIN ImpactsCompany i ON i.AffectedCompanyID = c.CompanyID JOIN DisruptionEvent e ON e.EventID = i.EventID JOIN Location l ON l.LocationID = c.LocationID";
 
     //Puting query together and generating result
-    $regionalOverviewQuery = "{$regionalOverviewSelect} {$whereStateEvents}{$whereState} {$groupByRegion};";
+    $regionalOverviewQuery = "{$regionalOverviewSelect} {$whereState} {$groupByRegion};";
     //  echo $regionalOverviewQuery;
 
     $resultregionalOverview = mysqli_query($conn, $regionalOverviewQuery);
