@@ -120,7 +120,7 @@ $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp
     // echo json_encode($disruptionEvent);
 
     //Query that explores disruption event exposure 
-    $disruptionEXPOSUREEventSelect = "SELECT COUNT(e.EventID) AS disruptionExposure, SUM(CASE WHEN i.ImpactLevel = 'High' THEN 1 ELSE 0 END) AS NumHighImpact, SUM(CASE WHEN i.ImpactLevel = 'Medium' THEN 1 ELSE 0 END) AS NumMedImpact, SUM(CASE WHEN i.ImpactLevel = 'Low' THEN 1 ELSE 0 END) AS NumLowImpact
+    $disruptionEXPOSUREEventSelect = "SELECT COUNT(e.EventID) + 2 * SUM(CASE WHEN i.ImpactLevel = 'High' THEN 1 ELSE 0 END) AS disruptionExposure, SUM(CASE WHEN i.ImpactLevel = 'High' THEN 1 ELSE 0 END) AS NumHighImpact, SUM(CASE WHEN i.ImpactLevel = 'Medium' THEN 1 ELSE 0 END) AS NumMedImpact, SUM(CASE WHEN i.ImpactLevel = 'Low' THEN 1 ELSE 0 END) AS NumLowImpact
     FROM Distributor d JOIN Company c ON d.CompanyID = c.CompanyID
     JOIN ImpactsCompany i ON i.AffectedCompanyID = d.CompanyID JOIN DisruptionEvent e ON e.EventID = i.EventID";
     $disruptionEXPOSUREEventQuery = "{$disruptionEXPOSUREEventSelect} {$whereStateEvents} AND c.CompanyName =  '" . $quer[0] . "'; "; //Will have same time range filters as user specified
