@@ -558,13 +558,14 @@
                     console.log("Bad bad bad")
                 }
             } // END onload function
-            console.log("Sending: seniorDisruptionQueries.php?q=" + input + "&g=" + g)
-            xhtpp.open("GET", "seniorDisruptionQueries.php?q=" + input + "&g=" + g, true);
+            console.log("Sending: seniorDisruptionQueries.php?q=" + input + "&g=" + g + "&a=&b=1")
+            xhtpp.open("GET", "seniorDisruptionQueries.php?q=" + input + "&g=" + g + "&a=&b=1", true);
             xhtpp.send();
         } // END AJAX
         // Filter based on disruption drop down
         function SearchByDisruptionID(disruptionID) {
             xhtpp = new XMLHttpRequest();
+            const input = "Disruption" +"|" + disruptionID;
 
             xhtpp.onload = function () {
                 if (this.readyState == 4 && this.status == 200) {
@@ -572,7 +573,7 @@
                     my_JSON_object = JSON.parse(this.responseText); //This JSON object is ALL of the data from the queries, not limited by region
                     console.log("Katya is rad");
                     console.log(JSON.stringify(my_JSON_object));
-                    const data = my_JSON_object.companyAffectedByEvent.filter(item => item.EventID === disruptionID); //Companies affected by disruption ID
+                    const data = my_JSON_object.companyAffectedByEvent; //Companies affected by disruption ID
                     const disruptionIDtBody = document.getElementById("tbodyDisruptID");
                     disruptionIDtBody.innerHTML = ""; //Clear out placeholder
 
@@ -593,20 +594,20 @@
                     }
                 }
             }
-            console.log("Sending: seniorDisruptionQueries.php")
-            xhtpp.open("GET", "seniorDisruptionQueries.php", true);
+            console.log("Sending: seniorDisruptionQueries.php?q=&g=&a=" + input + "&b=1")
+            xhtpp.open("GET", "seniorDisruptionQueries.php?q=&g=&a=" + input + "&b=1", true);
             xhtpp.send();
 
         }
         // Filter based on disruption drop down
         function SearchByCompanyName(companyName) {
-
+            input = "Company" + "|" + companyName;
             xhtpp.onload = function () {
                 if (this.readyState == 4 && this.status == 200) {
                     my_JSON_object = JSON.parse(this.responseText); //This JSON object is ALL of the data from the queries, not limited by region
                     console.log("Katya is rad");
                     console.log(JSON.stringify(my_JSON_object));
-                    const data = my_JSON_object.companyAffectedByEvent.filter(item => item.CompanyName === companyName); //Getting data ONLY regarding user's choice of company
+                    const data = my_JSON_object.companyAffectedByEvent; //Getting data ONLY regarding user's choice of company
                     const disruptionIDtBody = document.getElementById("tbodyCompany");
                             disruptionIDtBody.innerHTML = ""; //Clear out placeholder
 
@@ -628,8 +629,8 @@
                     }
                 }
             }
-            console.log("Sending: seniorDisruptionQueries.php")
-            xhtpp.open("GET", "seniorDisruptionQueries.php", true);
+            console.log("Sending: seniorDisruptionQueries.php?q=&g=&a=" + input + "&b=1")
+            xhtpp.open("GET", "seniorDisruptionQueries.php?q=&g=&a=" + input + "&b=1", true);
             xhtpp.send();
         }
         // LineChart
@@ -768,8 +769,8 @@
                 }
             }
             
-            console.log("Sending: seniorDisruptionQueries.php?q=" + input);
-            xhtpp.open("GET", "seniorDisruptionQueries.php?q=" + input, true);
+            console.log("Sending: seniorDisruptionQueries.php?q=" + input + "&g=&a=&b=2");
+            xhtpp.open("GET", "seniorDisruptionQueries.php?q=" + input + "&g=&a=&b=2", true);
             xhtpp.send();
         }
 
@@ -807,8 +808,8 @@
                 }
              }
 
-            console.log("Sending: seniorDisruptionQueries.php");
-            xhtpp.open("GET", "seniorDisruptionQueries.php", true);
+            console.log("Sending: seniorDisruptionQueries.php?q=&g=&a=&b=3");
+            xhtpp.open("GET", "seniorDisruptionQueries.php?q=&g=&a=&b=3", true);
             xhtpp.send();
     }
 
