@@ -373,6 +373,7 @@
             loadCompanies();
             updateDropDowns();
             LoadDisruptionFrequency('2020-09-09', '2025-09-09');
+            CriticalityFunc();
         });
 
         function LoadRegionList(region) {
@@ -699,144 +700,182 @@
             xhtpp.open("GET", "seniorDisruptionQueries.php", true);
             xhtpp.send();
         }
-         // LineChart
-        function LoadDisruptionFrequency(start_date, end_date) {
-            const input = start_date + "|" + end_date;
-            //Get DIV for display
-            const freqChartDiv = document.getElementById("DisruptionFreqChart");
-            freqChartDiv.innerHTML = ""; //Clear out placeholder
+                // LineChart
+                function LoadDisruptionFrequency(start_date, end_date) {
+                    const input = start_date + "|" + end_date;
+                    //Get DIV for display
+                    const freqChartDiv = document.getElementById("DisruptionFreqChart");
+                    freqChartDiv.innerHTML = ""; //Clear out placeholder
 
+                    xhtpp.onload = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+                            my_JSON_object = JSON.parse(this.responseText);
+                            console.log("Katya is rad");
+                            console.log(JSON.stringify(my_JSON_object));
+                            
+                            // Extract the frequency data array
+                            const frequencyData = my_JSON_object.frequency;
+                            
+                            // Prepare data arrays for plotting
+                            var dates = [];
+                            var eventCounts = [];
+                            var avgDurations = [];
+                            var maxDurations = [];
+                            
+                            frequencyData.forEach(function(datum) {
+                                dates.push(new Date(datum.StartDate));
+                                eventCounts.push(parseInt(datum.EventCount));
+                                avgDurations.push(parseFloat(datum.avgDuration));
+                                maxDurations.push(parseInt(datum.maxDuration));
+                            });
+                            
+                            // Define traces for the plot
+                            var traces = [
+                                {
+                                    name: 'Event Count',
+                                    mode: 'lines+markers',
+                                    x: dates,
+                                    y: eventCounts,
+                                    yaxis: 'y1',
+                                    line: { color: '#1f77b4' },
+                                    marker: { size: 6 }
+                                },
+                                {
+                                    name: 'Avg Duration (days)',
+                                    mode: 'lines+markers',
+                                    x: dates,
+                                    y: avgDurations,
+                                    yaxis: 'y2',
+                                    line: { color: '#ff7f0e' },
+                                    marker: { size: 6 }
+                                },
+                                {
+                                    name: 'Max Duration (days)',
+                            mode: 'lines',
+                            x: dates,
+                            y: maxDurations,
+                            yaxis: 'y2',
+                            line: { color: '#2ca02c', dash: 'dash' },
+                            opacity: 0.6
+                                }
+                            ];
+                            
+                            // Define range selector options
+                            var selectorOptions = {
+                                buttons: [
+                                    {
+                                        step: 'month',
+                                        stepmode: 'backward',
+                                        count: 1,
+                                        label: '1m'
+                                    },
+                                    {
+                                        step: 'month',
+                                        stepmode: 'backward',
+                                        count: 6,
+                                        label: '6m'
+                                    },
+                                    {
+                                        step: 'year',
+                                        stepmode: 'todate',
+                                        count: 1,
+                                        label: 'YTD'
+                                    },
+                                    {
+                                        step: 'year',
+                                        stepmode: 'backward',
+                                        count: 1,
+                                        label: '1y'
+                                    },
+                                    {
+                                        step: 'all',
+                                        label: 'All'
+                                    }
+                                ]
+                            };
+                            
+                            // Define layout
+                            var layout = {
+                                title: {
+                                    text: 'Disruption Event Frequency and Duration'
+                                },
+                                xaxis: {
+                                    title: 'Adjust Slide Bar to Explore Date Ranges',
+                                    rangeselector: selectorOptions,
+                                    rangeslider: {}
+                                },
+                                yaxis: {
+                                    title: 'Number of Events',
+                                    fixedrange: true,
+                                    side: 'left'
+                                },
+                                yaxis2: {
+                                    title: 'Average Duration (days)',
+                                    overlaying: 'y',
+                                    side: 'right',
+                                    fixedrange: true
+                                },
+                                hovermode: 'x unified',
+                                height: 500,
+                                width: 950,
+                                showlegend: true,
+                                legend: {
+                                    x: 0.01,
+                                    y: 0.99,
+                                    bgcolor: 'rgba(255, 255, 255, 0.8)'
+                                }
+                            };
+                            
+                            // Create the plot
+                            Plotly.newPlot('DisruptionFreqChart', traces, layout);
+                        }
+                        else {
+                            freqChartDiv.innerHTML = "No data in provided time range!";
+                        }
+                    }
+            
+            console.log("Sending: seniorDisruptionQueries.php?q=" + input);
+            xhtpp.open("GET", "seniorDisruptionQueries.php?q=" + input, true);
+            xhtpp.send();
+        }
+
+        function CriticalityFunc(){
             xhtpp.onload = function () {
                 if (this.readyState == 4 && this.status == 200) {
-                    my_JSON_object = JSON.parse(this.responseText);
-                    console.log("Katya is rad");
-                    console.log(JSON.stringify(my_JSON_object));
-                    
-                    // Extract the frequency data array
-                    const frequencyData = my_JSON_object.frequency;
-                    
-                    // Prepare data arrays for plotting
-                    var dates = [];
-                    var eventCounts = [];
-                    var avgDurations = [];
-                    var maxDurations = [];
-                    
-                    frequencyData.forEach(function(datum) {
-                        dates.push(new Date(datum.StartDate));
-                        eventCounts.push(parseInt(datum.EventCount));
-                        avgDurations.push(parseFloat(datum.avgDuration));
-                        maxDurations.push(parseInt(datum.maxDuration));
-                    });
-                    
-                    // Define traces for the plot
-                    var traces = [
-                        {
-                            name: 'Event Count',
-                            mode: 'lines+markers',
-                            x: dates,
-                            y: eventCounts,
-                            yaxis: 'y1',
-                            line: { color: '#1f77b4' },
-                            marker: { size: 6 }
-                        },
-                        {
-                            name: 'Avg Duration (days)',
-                            mode: 'lines+markers',
-                            x: dates,
-                            y: avgDurations,
-                            yaxis: 'y2',
-                            line: { color: '#ff7f0e' },
-                            marker: { size: 6 }
-                        },
-                        {
-                            name: 'Max Duration (days)',
-                    mode: 'lines',
-                    x: dates,
-                    y: maxDurations,
-                    yaxis: 'y2',
-                    line: { color: '#2ca02c', dash: 'dash' },
-                    opacity: 0.6
-                        }
-                    ];
-                    
-                    // Define range selector options
-                    var selectorOptions = {
-                        buttons: [
-                            {
-                                step: 'month',
-                                stepmode: 'backward',
-                                count: 1,
-                                label: '1m'
-                            },
-                            {
-                                step: 'month',
-                                stepmode: 'backward',
-                                count: 6,
-                                label: '6m'
-                            },
-                            {
-                                step: 'year',
-                                stepmode: 'todate',
-                                count: 1,
-                                label: 'YTD'
-                            },
-                            {
-                                step: 'year',
-                                stepmode: 'backward',
-                                count: 1,
-                                label: '1y'
-                            },
-                            {
-                                step: 'all',
-                                label: 'All'
+
+                        my_JSON_object = JSON.parse(this.responseText);
+                        console.log("Katya is rad");
+                        console.log(JSON.stringify(my_JSON_object));
+                        data = my_JSON_object.criticality;
+
+                        const CriticalityTable = document.getElementById("CriticalityTable");
+                        CriticalityTable.innerHTML = ""; //Clear out placeholder
+
+                        if (data && data.length > 0) {
+                            for (let i = 0; i < data.length; i++){
+                                    const row = CriticalityTable.insertRow();
+                                    row.innerHTML = `
+                                        <td>${data[i].CompanyName}</td>
+                                        <td>${data[i].Criticality}</td>
+                                        `;
+                                }
+                            } else {
+                                const row = CriticalityTable.insertRow();
+                                    row.innerHTML = `
+                                        <td>No company data</td>
+                                        <td>N/A</td>
+                                        `;
                             }
-                        ]
-                    };
-                    
-                    // Define layout
-                    var layout = {
-                        title: {
-                            text: 'Disruption Event Frequency and Duration'
-                        },
-                        xaxis: {
-                            title: 'Adjust Slide Bar to Explore Date Ranges',
-                            rangeselector: selectorOptions,
-                            rangeslider: {}
-                        },
-                        yaxis: {
-                            title: 'Number of Events',
-                            fixedrange: true,
-                            side: 'left'
-                        },
-                        yaxis2: {
-                            title: 'Average Duration (days)',
-                            overlaying: 'y',
-                            side: 'right',
-                            fixedrange: true
-                        },
-                        hovermode: 'x unified',
-                        height: 500,
-                        width: 950,
-                        showlegend: true,
-                        legend: {
-                            x: 0.01,
-                            y: 0.99,
-                            bgcolor: 'rgba(255, 255, 255, 0.8)'
-                        }
-                    };
-                    
-                    // Create the plot
-                    Plotly.newPlot('DisruptionFreqChart', traces, layout);
+                } else{
+                    console.log("Whomp whomp");
                 }
-                else {
-                    freqChartDiv.innerHTML = "No data in provided time range!";
-                }
-            }
-    
-    console.log("Sending: seniorDisruptionQueries.php?q=" + input);
-    xhtpp.open("GET", "seniorDisruptionQueries.php?q=" + input, true);
-    xhtpp.send();
-}
+             }
+
+            console.log("Sending: seniorDisruptionQueries.php");
+            xhtpp.open("GET", "seniorDisruptionQueries.php", true);
+            xhtpp.send();
+    }
+
         function CreateDSDStackedBarChart(dsd_regions, dsd_other_values, dsd_high_values){
             //Placement  
             const StackedBarChart = document.getElementById('disruptionLevelChart');
