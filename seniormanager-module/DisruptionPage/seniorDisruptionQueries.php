@@ -25,10 +25,10 @@ $quer = explode('|', $quer); ////["Region Type", "Region Selected]
 $groupByRegion = ""; //Group By
 $whereState = "";
 $whereStateEvents = "";
-if (!empty($tmp[0])) {
+if (!empty($tmp[0])) { //NOT ALL TABS NEED THIS FILTER WHICH IS WHY IT IS OPTIONAL
     $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "') OR (e.EventRecoveryDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "') OR (e.EventDate < '" . $tmp[0] . "' AND e.EventRecoveryDate > '" . $tmp[1] . "'))";
 }
-    //Group By statement added per user input
+    //Group By statement added per user input USER HAS OPTION TO NOT SELECT THESE FILTERS
     if (!empty($quer[0])) { 
         switch ($quer[0]) {
             case "Country":
@@ -88,25 +88,26 @@ if (!empty($tmp[0])) {
     //   echo json_encode($regionalOverview);
 
     // Disruption Frequency Over Time TIMMY HELPPPPPP
-    // $regionalOverviewSelect = "SELECT L.ContinentName AS Continent,  Count(I. EventID) AS TotalRegionalDisruption, COUNT(CASE WHEN I.ImpactLevel = ‘High’ THEN 1 END) AS HighImpactCount FROM Company C JOIN ImpactsCompany I ON I.AffectedCompanyID = C.CompanyID JOIN Location L ON L. LocationID = C. LocationID";
+    $frequencySelect = "SELECT e.EventDate AS StartDate, COUNT(*) AS EventCount, ROUND(AVG(DATEDIFF(e.EventRecoveryDate, e.EventDate)), 2) AS avgDuration, ROUND(MAX(DATEDIFF(e.EventRecoveryDate, e.EventDate)), 2) AS maxDuration, ROUND(MIN(DATEDIFF(e.EventRecoveryDate, e.EventDate)), 2) AS minDuration  FROM DisruptionEvent e";
 
-    // //Puting query together and generating result
-    // $regionalOverviewQuery = "{$regionalOverviewSelect} {$whereStateEvents};";
-    //  echo $regionalOverviewQuery;
+    //Puting query together and generating result
+    $frequencyQuery = "{$frequencySelect} {$whereStateEvents} GROUP BY e.EventDate;";
+    //  echo $frequencyQuery;
 
-    // $resultregionalOverview = mysqli_query($conn, $regionalOverviewQuery);
-    // // Convert the table into individual rows and reformat.
-    // $regionalOverview = []; //Creating shipping Array
-    // while ($row = mysqli_fetch_array($resultregionalOverview, MYSQLI_ASSOC)) {
-    //     $regionalOverview[] = $row;
-    // }
-    //   echo json_encode($regionalOverview);
+    $resultfrequency = mysqli_query($conn, $frequencyQuery);
+    // Convert the table into individual rows and reformat.
+    $frequency = []; //Creating shipping Array
+    while ($row = mysqli_fetch_array($resultfrequency, MYSQLI_ASSOC)) {
+        $frequency[] = $row;
+    }
+    //   echo json_encode($frequency);
 
 
          //Making JSON Object
     $seniorDisruptionResults = [
         "companyAffectedByEvent" => $companyAffectedByEvent,
-        "regionalOverview" => $regionalOverview
+        "regionalOverview" => $regionalOverview,
+        "frequency" => $frequency
     ];
 
     echo json_encode($seniorDisruptionResults);
