@@ -245,7 +245,7 @@ $user_FullName = $_SESSION['FullName'];
                                     <div class="card" style="height: 150px;">
                                         <div class="card-header" id="otherInfoHeader">Other Information</div>
                                         <div class="card-body">
-                                            <ul class="list-group list-group-flush" id="otherInfo" style="max-height:300px;">
+                                            <ul class="list-group list-group-flush" id="otherInfo" style="max-height:300px; overflow-y: auto;">
                                                 <p class="text-muted">Submit query to see results...</p>
                                             </ul>
                                         </div>
@@ -282,7 +282,7 @@ $user_FullName = $_SESSION['FullName'];
                                 <div class="col-md-6">
                                     <div class="card">
                                         <div class="card-header">Products Supplied</div>
-                                        <ul class="list-group list-group-flush" id="productsSupplied">
+                                        <ul class="list-group list-group-flush" id="productsSupplied" style="max-height:300px; overflow-y: auto;">
                                             <p class="text-muted">Submit query to see results...</p>
                                         </ul>
                                     </div>
