@@ -50,31 +50,24 @@ $city = [];
 while ($row = mysqli_fetch_array($resultcity, MYSQLI_ASSOC)) {
     $city[] = $row;
 }
+
+$disruptionIDsQuery = "SELECT DISTINCT EventID FROM DisruptionEvent";
+$result_disruption = mysqli_query($conn, $disruptionIDsQuery);
+while ($row = mysqli_fetch_array($result_disruption, MYSQLI_ASSOC)) {
+    $disruptionIDs[] = $row;
+}
+
 // echo json_encode($city);
-
-//Some cities are displaying as null in name, but they have lengths. Really weird issue
-// $debugQuery = "SELECT DISTINCT City, LENGTH(City)
-// FROM Location;";
-// $resultdebug = mysqli_query($conn, $debugQuery);
-// $debug = [];
-// while ($row = mysqli_fetch_array($resultdebug, MYSQLI_ASSOC)) {
-// $debug[] = $row;
-// }
-// echo json_encode($debug);
-
-
 
 $SCMDistributorResults = [
         "distributors"=> $distributorName,
         "company"=> $companyName,
         "country" => $country,
         "city"=> $city,
+        "disruptionID" => $disruptionIDs
     ];
 
-    echo json_encode($SCMDistributorResults);
-
-
-   
+echo json_encode($SCMDistributorResults);
 
 $conn->close();
 ?>
