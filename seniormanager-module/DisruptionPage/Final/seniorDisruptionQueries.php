@@ -107,7 +107,7 @@ $whereStateTab2 = "";
     }
     //   echo json_encode($regionalOverview);
 
-    // Disruption Frequency Over Time TIMMY HELPPPPPP
+    // Disruption Frequency Over Time
     $frequencySelect = "SELECT e.EventDate AS StartDate, COUNT(*) AS EventCount, ROUND(AVG(DATEDIFF(e.EventRecoveryDate, e.EventDate)), 2) AS avgDuration, ROUND(MAX(DATEDIFF(e.EventRecoveryDate, e.EventDate)), 2) AS maxDuration, ROUND(MIN(DATEDIFF(e.EventRecoveryDate, e.EventDate)), 2) AS minDuration  FROM DisruptionEvent e";
 
     //Puting query together and generating result
@@ -152,11 +152,6 @@ $whereStateTab2 = "";
         "Criticality" => $my_i_result[0]['Criticality']
     ];
     }
-    // echo $my_i_result[0];
-    // for ($j=0; $j < count($final_results); $j++){
-    //     echo "'{$final_results[$j]}'";
-    // }
-    // echo json_encode($final_results);
 
 
          //Making JSON Object based on user need
@@ -184,12 +179,7 @@ $whereStateTab2 = "";
         }
     }
 
-    // $seniorDisruptionResults = [
-    //     "companyAffectedByEvent" => $companyAffectedByEvent,
-    //     "regionalOverview" => $regionalOverview,
-    //     "frequency" => $frequency,
-    //     "criticality" => $final_results
-    // ];
+
 
     echo json_encode($seniorDisruptionResults);
    
