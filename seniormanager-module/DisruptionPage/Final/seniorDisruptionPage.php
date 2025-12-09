@@ -799,7 +799,7 @@ function ValidateFrequencyTab() {
                             //Extract the count and dates
                             const countData = my_JSON_object.frequency_counts;              
                             countData.forEach(function(datum) {
-                                dates.push(new Date(datum.YearMonth));
+                                dates.push(datum.YearMonth);
                                 eventCounts.push(parseInt(datum.DisruptionFrequency));
                             });
                             console.log(eventCounts);
