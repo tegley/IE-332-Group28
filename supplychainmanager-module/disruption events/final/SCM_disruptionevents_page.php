@@ -689,7 +689,7 @@ function DisruptionEventsAJAX(DisruptionDropDown, user_input, start_date, end_da
               document.getElementById("StatusMessage").innerHTML = '<div class="alert alert-warning">Selected country is not in the database</div>';
             }
             if(error_check=="Error continent") {
-              document.getElementById("StatusMessage").innerHTML = '<div class="alert alert-warning">Selected country is not in the database</div>';
+              document.getElementById("StatusMessage").innerHTML = '<div class="alert alert-warning">Selected continent is not in the database</div>';
             }
             if(error_check=="Error company") {
               document.getElementById("StatusMessage").innerHTML = '<div class="alert alert-warning">Selected company is not in the database</div>';
