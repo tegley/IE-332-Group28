@@ -280,19 +280,7 @@ $tmp = explode('|', $tmp);
 
     echo json_encode($SCMHomePageCompanyResults);
 
-    // //Queries for Key Performance
-    // $shipmentDetailsQuery = "SELECT AVG(s.ActualDate - s.PromisedDate), STDDEV(s.ActualDate - s.PromisedDate), COUNT(*) FROM Company c JOIN Shipping s ON c.CompanyID = s.SourceCompanyID 
-    // WHERE CompanyName = '" . $tmp . "' AND s.ActualDate BETWEEN '2020-01-01' AND '2025-09-30' AND s.ActualDate <= s.PromisedDate;";
-    // echo $shipmentDetailsQuery;
-    // $totalShipmentsQuery = "SELECT COUNT(*) FROM Company c JOIN Shipping s ON c.CompanyID = s.SourceCompanyID
-    // WHERE CompanyName = '" . $tmp . "' AND s.ActualDate BETWEEN '2020-01-01' AND '2025-09-30';";
-    // echo $totalShipmentsQuery;
-    // $pastHealthScores = "SELECT f.HealthScore FROM Company c JOIN FinancialReport f ON c.CompanyID = f.CompanyID WHERE c.CompanyName = '" . $tmp . "' ORDER BY f.RepYear DESC, f.Quarter DESC LIMIT 5;";
-    // echo $pastHealthScores;
-    // $disruptionEvents = "SELECT d.EventID, x.CategoryName, d.EventDate, d.EventRecoveryDate, x.Description FROM DisruptionEvent d JOIN DisruptionCategory x ON d.CategoryID = x.CategoryID JOIN ImpactsCompany i ON d.EventID = i.EventID JOIN Company c ON i.AffectedCompanyID = c.CompanyID
-    // WHERE c.CompanyName = '" . $tmp . "' GROUP BY x.CategoryName;";
-    // echo $disruptionEvents;
-// }
+
 
 $conn->close();
 ?>
