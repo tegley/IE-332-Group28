@@ -1,17 +1,3 @@
-<?php
-/*session_start();
-
-//Check if the user is NOT logged in (security measure)
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    echo "<h1>Unauthorized Login</h1>";
-    echo "<p>Please visit the <a href='index.php'>login page</a>!</p>";
-    exit();
-}
-
-$user_FullName = $_SESSION['FullName']; */
-?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,8 +9,6 @@ $user_FullName = $_SESSION['FullName']; */
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script src="SCM_display_alerts.js"></script>
 
     <style>
         @import "standardized_project_formatting.css";
@@ -133,7 +117,7 @@ $user_FullName = $_SESSION['FullName']; */
                     <!-- TAB 2 -->
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="idname-tab" data-bs-toggle="tab" data-bs-target="#idname" type="button" role="tab">
-                            Disruption ID or Company Name
+                            Search Disruption Events
                         </button>
                     </li>
 
@@ -168,7 +152,7 @@ $user_FullName = $_SESSION['FullName']; */
                                 <div class="col-md-6">
                                     <label>Region Type</label>
                                     <select class="form-control" id="regionType_input" onchange='LoadRegionList(document.getElementById("regionType_input").value)'>
-                                        <option value="">Select Type</option>
+                                        <option value="" disabled selected>Select Type:</option>
                                         <option value="Country">Country</option>
                                         <option value="Continent">Continent</option>
                                     </select>
@@ -200,7 +184,7 @@ $user_FullName = $_SESSION['FullName']; */
                         <div class="row">
 
                             <div class="col-md-6">
-                                <div class="card" style="height: 350px;">
+                                <div class="card mb-3" style="height: 350px;">
                                     <div class="card-header"><h4>Regional Disruption Overview</h4></div>
                                     <ul class="list-group list-group-flush" id="regionalOverviewList" style="max-height:700px; overflow-y: auto;">
                                         <p class="text-muted">Submit query to see results...</p>
@@ -209,7 +193,7 @@ $user_FullName = $_SESSION['FullName']; */
                             </div>
 
                             <div class="col-md-6">
-                                <div class="card" style="height: 350px;">
+                                <div class="card mb-3" style="height: 350px;">
                                     <div class="card-header"><h4>Regional Disruption Bar Chart</h4></div>
                                     <div id="disruptionLevelChart" style="height: 300px;">
                                         <p class="text-muted">Submit query to see results...</p>
@@ -224,7 +208,7 @@ $user_FullName = $_SESSION['FullName']; */
                      <!-- TAB 2: SEARCH BY DISRUPTION ID OR COMPANY NAME -->
                     <div class="tab-pane fade" id="idname" role="tabpanel" aria-labelledby="idname-tab">
 
-                        <div class="area-header">Search by Disruption ID or Company Name within Region</div>
+                        <div class="area-header">Search by Disruption ID or Company Name</div>
 
                         <div class="row">
 
@@ -243,7 +227,7 @@ $user_FullName = $_SESSION['FullName']; */
                                 </div>
 
                                 <!-- Results (LEFT TABLE) -->
-                                <div class="card">
+                                <div class="card" style="height: 350px;">
                                     <div class="card-header">Company Affected and Impact Level</div>
 
                                     <div class="card-body" style="max-height: 320px; overflow-y: auto;">
@@ -277,16 +261,17 @@ $user_FullName = $_SESSION['FullName']; */
                                 </div>
 
                                 <!-- Results (RIGHT TABLE) -->
-                                <div class="card">
+                                <div class="card" style="height: 350px;">
                                     <div class="card-header">Disruption Event, Date and Impact Level</div>
 
                                     <div class="card-body" style="max-height: 320px; overflow-y: auto;">
                                         <table class="table table-bordered table-striped">
                                             <thead>
                                                 <tr>
-                                                    <th>Disruption Event</th>
-                                                    <th>Date</th>
-                                                    <th>Impact Level</th>
+                                                    <th style="width:15%;">Disruption EventID</th>
+                                                    <th style="width:32%;">Start Date</th>
+                                                    <th style="width:32%;">End Date</th>
+                                                    <th style="width:20%;">Impact Level</th>
                                                 </tr>
                                             </thead>
                                             <tbody id = "tbodyCompany">
@@ -312,12 +297,12 @@ $user_FullName = $_SESSION['FullName']; */
 
                                 <div class="col-md-6">
                                     <label class="form-label">Start Date</label>
-                                    <input type="date" id="freqStartDate" class="form-control">
+                                    <input type="month" id="freqStartDate" class="form-control">
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label">End Date</label>
-                                    <input type="date" id="freqEndDate" class="form-control">
+                                    <input type="month" id="freqEndDate" class="form-control">
                                 </div>
 
                                 <div class="col-12 mt-3 d-flex justify-content-center">
@@ -330,7 +315,9 @@ $user_FullName = $_SESSION['FullName']; */
                         </div>
 
                         <!-- Frequency Line Chart -->
-                        <div class="card" style="height: 600px;">
+                        <div class="card mb-3" id="DisruptionFreqChart" style="height: 600px;">
+                            
+                            <!--
                             <div class="card-header fw-bold text-center">
                                 Disruption Frequency Line Chart
                             </div>
@@ -339,6 +326,8 @@ $user_FullName = $_SESSION['FullName']; */
                                     <p class="text-muted">Submit query to see results...</p>
                                 </div>
                             </div>
+                             Comment out -->
+
                         </div>
 
                     </div> <!-- END TAB 3 -->
@@ -351,7 +340,7 @@ $user_FullName = $_SESSION['FullName']; */
                         <!-- Card Container -->
                         <div class="card">
                             <div class="card-header fw-bold">
-                                Company's Score
+                                Criticality Scores, Sorted From Highest to Lowest
                             </div>
                             <div class="card-body" style="max-height: 350px; overflow-y: auto;">
                                 <table class="table table-bordered table-striped">
@@ -380,14 +369,51 @@ $user_FullName = $_SESSION['FullName']; */
         </div> <!-- row -->
     </div> <!-- container -->
 
-    <!-- Need refitting for Senior Manager Disruption Page-->
-    <script>
-        //Load Company Names when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            loadTab2Dropdowns();
-            LoadDisruptionFrequency('2020-09-09', '2025-09-09');
-            CriticalityFunc();
-        });
+<!-- Need refitting for Senior Manager Disruption Page-->
+<script>
+//Load Company Names when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadCompanies();
+    updateDropDowns();
+    //LoadDisruptionFrequency('2024-01', '2025-12');
+    CriticalityFunc();
+});
+
+//JavaScript for resizing Plotly graphs
+//Ensure graphs are properly sized when other tabs are clicked
+const tabElms = document.querySelectorAll('button[data-bs-toggle="tab"]');
+
+//Loop through each tab element
+tabElms.forEach(tabElm => {
+    tabElm.addEventListener('shown.bs.tab', event => {
+        
+        const targetTabId = event.target.getAttribute('data-bs-target');
+        
+        //If the tab is active, resize the chart to fit to card dimensions
+        if (targetTabId === '#countrycontinent') {
+            const chartContainer = document.getElementById('disruptionLevelChart');
+            if (chartContainer) {
+                Plotly.relayout(chartContainer, { autosize: true });
+            }
+        } 
+        else if (targetTabId === '#frequency') {
+            const chartContainer = document.getElementById('DisruptionFreqChart');
+            if (chartContainer) {
+                Plotly.relayout(chartContainer, { autosize: true });
+            }
+        }
+    });
+});
+//Prevent height compression on first active tab
+const activePane = document.querySelector('.tab-pane.show.active');
+if (activePane) {
+  const ChartContainer = activePane.querySelector('[id$="Chart"]');
+    console.log(ChartContainer);
+    if (ChartContainer) {
+        Plotly.relayout(ChartContainer, { autosize: true });
+    }
+}
+
 
         function LoadRegionList(region) {
             xhtpp = new XMLHttpRequest();
@@ -406,7 +432,9 @@ $user_FullName = $_SESSION['FullName']; */
                     
                     const defaultRegionOption = document.createElement('option');
                     defaultRegionOption.value = '';
-                    defaultRegionOption.textContent = 'Select a specific region';
+                    defaultRegionOption.textContent = 'Select a specific region:';
+                    defaultRegionOption.disabled = true;
+                    defaultRegionOption.selected = true;
                     regionDropdown.appendChild(defaultRegionOption);
                     
                     //Since the key will change based on user input, we must find out what the key is
@@ -422,9 +450,13 @@ $user_FullName = $_SESSION['FullName']; */
                     //Add All option
                     const allOption = document.createElement('option');
                         allOption.value = "";
-                        allOption.textContent = "All Regions";
+                        if(region == "Country"){
+                            allOption.textContent = "All Countries";
+                        }
+                        else if(region == "Continent"){
+                            allOption.textContent = "All Continents";
+                        }
                         regionDropdown.appendChild(allOption);
-
 
                 } // END onload function
                 else{
@@ -437,7 +469,7 @@ $user_FullName = $_SESSION['FullName']; */
             xhtpp.send();
     } //End LoadRegionList
 
-        function loadTab2Dropdowns() {
+        function loadCompanies() {
             fetch('distributorList.php')
                 .then(response => response.json())
                 .then(data => {
@@ -446,6 +478,8 @@ $user_FullName = $_SESSION['FullName']; */
                     
                     const defaultCompanyOption = document.createElement('option');
                     defaultCompanyOption.value = '';
+                    defaultCompanyOption.disabled = true;
+                    defaultCompanyOption.selected = true;
                     defaultCompanyOption.textContent = 'Select a company';
                     companyDropdown.appendChild(defaultCompanyOption);
                     
@@ -462,6 +496,9 @@ $user_FullName = $_SESSION['FullName']; */
                     const defaultdisruptionOption = document.createElement('option');
                     defaultdisruptionOption.value = '';
                     defaultdisruptionOption.textContent = 'Select a disruptionID';
+                    defaultdisruptionOption.disabled = true;
+                    defaultdisruptionOption.selected = true;
+
                     disruptionDropdown.appendChild(defaultdisruptionOption);
                     
                     data.disruptionID.forEach(disruptionID => {
@@ -472,49 +509,120 @@ $user_FullName = $_SESSION['FullName']; */
                     });
                 })
         }
-    
-    </script>
+         // Update Dropdown List
+        function updateDropDowns(){
+            xhtpp = new XMLHttpRequest();
+            // const regionType = document.getElementById("regionType_input").value;
+            // const region = document.getElementById("region_input").value;
+            // const input = regionType + ',' + region;
+            console.log("updateRegionsCalled!");
+            
 
-    <script>
-        function CheckUserInput() {
+            xhtpp.onload = function () {
+                if (this.readyState == 4 && this.status == 200) {
 
-            const regionType = document.getElementById("regionType_input").value;
-            console.log("Called!!");
-             if (regionType === "") {
-                alert("Please select a Region Type (Country or Continent).");
-                return false;
-            }
-            return true;
+                    const data = JSON.parse(this.responseText);
+                    console.log(JSON.stringify(data));
+                     const companyDropdown = document.getElementById('CompanyName_input');
+                    companyDropdown.innerHTML = '';
+                    const disruptionDropdown = document.getElementById('DisruptionID_input');
+                    disruptionDropdown.innerHTML = '';
+
+                    if(data.company.length > 0){
+                    //Populate Company Options
+                    const defaultCompanyOption = document.createElement('option');
+                    defaultCompanyOption.value = '';
+                    defaultCompanyOption.textContent = 'Select a company';
+                    companyDropdown.appendChild(defaultCompanyOption);
+                    
+                    data.company.forEach(company => {
+                        const option = document.createElement('option');
+                        option.value = company.CompanyName;
+                        option.textContent = company.CompanyName;
+                        companyDropdown.appendChild(option);
+                    });}else{
+                        const defaultCompanyOption = document.createElement('option');
+                        defaultCompanyOption.value = '';
+                        defaultCompanyOption.textContent = 'No Companies in Filter';
+                        companyDropdown.appendChild(defaultCompanyOption);
+                        const disruptionDropdown = document.getElementById('DisruptionID_input');
+                        disruptionDropdown.innerHTML = '';
+                    }
+                    if(data.disruptionID.length > 0){
+                    //Population Disruption Event IDs
+                    const defaultdisruptionOption = document.createElement('option');
+                    defaultdisruptionOption.value = '';
+                    defaultdisruptionOption.textContent = 'Select a disruptionID';
+                    disruptionDropdown.appendChild(defaultdisruptionOption);
+                    data.disruptionID.forEach(disruptionID => {
+                        const option = document.createElement('option');
+                        option.value = disruptionID.EventID;
+                        option.textContent = disruptionID.EventID;
+                        disruptionDropdown.appendChild(option);
+                    });
+                    } else{
+                    const defaultdisruptionOption = document.createElement('option');
+                    defaultdisruptionOption.value = '';
+                    defaultdisruptionOption.textContent = 'No Disruptions within Filter';
+                    disruptionDropdown.appendChild(defaultdisruptionOption);
+                    }
 
 
-            return true;
+                } // END onload function
+                else{
+                    console.log("Failed");
+                }
+                }
+                xhtpp.open("GET", "regionSelectionOptions.php", true);
+                console.log("regionSelectionOptions.php"); 
+                xhtpp.send();
         }
     </script>
 
-    <script>
-        function ValidateFrequencyTab() {
+<script>
+function CheckUserInput() {
 
-            const start = document.getElementById("freqStartDate").value;
-            const end = document.getElementById("freqEndDate").value;
+    const regionType = document.getElementById("regionType_input").value;
+    const regionSelection = document.getElementById('region_input').value;
+    console.log(regionType);
+    console.log(regionSelection);
+    if (regionType === "") {
+        alert("Please select a Region Type (Country or Continent).");
+        return false;
+    }
 
-            if (start === "" || end === "") {
-                alert("Please select both a start and end month.");
-                return false;
-            }
+    if (regionSelection === "") {
+        alert("Please select a specific region!");
+        return false;
+    }
 
-            if (start >= end) {
-                alert("Start date must be before end date.");
-                return false;
-            }
+    return true;
+}
 
-            return true;
-        }
-    </script>
-     <script>
+function ValidateFrequencyTab() {
+
+    const start = document.getElementById("freqStartDate").value;
+    const end = document.getElementById("freqEndDate").value;
+
+    if (start === "" || end === "") {
+        alert("Please select both a start and end month.");
+        return false;
+    }
+
+    if (start >= end) {
+        alert("Start date must be before end date.");
+        return false;
+    }
+
+    return true;
+}
+</script>
+
+<script>
         let my_JSON_object = ""; //Making global JSON object so that the user's selection can dynamically update when they select a dropdown filter
 
         function LoadRegionDisruptions(regionType, region) {
-            input = "";
+            input = 'Search';
             g = regionType + "|" + region;
 
             xhtpp = new XMLHttpRequest();
@@ -536,9 +644,9 @@ $user_FullName = $_SESSION['FullName']; */
                             const div = document.createElement("div");
                             div.className = "list-item";
                             div.innerHTML = `
-                                <strong>Company Name:</strong> ${item.CompanyName} <strong>ID:</strong> ${item.CompanyID}<br>
+                                <strong>Affected Company:</strong> ${item.CompanyName} <strong>ID:</strong> ${item.AffectedCompanyID}<br>
                                 <strong>Event ID:</strong> ${item.EventID} <strong>Impact Level:</strong> ${item.ImpactLevel}<br>
-                                <strong>Country:</strong> ${item.CategoryName}<br>
+                                <strong>Category:</strong> ${item.CategoryName}<br>
                                 <strong>Country:</strong> ${item.CountryName} <strong>Continent:</strong> ${item.ContinentName}
                             `;
                             companyImpactedDiv.appendChild(div);
@@ -572,14 +680,13 @@ $user_FullName = $_SESSION['FullName']; */
                     console.log("Bad bad bad")
                 }
             } // END onload function
-            console.log("Sending: seniorDisruptionQueries.php?q=" + input + "&g=" + g + "&a=&b=1")
-            xhtpp.open("GET", "seniorDisruptionQueries.php?q=" + input + "&g=" + g + "&a=&b=1", true);
+            console.log("Sending: seniorDisruptionQueries.php?q=" + input + "&g=" + g)
+            xhtpp.open("GET", "seniorDisruptionQueries.php?q=" + input + "&g=" + g, true);
             xhtpp.send();
         } // END AJAX
         // Filter based on disruption drop down
         function SearchByDisruptionID(disruptionID) {
             xhtpp = new XMLHttpRequest();
-            const input = "Disruption" +"|" + disruptionID;
 
             xhtpp.onload = function () {
                 if (this.readyState == 4 && this.status == 200) {
@@ -587,7 +694,7 @@ $user_FullName = $_SESSION['FullName']; */
                     my_JSON_object = JSON.parse(this.responseText); //This JSON object is ALL of the data from the queries, not limited by region
                     console.log("Katya is rad");
                     console.log(JSON.stringify(my_JSON_object));
-                    const data = my_JSON_object.companyAffectedByEvent; //Companies affected by disruption ID
+                    const data = my_JSON_object.companyAffectedByEvent.filter(item => item.EventID === disruptionID); //Companies affected by disruption ID
                     const disruptionIDtBody = document.getElementById("tbodyDisruptID");
                     disruptionIDtBody.innerHTML = ""; //Clear out placeholder
 
@@ -608,29 +715,33 @@ $user_FullName = $_SESSION['FullName']; */
                     }
                 }
             }
-            console.log("Sending: seniorDisruptionQueries.php?q=&g=&a=" + input + "&b=1")
-            xhtpp.open("GET", "seniorDisruptionQueries.php?q=&g=&a=" + input + "&b=1", true);
+            console.log('Sending: "seniorDisruptionQueries.php?q=" + Search')
+            xhtpp.open("GET", "seniorDisruptionQueries.php?q=" + 'Search', true);
             xhtpp.send();
 
         }
         // Filter based on disruption drop down
         function SearchByCompanyName(companyName) {
-            input = "Company" + "|" + companyName;
+
             xhtpp.onload = function () {
                 if (this.readyState == 4 && this.status == 200) {
                     my_JSON_object = JSON.parse(this.responseText); //This JSON object is ALL of the data from the queries, not limited by region
                     console.log("Katya is rad");
                     console.log(JSON.stringify(my_JSON_object));
-                    const data = my_JSON_object.companyAffectedByEvent; //Getting data ONLY regarding user's choice of company
+                    const data = my_JSON_object.companyAffectedByEvent.filter(item => item.CompanyName === companyName); //Getting data ONLY regarding user's choice of company
                     const disruptionIDtBody = document.getElementById("tbodyCompany");
                             disruptionIDtBody.innerHTML = ""; //Clear out placeholder
 
                     if (data && data.length > 0) {
                         for (let i = 0; i < data.length; i++){
+                            if(data[i].EventRecoveryDate == null){
+                                data[i].EventRecoveryDate = 'Unknown';
+                            }
                             const row = disruptionIDtBody.insertRow();
                             row.innerHTML = `
                                 <td>${data[i].EventID}</td>
                                 <td>${data[i].EventDate}</td>
+                                <td>${data[i].EventRecoveryDate}</td>
                                 <td>${data[i].ImpactLevel}</td>
                                 `;
                         }
@@ -643,154 +754,153 @@ $user_FullName = $_SESSION['FullName']; */
                     }
                 }
             }
-            console.log("Sending: seniorDisruptionQueries.php?q=&g=&a=" + input + "&b=1")
-            xhtpp.open("GET", "seniorDisruptionQueries.php?q=&g=&a=" + input + "&b=1", true);
+            console.log('Sending: seniorDisruptionQueries.php?q=" + Search');
+            xhtpp.open("GET", "seniorDisruptionQueries.php?q=" + 'Search', true);
             xhtpp.send();
         }
-        // LineChart
-        function LoadDisruptionFrequency(start_date, end_date) {
-            const input = start_date + "|" + end_date;
-            console.log("Load Line Chart Called");
-            var xhtpp = new XMLHttpRequest();
-            //Get DIV for display
-            const freqChartDiv = document.getElementById("DisruptionFreqChart");
-            freqChartDiv.innerHTML = ""; //Clear out placeholder
+                // LineChart
+                function LoadDisruptionFrequency(start_date, end_date) {
+                    const input = start_date + "|" + end_date;
+                    //Get DIV for display
+                    const freqChartDiv = document.getElementById("DisruptionFreqChart");
+                    freqChartDiv.innerHTML = ""; //Clear out placeholder
 
-            xhtpp.onload = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    my_JSON_object = JSON.parse(this.responseText);
-                    console.log("Katya is rad");
-                    console.log(JSON.stringify(my_JSON_object));
-                    
-                    // Extract the frequency data array
-                    const frequencyData = my_JSON_object.frequency;
-                    
-                    // Prepare data arrays for plotting
-                    var dates = [];
-                    var eventCounts = [];
-                    var avgDurations = [];
-                    var maxDurations = [];
-                    
-                    frequencyData.forEach(function(datum) {
-                        dates.push(new Date(datum.StartDate));
-                        eventCounts.push(parseInt(datum.EventCount));
-                        avgDurations.push(parseFloat(datum.avgDuration));
-                        maxDurations.push(parseInt(datum.maxDuration));
-                    });
-                    
-                    // Define traces for the plot
-                    var traces = [
-                        {
-                            name: 'Event Count',
-                            mode: 'lines+markers',
+                    xhtpp.onload = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+                            my_JSON_object = JSON.parse(this.responseText);
+                            console.log(JSON.stringify(my_JSON_object));
+
+                            // Prepare data arrays for plotting
+                            var dates = [];
+                            var eventCounts = [];
+                            var avgDurations = [];
+                            var maxDurations = [];
+
+                            // Extract the frequency data array
+                            const frequencyData = my_JSON_object.frequency;
+                            frequencyData.forEach(function(datum) {
+                                avgDurations.push(parseFloat(datum.avgDuration));
+                                maxDurations.push(parseInt(datum.maxDuration));
+                            });
+
+                            //Extract the count and dates
+                            const countData = my_JSON_object.frequency_counts;              
+                            countData.forEach(function(datum) {
+                                dates.push(new Date(datum.YearMonth));
+                                eventCounts.push(parseInt(datum.DisruptionFrequency));
+                            });
+                            console.log(eventCounts);
+                            console.log(dates);
+                            
+                            // Define traces for the plot
+                            var traces = [
+                                {
+                                    name: 'Event Count',
+                                    mode: 'lines+markers',
+                                    x: dates,
+                                    y: eventCounts,
+                                    yaxis: 'y1',
+                                    line: { color: '#1f77b4' },
+                                    marker: { size: 6 }
+                                },
+                                {
+                                    name: 'Avg Duration (days)',
+                                    mode: 'lines+markers',
+                                    x: dates,
+                                    y: avgDurations,
+                                    yaxis: 'y2',
+                                    line: { color: '#ff7f0e' },
+                                    marker: { size: 6 }
+                                },
+                                {
+                                    name: 'Max Duration (days)',
+                            mode: 'lines',
                             x: dates,
-                            y: eventCounts,
-                            yaxis: 'y1',
-                            line: { color: '#1f77b4' },
-                            marker: { size: 6 }
-                        },
-                        {
-                            name: 'Avg Duration (days)',
-                            mode: 'lines+markers',
-                            x: dates,
-                            y: avgDurations,
+                            y: maxDurations,
                             yaxis: 'y2',
-                            line: { color: '#ff7f0e' },
-                            marker: { size: 6 }
-                        },
-                        {
-                            name: 'Max Duration (days)',
-                    mode: 'lines',
-                    x: dates,
-                    y: maxDurations,
-                    yaxis: 'y2',
-                    line: { color: '#2ca02c', dash: 'dash' },
-                    opacity: 0.6
+                            line: { color: '#2ca02c', dash: 'dash' },
+                            opacity: 0.6
+                                }
+                            ];
+                            
+                            // Define range selector options
+                            var selectorOptions = {
+                                buttons: [
+                                    {
+                                        step: 'month',
+                                        stepmode: 'backward',
+                                        count: 1,
+                                        label: '1m'
+                                    },
+                                    {
+                                        step: 'month',
+                                        stepmode: 'backward',
+                                        count: 6,
+                                        label: '6m'
+                                    },
+                                    {
+                                        step: 'year',
+                                        stepmode: 'todate',
+                                        count: 1,
+                                        label: 'YTD'
+                                    },
+                                    {
+                                        step: 'year',
+                                        stepmode: 'backward',
+                                        count: 1,
+                                        label: '1y'
+                                    },
+                                    {
+                                        step: 'all',
+                                        label: 'All'
+                                    }
+                                ]
+                            };
+                            
+                            // Define layout
+                            var layout = {
+                                title: {
+                                    text: 'Disruption Event Frequency and Duration'
+                                },
+                                xaxis: {
+                                    title: 'Adjust Slide Bar to Explore Date Ranges',
+                                    rangeselector: selectorOptions,
+                                    rangeslider: {}
+                                },
+                                yaxis: {
+                                    title: 'Number of Events',
+                                    fixedrange: true,
+                                    side: 'left'
+                                },
+                                yaxis2: {
+                                    title: 'Average Duration (days)',
+                                    overlaying: 'y',
+                                    side: 'right',
+                                    fixedrange: true
+                                },
+                                hovermode: 'x unified',
+                                showlegend: true,
+                                legend: {
+                                    x: 0.01,
+                                    y: 0.99,
+                                    bgcolor: 'rgba(255, 255, 255, 0.8)'
+                                }
+                            };
+                            
+                            // Create the plot
+                            Plotly.newPlot('DisruptionFreqChart', traces, layout);
                         }
-                    ];
-                    
-                    // Define range selector options
-                    var selectorOptions = {
-                        buttons: [
-                            {
-                                step: 'month',
-                                stepmode: 'backward',
-                                count: 1,
-                                label: '1m'
-                            },
-                            {
-                                step: 'month',
-                                stepmode: 'backward',
-                                count: 6,
-                                label: '6m'
-                            },
-                            {
-                                step: 'year',
-                                stepmode: 'todate',
-                                count: 1,
-                                label: 'YTD'
-                            },
-                            {
-                                step: 'year',
-                                stepmode: 'backward',
-                                count: 1,
-                                label: '1y'
-                            },
-                            {
-                                step: 'all',
-                                label: 'All'
-                            }
-                        ]
-                    };
-                    
-                    // Define layout
-                    var layout = {
-                        title: {
-                            text: 'Disruption Event Frequency and Duration'
-                        },
-                        xaxis: {
-                            title: 'Adjust Slide Bar to Explore Date Ranges',
-                            rangeselector: selectorOptions,
-                            rangeslider: {}
-                        },
-                        yaxis: {
-                            title: 'Number of Events',
-                            fixedrange: true,
-                            side: 'left'
-                        },
-                        yaxis2: {
-                            title: 'Average Duration (days)',
-                            overlaying: 'y',
-                            side: 'right',
-                            fixedrange: true
-                        },
-                        hovermode: 'x unified',
-                        height: 500,
-                        width: 950,
-                        showlegend: true,
-                        legend: {
-                            x: 0.01,
-                            y: 0.99,
-                            bgcolor: 'rgba(255, 255, 255, 0.8)'
+                        else {
+                            freqChartDiv.innerHTML = "No data in provided time range!";
                         }
-                    };
-                    
-                    // Create the plot
-                    Plotly.newPlot('DisruptionFreqChart', traces, layout);
-                }
-                else {
-                    freqChartDiv.innerHTML = "No data in provided time range!";
-                }
-            }
+                    }
             
-            console.log("Sending: seniorDisruptionQueries.php?q=" + input + "&g=&a=&b=2");
-            xhtpp.open("GET", "seniorDisruptionQueries.php?q=" + input + "&g=&a=&b=2", true);
+            console.log("Sending: seniorDisruptionQueries.php?q=" + input);
+            xhtpp.open("GET", "seniorDisruptionQueries.php?q=" + input, true);
             xhtpp.send();
         }
 
         function CriticalityFunc(){
-            console.log("CriticalityC Called");
-            var xhtpp = new XMLHttpRequest();
             xhtpp.onload = function () {
                 if (this.readyState == 4 && this.status == 200) {
 
@@ -798,6 +908,14 @@ $user_FullName = $_SESSION['FullName']; */
                         console.log("Katya is rad");
                         console.log(JSON.stringify(my_JSON_object));
                         data = my_JSON_object.criticality;
+
+                        //Sort the array by the 'score' property from highest to lowest (descending)
+                        data.sort((a, b) => {
+                            const critA = Number(a.Criticality);
+                            const critB = Number(b.Criticality);
+                            return critB - critA;
+                        });
+                        console.log(data);
 
                         const CriticalityTable = document.getElementById("CriticalityTable");
                         CriticalityTable.innerHTML = ""; //Clear out placeholder
@@ -822,8 +940,8 @@ $user_FullName = $_SESSION['FullName']; */
                 }
              }
 
-            console.log("Sending: seniorDisruptionQueries.php?q=&g=&a=&b=3");
-            xhtpp.open("GET", "seniorDisruptionQueries.php?q=&g=&a=&b=3", true);
+            console.log("Sending: senior_criticality_query.php");
+            xhtpp.open("GET", "senior_criticality_query.php", true);
             xhtpp.send();
     }
 
@@ -853,7 +971,7 @@ $user_FullName = $_SESSION['FullName']; */
                 x: dsd_regions,
                 y: dsd_other_values,
                 type: 'bar',
-                name: 'Disruption Events',
+                name: 'Total Number',
                 marker: {
                 color: '#FFDD00'
                 }
