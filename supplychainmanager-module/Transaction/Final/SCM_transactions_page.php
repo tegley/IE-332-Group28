@@ -22,8 +22,6 @@ $user_FullName = $_SESSION['FullName'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-3.3.0.min.js" charset="utf-8"></script> <!-- JavaScript for Plotly -->
     
-    <script src="SCM_display_alerts.js"></script> <!-- JavaScript for alerts -->
-
     <style>
         @import "standardized_project_formatting.css";
         #form-box {
@@ -237,37 +235,56 @@ $user_FullName = $_SESSION['FullName'];
 
                 <!-- Status message for user validation -->
                 <div id="statusMessage" class="mt-3"></div>
+                <div class = "scroll-box-MainContent" id = transactionDetails>
 
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <h5>Leaving From</h5>
-                        <div class="scroll-box" id="leavingBox">
-                            <p class="text-muted">Submit query to see results...</p>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="stats-header">All Transaction Info</div>
+                            <div class="scroll-box" id="transactionBox">
+                                <p class="text-muted">Submit query to see results...</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="stats-header">Select a Transactions</div>
+                            <div class="scroll-box" id="viewTransactionBox">
+                                <p class="text-muted">Submit query to see results...</p>
+                            </div>
+                        </div>
+                        </div>
+
+                    <div class="row mt-4">
+
+                        <div class="col-md-6">
+                            <div class="stats-header">Leaving From</div>
+                            <div class="scroll-box" id="leavingBox">
+                                <p class="text-muted">Submit query to see results...</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="stats-header">Arriving At</div>
+                            <div class="scroll-box" id="arrivingBox">
+                                <p class="text-muted">Submit query to see results...</p>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <h5>Arriving At</h5>
-                        <div class="scroll-box" id="arrivingBox">
-                            <p class="text-muted">Submit query to see results...</p>
+                    <div class="row mt-4">
+
+                        <div class="col-md-6">
+                            <div class="stats-header">Adjustments Overview</div>
+                            <div class="scroll-box" id="adjustmentDetails">
+                                <p class="text-muted">Submit query to see results...</p>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="row mt-4">
-
-                    <div class="col-md-6">
-                        <div class="stats-header">Adjustments Overview</div>
-                        <div class="scroll-box" id="adjustmentDetails">
-                            <p class="text-muted">Submit query to see results...</p>
+                        <div class="col-md-6 text-center">
+                            <div class="stats-header">Top Companies by Shipment Volume</div>
+                            <div class = "col-md-6 text-center" id = "lineChartAdjustments"></div>
                         </div>
-                    </div>
 
-                    <div class="col-md-6 text-center">
-                        <div class="stats-header">Top Companies by Shipment Volume</div>
-                           <div class = "col-md-6 text-center" id = "lineChartAdjustments"></div>
                     </div>
-
                 </div>
 
             </div> <!-- End Company transactions -->
@@ -613,13 +630,56 @@ function showCustomer(startDate, endDate, userInput, filterType) {
                 console.log("Parsed data:", data);
 
                 // Clear boxes
+                const transactionDiv = document.getElementById("transactionBox");
                 const leavingDiv = document.getElementById("leavingBox");
                 const arrivingDiv = document.getElementById("arrivingBox");
                 const adjusmentsDiv = document.getElementById("adjustmentDetails");
+                transactionDiv.innerHTML = "";
                 leavingDiv.innerHTML = "";
                 arrivingDiv.innerHTML = "";
                 adjusmentsDiv.innerHTML = "";
                 document.getElementById("lineChartAdjustments").innerHTML = "";
+
+
+                // Display All Transactions
+                if (data.transactionShip && data.transactionShip.length > 0) {
+                    data.transactionShip.forEach(item => {
+                        const div = document.createElement("div");
+                        div.className = "list-item";
+                        div.innerHTML = `
+                            <strong>Transaction ID:</strong> ${item.TransactionID}<br>
+                            <strong>Transaction Type:</strong> ${item.Type}<br>
+                            <strong>Company:</strong> ${item.CompanyName}<br>
+                        `;
+                        div.addEventListener('click', function() {
+                        document.querySelectorAll('.list-item').forEach(el => el.style.backgroundColor = '#f8f9fa');
+                        this.style.backgroundColor = '#e3f2fd';
+                        transactionAJAX(item.TransactionID, item.Type);
+                    });
+                        transactionDiv.appendChild(div);
+                    });
+                } else {
+                    transactionDiv.innerHTML = '<p class="text-muted">No shipments found</p>';
+                }
+                if (data.transactionRec && data.transactionRec.length > 0) {
+                    data.transactionRec.forEach(item => {
+                        const div = document.createElement("div");
+                        div.className = "list-item";
+                        div.innerHTML = `
+                            <strong>Transaction ID:</strong> ${item.TransactionID}<br>
+                            <strong>Transaction Type:</strong> ${item.Type}<br>
+                            <strong>Company:</strong> ${item.CompanyName}<br>
+                        `;
+                        div.addEventListener('click', function() {
+                        document.querySelectorAll('.list-item').forEach(el => el.style.backgroundColor = '#f8f9fa');
+                        this.style.backgroundColor = '#e3f2fd';
+                        transactionAJAX(item.TransactionID, item.Type);
+                    });
+                        transactionDiv.appendChild(div);
+                    });
+                } else {
+                    transactionDiv.innerHTML = '<p class="text-muted">No shipments found</p>';
+                }
 
                 // Display leaving shipments
                 if (data.leavingCompany && data.leavingCompany.length > 0) {
@@ -682,10 +742,10 @@ function showCustomer(startDate, endDate, userInput, filterType) {
             });
 
             // Filter by date range
-        const filteredData = data.leavingCompany.filter(item => {
-            const itemDate = new Date(item.ActualDate); // Your date field
-            return itemDate >= new Date(startDate) && itemDate <= new Date(endDate);
-        });
+            const filteredData = data.leavingCompany.filter(item => {
+                const itemDate = new Date(item.ActualDate); 
+                return itemDate >= new Date(startDate) && itemDate <= new Date(endDate);
+            });
 
         const sortedCompanies = Object.entries(companyCounts)
             .sort((a, b) => b[1] - a[1])
@@ -746,6 +806,113 @@ function showCustomer(startDate, endDate, userInput, filterType) {
 
     // Send the request
     const url = "SCMTransactionQueries.php?q=" + encodeURIComponent(q) + "&g=" + encodeURIComponent(g);
+    console.log("Opening request to:", url);
+    
+    xhttp.open("GET", url, true);
+    xhttp.send();
+}
+
+function transactionAJAX(transactionID, transactionType) {
+    console.log("transactionAJAX() called");
+    // Package parameters
+    const q = `${transactionID},${transactionType}`;
+
+    console.log("Sending request with q=" + q);
+
+    document.getElementById("viewTransactionBox").innerHTML = '<p class="text-muted">Loading...</p>';
+
+    
+
+    // Create XMLHttpRequest
+    const xhttp = new XMLHttpRequest();
+
+    xhttp.onload = function() {
+        console.log("Response received. Status:", this.status);
+        console.log("Ready state:", this.readyState);
+        
+        if (this.readyState == 4 && this.status == 200) {
+            console.log("Response text:", this.responseText.substring(0, 200));
+
+            try {
+                // Parse the JSON returned from PHP
+                const my_JSON_object = JSON.parse(this.responseText);
+                console.log("Parsed data:", my_JSON_object);
+
+                // Clear boxes
+                const transactionDiv = document.getElementById("viewTransactionBox");
+                transactionDiv.innerHTML = "";
+       
+                if(transactionType === 'Shipping'){
+                    const info = my_JSON_object[0];   // JSON Array clarifying what info needs to be "grabbed"
+
+                    const fields = [
+                        ["Company Name", info.CompanyName],
+                        ["ShipmentID", info.ShipmentID],
+                        ["ActualDate", info.ActualDate],
+                        ["Quantity Shipped", info.Quantity],
+                        ["City", info.City],
+                        ["Country", info.CountryName],
+                        ["Continent", info.ContinentName],
+                        ["Product ID", info.ProductID]
+                    ];
+
+
+                    fields.forEach(([label, value]) => {
+                        const div = document.createElement("div");
+                        div.className = "list-item";
+                        div.innerHTML = `<strong>${label}:</strong> ${value}`;
+                        transactionDiv.appendChild(div);
+                    });
+                }
+                if (transactionType === 'Receiving') {
+
+                    const info = my_JSON_object[0];   // JSON Array clarifying what info needs to be "grabbed"
+
+                    const fields = [
+                        ["Company Name", info.CompanyName],
+                        ["ReceivingID", info.ReceivingID],
+                        ["Received Date", info.ReceivedDate],
+                        ["Quantity Received", info.QuantityReceived],
+                        ["City", info.City],
+                        ["Country", info.CountryName],
+                        ["Continent", info.ContinentName],
+                        ["Product ID", info.ProductID]
+                    ];
+
+
+                    fields.forEach(([label, value]) => {
+                        const div = document.createElement("div");
+                        div.className = "list-item";
+                        div.innerHTML = `<strong>${label}:</strong> ${value}`;
+                        transactionDiv.appendChild(div);
+                    });
+                }
+
+                
+                
+            } catch (error) {
+                console.error("Error parsing response:", error);
+                document.getElementById("statusMessage").innerHTML = 
+                    `<div class="alert alert-danger">Error parsing data: ${error.message}</div>`;
+                document.getElementById("leavingBox").innerHTML = '<p class="text-danger">Error loading data</p>';
+                document.getElementById("arrivingBox").innerHTML = '<p class="text-danger">Error loading data</p>';
+            }
+
+        } else if (this.readyState == 4) {
+            console.error("Error loading data. Status:", this.status);
+            document.getElementById("statusMessage").innerHTML = 
+                `<div class="alert alert-danger">Error loading data. Status: ${this.status}</div>`;
+        }
+    };
+
+    xhttp.onerror = function() {
+        console.error("Network error occurred");
+        document.getElementById("statusMessage").innerHTML = 
+            '<div class="alert alert-danger">Network error occurred. Check console for details.</div>';
+    };
+
+    // Send the request
+    const url = "generalTransactionQueries.php?q=" + encodeURIComponent(q);
     console.log("Opening request to:", url);
     
     xhttp.open("GET", url, true);
@@ -1033,3 +1200,4 @@ function showCustomerDistributors(startDate, endDate, CompanyName) {
 
 </body>
 </html>
+
