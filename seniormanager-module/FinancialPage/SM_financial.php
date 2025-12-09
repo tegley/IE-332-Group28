@@ -778,7 +778,7 @@ function CompanyInformationAJAX(company_name) {
 
         const fields = [
                         ["Company Name", info.CompanyName],
-                        ["ReceivingID", info.CompanyID],
+                        ["CompanyID", info.CompanyID],
                         ["Company Address", address],
                         ["Company Type", info.Type],
                         ["Company Tier", info.TierLevel],
