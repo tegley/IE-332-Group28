@@ -232,23 +232,21 @@ $user_FullName = $_SESSION['FullName'];
                             <div class="card-body row">
                                 <!-- Important Info -->
                                 <div class="col-md-6">
-                                    <div class="card">
+                                    <div class="card" style="height: 250px;">
                                         <div class="card-header">Important Information</div>
 
-                                        <div class="card-body" id="important-info-id" style="max-height:150px;">
+                                        <div class="card-body" id="important-info-id" style="max-height:170px;">
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Other Info -->
                                 <div class="col-md-6">
-                                    <div class="card" style="height: 300px;">
+                                    <div class="card" style="height: 250px;">
                                         <div class="card-header" id="otherInfoHeader">Other Information</div>
-                                        <div class="card-body">
-                                            <ul class="list-group list-group-flush" id="otherInfo" style="max-height:300px; overflow-y: auto;">
-                                                <p class="text-muted">Submit query to see results...</p>
-                                            </ul>
-                                        </div>
+                                        <ul class="list-group list-group-flush" id="otherInfo" style="max-height:200px; overflow-y: auto;">
+                                            <p class="text-muted">Submit query to see results...</p>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -257,18 +255,18 @@ $user_FullName = $_SESSION['FullName'];
                             <div class="card-body row">
 
                                 <div class="col-md-6">
-                                    <div class="card">
+                                    <div class="card" style="height: 200px;">
                                         <div class="card-header">Company Depends On</div>
-                                        <ul class="list-group list-group-flush" id="dependsOn">
+                                        <ul class="list-group list-group-flush" id="dependsOn" style="max-height:150px; overflow-y: auto;">
                                             <p class="text-muted">Submit query to see results...</p>
                                         </ul>
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <div class="card">
+                                    <div class="card" style="height: 200px;">
                                         <div class="card-header">Company Is Depended On By</div>
-                                        <ul class="list-group list-group-flush" id="dependedOn">
+                                        <ul class="list-group list-group-flush" id="dependedOn" style="max-height:150px; overflow-y: auto;">
                                             <p class="text-muted">Submit query to see results...</p>
                                         </ul>
                                     </div>
