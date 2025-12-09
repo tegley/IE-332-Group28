@@ -1,8 +1,8 @@
 <?php
 $servername = "mydb.itap.purdue.edu";
 
-$username = "cox447";//yourCAREER/groupusername
-$password = "LunaZuna704";//yourgrouppassword
+$username = "g1151938";//yourCAREER/groupusername
+$password = "Purdue28";//yourgrouppassword
 $database = $username;//ITaPsetupdatabasename=yourcareerlogin
 
 $conn = new mysqli($servername, $username, $password, $database);
@@ -11,178 +11,139 @@ if ($conn->connect_error) {
     die("Connection failed:" . $conn->connect_error);
 }
 
-$tmp = $_GET['q']; //['Start Date', 'End Date']
+$date = $_GET['q'];
 $quer = $_GET['g']; //['Region','What drop Down was Selected']
-$info = $_GET['a']; //['Disruption or Company','ID or Name']
-$num = $_GET['b']; //['Query Needed']
 
 // Convert the comma-delimited string into an array of strings.
-$tmp = explode('|', $tmp); //["start date"| "end date"]
-// print_r($tmp);
+$date = explode('|', $date); //["start date"| "end date"]
 $quer = explode('|', $quer); ////["Region Type", "Region Selected]
-// print_r($quer);
-$info = explode('|', $info); ////['Disruption or Company','ID or Name']
-// print_r($info);
-$num = explode('|', $num); ////['Query Needed']
-// print_r($info);
 
-//We will need to build the queries per user selection, but the added constraints will be the same accross all queries, so we will make additions rn
+//Disruption frequency chart
+if($date[0] !== 'Search'){
+    //Date handling - convert month inputs to yyyy-mm-dd format
+    $tmp = ['Date 1', 'Date 2'];
+    //Starting month -> yyyy-mm-01
+    $start_date_object = DateTime::createFromFormat('Y-m', $date[0]);
+    $start_date = $start_date_object->format('Y-m-d');
+
+    //Ending month -> yyyy-mm-last day of corresponding month
+    $end_date_object = DateTime::createFromFormat('Y-m', $date[1]);
+    $end_date = $end_date_object->format('Y-m-t');
+
+    //Assigning values to tmp
+    $tmp[0] = $start_date;
+    $tmp[1] = $end_date;
+    $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "') OR (e.EventRecoveryDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "') OR (e.EventDate < '" . $tmp[0] . "' AND e.EventRecoveryDate > '" . $tmp[1] . "'))";
+
+    // Disruption Frequency Over Time - Calculations for outlining time frequency chart 
+    $frequencySelect_average_max = "SELECT ROUND(AVG(DATEDIFF(e.EventRecoveryDate, e.EventDate)), 2) AS avgDuration, ROUND(MAX(DATEDIFF(e.EventRecoveryDate, e.EventDate)), 2) AS maxDuration, ROUND(MIN(DATEDIFF(e.EventRecoveryDate, e.EventDate)), 2) AS minDuration  FROM DisruptionEvent e";
+
+    //Puting query together and generating result
+    $frequencyQuery_1 = "{$frequencySelect_average_max} {$whereStateEvents} GROUP BY DATE_FORMAT(e.EventDate, '%Y-%m');";
+    //  echo $frequencyQuery;
+
+    $resultfrequency_1 = mysqli_query($conn, $frequencyQuery_1);
+    // Convert the table into individual rows and reformat.
+    while ($row = mysqli_fetch_array($resultfrequency_1, MYSQLI_ASSOC)) {
+        $frequency_1[] = $row;
+    }
+
+    // Disruption Frequency Over Time - Counts by month
+    $frequencySelect_counts_by_month = "SELECT DATE_FORMAT(e.EventDate, '%Y-%m') AS YearMonth, COUNT(e.EventID) AS DisruptionFrequency";
+    $frequency_from = "FROM ImpactsCompany i JOIN DisruptionEvent e ON e.EventID = i.EventID";
+    $frequency_groupby = "GROUP BY DATE_FORMAT(e.EventDate, '%Y-%m')";
+
+    //Puting query together and generating result
+    $frequencyQuery_2 = "{$frequencySelect_counts_by_month} {$frequency_from} {$whereStateEvents} {$frequency_groupby};";
+
+    $resultfrequency_2 = mysqli_query($conn, $frequencyQuery_2);
+    // Convert the table into individual rows and reformat.
+    while ($row = mysqli_fetch_array($resultfrequency_2, MYSQLI_ASSOC)) {
+        $frequency_2[] = $row;
+    }
+
+    //Making JSON Object
+    $seniorDisruptionResults = [
+        "frequency" => $frequency_1,
+        "frequency_counts" => $frequency_2
+    ];
+    
+    echo json_encode($seniorDisruptionResults);
+    $conn->close();
+    exit();
+}
+
+//Other charts
+else {
+
 $groupByRegion = ""; //Group By
 $whereState = "";
 $whereStateEvents = "";
-$whereStateTab2 = "";
 
-    if (!empty($tmp[0])) { //NOT ALL TABS NEED THIS FILTER WHICH IS WHY IT IS OPTIONAL
-        $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "') OR (e.EventRecoveryDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp[1] . "') OR (e.EventDate < '" . $tmp[0] . "' AND e.EventRecoveryDate > '" . $tmp[1] . "'))";
+//Group By statement added per user input USER HAS OPTION TO NOT SELECT THESE FILTERS
+if (!empty($quer[0])) { 
+    switch ($quer[0]) {
+        case "Country":
+            $groupByRegion = "GROUP BY l.CountryName";
+            break;
+        case "Continent":
+            $groupByRegion = "GROUP BY l.ContinentName";
+            break;
+        default:
+        $groupByRegion = "";
     }
-    //Group By statement added per user input USER HAS OPTION TO NOT SELECT THESE FILTERS
-    if (!empty($quer[0])) { 
-        switch ($quer[0]) {
-            case "Country":
-                $groupByRegion = "GROUP BY l.CountryName";
-                break;
-            case "Continent":
-                $groupByRegion = "GROUP BY l.ContinentName";
-                break;
-            default:
-            $groupByRegion = "";
-        }
+}
+
+//WHERE statement added per user input
+if (!empty($quer[1])) { //Adding appropriate where if user input a specific region.
+    switch ($quer[0]) {
+        case "Country":
+            $whereState = " AND l.CountryName = '" . $quer[1] . "'";
+            break;
+        case "Continent":
+            $whereState = " AND l.ContinentName = '" . $quer[1] . "'";
+            break;
+        default:
+        $whereState = "";
     }
-    // print_r($groupByRegion);
-    //WHERE statement added per user input
-        if (!empty($quer[1])) { //Adding appropriate where if user input a specific region.
-            switch ($quer[0]) {
-                case "Country":
-                    $whereState = " WHERE l.CountryName = '" . $quer[1] . "'";
-                    break;
-                case "Continent":
-                    $whereState = " WHERE l.ContinentName = '" . $quer[1] . "'";
-                    break;
-                default:
-                $whereState = "";
-            }
-        }
-        // print_r($whereState);
-        if (!empty($info[0])) { 
-        switch ($info[0]) {
-            case "Disruption":
-                $whereStateTab2 = " WHERE e.EventID = '" . $info[1] . "'";
-                break;
-            case "Company":
-                $whereStateTab2 = " WHERE c.CompanyName = '" . $info[1] . "'";
-                break;
-            default:
-            $whereStateTab2 = "";
-        }
-    }
-    // print_r($whereStateTab2);
+}
+    // print_r($whereState);
 
-    //Disruption Events Impacting Companies
-    $companyAffectedByEventSelect = "SELECT i.AffectedCompanyID,  c.CompanyName, i.ImpactLevel, e.EventID, e.EventDate, y.CategoryName, l.CountryName, l.ContinentName FROM ImpactsCompany i JOIN Company c ON i.AffectedCompanyID = c.CompanyID JOIN DisruptionEvent e ON e.EventID = i.EventID JOIN DisruptionCategory y ON y.CategoryID = e.CategoryID JOIN Location l ON l.LocationID = c.LocationID";
+//Disruption Events Impacting Companies
+$companyAffectedByEventSelect = "SELECT i.AffectedCompanyID,  c.CompanyName, i.ImpactLevel, e.EventID, e.EventDate, e.EventRecoveryDate, y.CategoryName, l.CountryName, l.ContinentName FROM ImpactsCompany i JOIN Company c ON i.AffectedCompanyID = c.CompanyID JOIN DisruptionEvent e ON e.EventID = i.EventID JOIN DisruptionCategory y ON y.CategoryID = e.CategoryID JOIN Location l ON l.LocationID = c.LocationID";
 
-    //Puting query together and generating result
-    $companyAffectedByEventQuery = "{$companyAffectedByEventSelect}{$whereState}{$whereStateTab2} ORDER BY e.EventID;";
-    //  echo $companyAffectedByEventQuery;
+//Puting query together and generating result
+$companyAffectedByEventQuery = "{$companyAffectedByEventSelect} {$whereStateEvents}{$whereState} ORDER BY e.EventID;";
+//  echo $companyAffectedByEventQuery;
 
-    $resultcompanyAffectedByEvent = mysqli_query($conn, $companyAffectedByEventQuery);
-    // Convert the table into individual rows and reformat.
-    $companyAffectedByEvent = []; //Creating shipping Array
-    while ($row = mysqli_fetch_array($resultcompanyAffectedByEvent, MYSQLI_ASSOC)) {
-        $companyAffectedByEvent[] = $row;
-    }
-    //   echo json_encode($companyAffectedByEvent);
+$resultcompanyAffectedByEvent = mysqli_query($conn, $companyAffectedByEventQuery);
+// Convert the table into individual rows and reformat.
+$companyAffectedByEvent = []; //Creating shipping Array
+while ($row = mysqli_fetch_array($resultcompanyAffectedByEvent, MYSQLI_ASSOC)) {
+    $companyAffectedByEvent[] = $row;
+}
 
-    // Regional Disruption Overview
-    $regionalOverviewSelect = "SELECT l.CountryName, l.ContinentName, COUNT(CASE WHEN i.ImpactLevel = 'High' THEN 0 ELSE 1 END) AS leftOverDisruption, COUNT(CASE WHEN i.ImpactLevel = 'High' THEN 1 ELSE 0 END) AS HighImpactCount FROM Company c JOIN ImpactsCompany i ON i.AffectedCompanyID = c.CompanyID JOIN DisruptionEvent e ON e.EventID = i.EventID JOIN Location l ON l.LocationID = c.LocationID";
+// Regional Disruption Overview
+$regionalOverviewSelect = "SELECT l.CountryName, l.ContinentName, COUNT(i.EventID) AS leftOverDisruption, SUM(CASE WHEN i.ImpactLevel = 'High' THEN 1 ELSE 0 END) AS HighImpactCount FROM Company c JOIN ImpactsCompany i ON i.AffectedCompanyID = c.CompanyID JOIN DisruptionEvent e ON e.EventID = i.EventID JOIN Location l ON l.LocationID = c.LocationID";
 
-    //Puting query together and generating result
-    $regionalOverviewQuery = "{$regionalOverviewSelect} {$whereState} {$groupByRegion};";
-    //  echo $regionalOverviewQuery;
+//Puting query together and generating result
+$regionalOverviewQuery = "{$regionalOverviewSelect} {$whereStateEvents}{$whereState} {$groupByRegion};";
 
-    $resultregionalOverview = mysqli_query($conn, $regionalOverviewQuery);
-    // Convert the table into individual rows and reformat.
-    $regionalOverview = []; //Creating shipping Array
-    while ($row = mysqli_fetch_array($resultregionalOverview, MYSQLI_ASSOC)) {
-        $regionalOverview[] = $row;
-    }
-    //   echo json_encode($regionalOverview);
+$resultregionalOverview = mysqli_query($conn, $regionalOverviewQuery);
+// Convert the table into individual rows and reformat.
+$regionalOverview = []; //Creating shipping Array
+while ($row = mysqli_fetch_array($resultregionalOverview, MYSQLI_ASSOC)) {
+    $regionalOverview[] = $row;
+}
 
-    // Disruption Frequency Over Time
-    $frequencySelect = "SELECT e.EventDate AS StartDate, COUNT(*) AS EventCount, ROUND(AVG(DATEDIFF(e.EventRecoveryDate, e.EventDate)), 2) AS avgDuration, ROUND(MAX(DATEDIFF(e.EventRecoveryDate, e.EventDate)), 2) AS maxDuration, ROUND(MIN(DATEDIFF(e.EventRecoveryDate, e.EventDate)), 2) AS minDuration  FROM DisruptionEvent e";
+//Making JSON Object
+$seniorDisruptionResults = [
+    "companyAffectedByEvent" => $companyAffectedByEvent,
+    "regionalOverview" => $regionalOverview,
+];
 
-    //Puting query together and generating result
-    $frequencyQuery = "{$frequencySelect} {$whereStateEvents} GROUP BY e.EventDate;";
-    //  echo $frequencyQuery;
-
-    $resultfrequency = mysqli_query($conn, $frequencyQuery);
-    // Convert the table into individual rows and reformat.
-    $frequency = []; //Creating shipping Array
-    while ($row = mysqli_fetch_array($resultfrequency, MYSQLI_ASSOC)) {
-        $frequency[] = $row;
-    }
-    //   echo json_encode($frequency);
-
-    //Criticality Query
-    $companyQuery = "SELECT c.CompanyID, c.CompanyName FROM Company c;";
-    //  echo $companyNameQuery;
-    //Execute the SQL query
-    $resultcompany = mysqli_query($conn, $companyQuery);
-    // Convert the table into individual rows and reformat.
-    $company = []; //Creating shipping Array
-    while ($row = mysqli_fetch_array($resultcompany, MYSQLI_ASSOC)) {
-    $company[] = $row;
-    }
-    // echo json_encode($company);
-    $length = count($company);
-    // echo $length;
-    $final_results = []; //Array of results
-    for ($i = 0; $i< $length; $i++){
-        $my_i_result = []; //resetting array
-        $companyID = $company[$i]['CompanyID'];
-    $query_statement = "SELECT c.CompanyName, COUNT( DISTINCT d.DownstreamCompanyID) * (SELECT COUNT(*) FROM Company x 
-        JOIN ImpactsCompany i ON i.AffectedCompanyID = x.CompanyID JOIN DisruptionEvent e ON e.EventID = i.EventID WHERE x.CompanyID = '{$companyID}' AND i.ImpactLevel = 'High') AS Criticality
-        FROM Company c JOIN DependsOn d ON d.UpstreamCompanyID = c.CompanyID WHERE c.CompanyID = '{$companyID}';";
-    $result = mysqli_query($conn, $query_statement);
-    while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-        $my_i_result[] = $row;
-        }
-    $final_results[$i] = [
-        "CompanyID" => $companyID,
-        "CompanyName" => $company[$i]['CompanyName'],
-        "Criticality" => $my_i_result[0]['Criticality']
-    ];
-    }
-
-
-         //Making JSON Object based on user need
-
-    if (!empty($num[0])) { 
-        switch ($num[0]) {
-            case "1":
-                $seniorDisruptionResults = [
-                    "companyAffectedByEvent" => $companyAffectedByEvent,
-                    "regionalOverview" => $regionalOverview
-                ];
-                break;
-            case "2":
-                $seniorDisruptionResults = [
-                    "frequency" => $frequency
-                ];
-                break;
-            case "3":
-                $seniorDisruptionResults = [
-                    "criticality" => $final_results
-                ];
-                break;
-            default:
-            $seniorDisruptionResults = "";
-        }
-    }
-
-
-
-    echo json_encode($seniorDisruptionResults);
-   
+echo json_encode($seniorDisruptionResults);
 
 $conn->close();
+}
 ?>
