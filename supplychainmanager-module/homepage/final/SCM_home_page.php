@@ -242,7 +242,7 @@ $user_FullName = $_SESSION['FullName'];
 
                                 <!-- Other Info -->
                                 <div class="col-md-6">
-                                    <div class="card" style="height: 150px;">
+                                    <div class="card" style="height: 300px;">
                                         <div class="card-header" id="otherInfoHeader">Other Information</div>
                                         <div class="card-body">
                                             <ul class="list-group list-group-flush" id="otherInfo" style="max-height:300px; overflow-y: auto;">
