@@ -246,7 +246,7 @@ $user_FullName = $_SESSION['FullName'];
                         </div>
 
                         <div class="col-md-6">
-                            <div class="stats-header">Select a Transactions</div>
+                            <div class="stats-header">Select a Transaction!</div>
                             <div class="scroll-box" id="viewTransactionBox">
                                 <p class="text-muted">Submit query to see results...</p>
                             </div>
@@ -678,7 +678,7 @@ function showCustomer(startDate, endDate, userInput, filterType) {
                         transactionDiv.appendChild(div);
                     });
                 } else {
-                    transactionDiv.innerHTML = '<p class="text-muted">No shipments found</p>';
+                    transactionDiv.innerHTML = '<p class="text-muted">No receivings found</p>';
                 }
 
                 // Display leaving shipments
