@@ -1,3 +1,16 @@
+<?php
+/*session_start();
+
+//Check if the user is NOT logged in (security measure)
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    echo "<h1>Unauthorized Login</h1>";
+    echo "<p>Please visit the <a href='index.php'>login page</a>!</p>";
+    exit();
+}
+
+$user_FullName = $_SESSION['FullName']; */
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
