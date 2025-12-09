@@ -173,13 +173,11 @@ $user_FullName = $_SESSION['FullName']; */
                         </div>
 
                         <!-- TABLE CARD -->
-                        <div class="card">
-                            <div class="card-body" style="max-height: 550px; overflow-y: auto;">
+                        <div class="col-md-12">
+                            <div class="card d-flex flex-column mb-3" style="height: 550px; overflow: hidden;">
                                 <div class="card-header fw-bold text-center">Top Distributors By Shipment Volume</div>
-                                <div class="card-body">
-                                    <div id="DistributorTransactionVolumeChart" style="height: 500px;">
-                                        <p class="text-muted">Submit query to see results...</p>
-                                    </div>
+                                <div id="DistributorTransactionVolumeChart" style="height: 550px;">
+                                    <p class="text-muted">Submit query to see results...</p>
                                 </div>
                             </div>
                         </div>
@@ -338,17 +336,14 @@ $user_FullName = $_SESSION['FullName']; */
 
                             <!-- RIGHT PIE CHART -->
                             <div class="col-md-6">
-                                <div class="card" style="height: 350px;">
-                                    <div class="card-header fw-bold text-center">
-                                        Product Distribution Chart
-                                    </div>
-                                    <div class="card-body">
-                                        <div id="ProductDistPie" style="height: 280px;">
-                                            <p class="text-muted">Submit query to see results...</p>
-                                        </div>
+                                <div class="card d-flex flex-column" style="height: 350px; overflow: hidden">
+                                    <div class="card-header fw-bold text-center">Product Delivered Distribution Chart</div>
+                                    <div id="ProductDistPie" class="flex-grow-1">
+                                        <p class="text-muted">Submit query to see results...</p>
                                     </div>
                                 </div>
                             </div>
+
 
                         </div>
 
@@ -598,8 +593,7 @@ function createDisabledOption() {
                         },
                         hovermode: 'closest',
                         autosize: true,
-                        height: 500,
-                        margin: { l: 80, r: 50, t: 80, b: 120 }
+                        margin: { l: 75, r: 50, t: 75, b: 80 }
                     };
                     
                     Plotly.newPlot('DistributorTransactionVolumeChart', [trace], layout, {responsive: true});
@@ -817,12 +811,12 @@ function createDisabledOption() {
                     var pieData = [{
                         values: productQuantity,
                         labels: labels,
-                        type: 'pie'
+                        type: 'pie',
+                        textinfo: 'none'
                         }];
                     var layout = {
-                        title: 'Products Delievered Distribution',
                         autosize: true,
-                        margin: { l: 20, r: 20, t: 40, b: 20 },
+                        margin: { l: 20, r: 20, t: 20, b: 20 },
                         hovertemplate: '<b>%{labels}</b><br>Quantity: %{values:,}<extra></extra>'
                         };
 
