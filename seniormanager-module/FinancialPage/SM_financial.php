@@ -774,31 +774,24 @@ function CompanyInformationAJAX(company_name) {
         const companyInfoDiv = document.getElementById("companyInfo");
         companyInfoDiv.innerHTML = ""; //Clear out placeholder
         address = String(my_JSON_object.companyInfo[0].City) + ", " + String(my_JSON_object.companyInfo[0].CountryName);
+        const info = my_JSON_object.companyInfo[0];
 
-        var div1 = document.createElement("div");
-        div1.className = "list-item";
-        div1.innerHTML = `<strong>Company Name:</strong> ${my_JSON_object.companyInfo[0].CompanyName}`;
-        companyInfoDiv.appendChild(div1);
-        var li5 = document.createElement("div");
-        li5.className = "list-item";
-        li5.innerHTML = `<strong>CompanyID:</strong> ${my_JSON_object.companyInfo[0].CompanyID}`;
-        companyInfoDiv.appendChild(li5);
-        var li2 = document.createElement("div");
-        li2.className = "list-item";
-        li2.innerHTML = `<strong>Company Address:</strong> ${address}`;
-        companyInfoDiv.appendChild(li2);
-        var li3 = document.createElement("div");
-        li3.className = "list-item";
-        li3.innerHTML = `<strong>Company Type:</strong> ${my_JSON_object.companyInfo[0].Type}`;
-        companyInfoDiv.appendChild(li3);
-        var li4 = document.createElement("div");
-        li4.className = "list-item";
-        li4.innerHTML = `<strong>Company Tier:</strong> ${my_JSON_object.companyInfo[0].TierLevel}`;
-        companyInfoDiv.appendChild(li4);    
-        var li5 = document.createElement("div");
-        li5.className = "list-item";
-        li5.innerHTML = `<strong>Five Most Recent Health Scores:</strong>`;
-        companyInfoDiv.appendChild(li5);    
+        const fields = [
+                        ["Company Name", info.CompanyName],
+                        ["ReceivingID", info.CompanyID],
+                        ["Company Address", address],
+                        ["Company Type", info.Type],
+                        ["Company Tier", info.TierLevel],
+                        ["Five Most Recent Health Scores", ""]
+                    ];
+
+                    fields.forEach(([label, value]) => {
+                        const div = document.createElement("div");
+                        div.className = "list-item";
+                        div.innerHTML = `<strong>${label}:</strong> ${value}`;
+                        companyInfoDiv.appendChild(div);
+                    });
+ 
         const data = my_JSON_object.pastHealthScores;
 
 
