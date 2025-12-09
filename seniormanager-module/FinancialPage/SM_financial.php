@@ -260,9 +260,9 @@ $user_FullName = $_SESSION['FullName'];
 
                             <!-- Company Info -->
                             <div class="col-md-6">
-                                <div class="card" style="height: 350px;">
+                                <div class="card" style="height: 350px;  overflow-y: auto;">
                                     <div class="card-header">Company Information</div>
-                                    <div id="companyInfo" style="height: 350px;">
+                                    <div id="companyInfo" style="height: 350px;  overflow-y: auto;">
                                         <p class="text-muted">Select a Company</p>
                                     </div>
                                 </div>
@@ -692,7 +692,7 @@ $user_FullName = $_SESSION['FullName'];
 
             xhtpp.open("GET", "seniorFinancialQueries.php?q=" + input + "&g=" + companyType, true);
             xhtpp.send();
-        } // END CompanyInformationAJAX
+        } // END 
 
 function LoadRegionFinancials(regionType, region) {
 
@@ -794,7 +794,28 @@ function CompanyInformationAJAX(company_name) {
         var li4 = document.createElement("div");
         li4.className = "list-item";
         li4.innerHTML = `<strong>Company Tier:</strong> ${my_JSON_object.companyInfo[0].TierLevel}`;
-        companyInfoDiv.appendChild(li3);    
+        companyInfoDiv.appendChild(li4);    
+        var li5 = document.createElement("div");
+        li5.className = "list-item";
+        li5.innerHTML = `<strong>Five Most Recent Health Scores:</strong>`;
+        companyInfoDiv.appendChild(li5);    
+        const data = my_JSON_object.pastHealthScores;
+
+
+            if (data.length > 0) {
+                data.forEach(item => {
+                    const divFinHealth = document.createElement("div");
+                    divFinHealth.className = "list-item";
+                    divFinHealth.innerHTML = `
+                        <strong>Past Health Score:</strong> ${item.HealthScore}<br>
+                        <strong>Date Recorded:</strong> ${item.RepYear} ${item.Quarter}<br>
+                    `;
+                    companyInfoDiv.appendChild(divFinHealth);
+                });
+            } else {
+                finHealthDiv.innerHTML = '<p class="text-muted">No health data found</p>';
+            }
+
     }
     };
     xhtpp.open("GET", "SCMhomepage_queries.php?q=" + input, true);
