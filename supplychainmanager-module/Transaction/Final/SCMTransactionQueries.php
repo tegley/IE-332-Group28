@@ -55,43 +55,9 @@ $havingState = "";
          }
 
     //Transaction Queries
-    // $shippingSelect = "SELECT s.ShipmentID, s.ActualDate, s.PromisedDate, p.ProductID, p.ProductName, s.SourceCompanyID, s.DestinationCompanyID, s.DistributorID, s.TransactionID FROM Shipping s JOIN Product p ON s.ProductID = p.ProductID
-    //     JOIN Company c ON s.SourceCompanyID = c.CompanyID LEFT JOIN Location l ON l.LocationID = c.LocationID";
-    $shippingSelect = "SELECT s.ShipmentID, s.ActualDate, s.PromisedDate, s.TransactionID, r.ReceivingID, r.QuantityReceived, c.CompanyName, l.City, l.CountryName, l.ContinentName FROM Shipping s JOIN Product p ON s.ProductID = p.ProductID
-        JOIN Company c ON s.SourceCompanyID = c.CompanyID LEFT JOIN Receiving r ON r.TransactionID = s.TransactionID LEFT JOIN Location l ON l.LocationID = c.LocationID";
-
-    $receivingsSelect = "SELECT r.ReceivingID, r.ReceivedDate, r.QuantityReceived, r.TransactionID, c.CompanyName, l.City, l.CountryName, l.ContinentName
-        FROM Receiving r JOIN Company c ON r.ReceiverCompanyID = c.CompanyID JOIN Shipping s ON r.ShipmentID = s.ShipmentID JOIN Product p ON s.ProductID = p.ProductID LEFT JOIN Location l ON l.LocationID = c.LocationID";
-    
 
     $adjustmentsSelect = "SELECT a.AdjustmentID, a.AdjustmentDate, p.ProductID, a.QuantityChange, a.Reason, c.CompanyName, l.City, l.CountryName, l.ContinentName
         FROM InventoryAdjustment a JOIN Company c ON a.CompanyID = c.CompanyID JOIN Product p ON a.ProductID = p.ProductID LEFT JOIN Location l ON l.LocationID = c.LocationID";
-    
-
-    //Puting shipping query together and generating result
-    $shippingQuery = "{$shippingSelect} {$whereStateShip} GROUP BY s.ShipmentID, s.ActualDate, s.PromisedDate, s.TransactionID, r.ReceivingID, r.QuantityReceived {$havingState};";
-    //  echo $shippingQuery;
-
-    $resultshipping = mysqli_query($conn, $shippingQuery);
-    // Convert the table into individual rows and reformat.
-    $shipping = []; //Creating shipping Array
-    while ($row = mysqli_fetch_array($resultshipping, MYSQLI_ASSOC)) {
-        $shipping[] = $row;
-    }
-    //   echo json_encode($shipping);
-
-    //Putting Receivings query together and generating result
-    $receivingsQuery = "{$receivingsSelect} {$whereStateRec} GROUP BY r.ReceivingID, r.ReceivedDate, r.QuantityReceived, r.TransactionID {$havingState};";
-
-    // echo $receivingsQuery;
-    //Execute the SQL query
-    $resultreceivings = mysqli_query($conn, $receivingsQuery);
-    // Convert the table into individual rows and reformat.
-    $receivings = []; //Creating Receivings Array
-    while ($row = mysqli_fetch_array($resultreceivings, MYSQLI_ASSOC)) {
-    $receivings[] = $row;
-    }
-    // echo json_encode($receivings); //Note that you can only have one uncommented JSON encode at a time
 
 
     //Putting Adjustments query together and generating result
@@ -144,8 +110,6 @@ $havingState = "";
         
         //Making JSON Object
     $SCMTransactionResults = [
-        "shipping" => $shipping,
-        "receivings" => $receivings,
         "adjustments" => $adjustments,
         "leavingCompany" => $leavingCompany,
         "arrivingCompany" => $arrivingCompany
