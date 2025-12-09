@@ -23,8 +23,6 @@ $user_FullName = $_SESSION['FullName'];
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="SCM_display_alerts.js"></script>
-
     <style>
         @import "standardized_project_formatting.css";
 
@@ -282,29 +280,41 @@ $user_FullName = $_SESSION['FullName'];
                         <div class="card mb-3">
                             <div class="card-body">
 
-                                <form name="AddCompanyForm" onsubmit="return ValidateAddCompany()" method="post">
+                                <form name="AddCompanyForm">
 
                                     <!-- ROW 1 -->
                                     <div class="row mb-4">
 
-                                        <div class="col-md-4">
-                                            <label>Company Name</label>
-                                            <input type="text" class="form-control" name="CompanyName">
-                                        </div>
-
-                                        <div class="col-md-4">
-                                            <label>Company Type</label>
-                                            <select class="form-control" name="CompanyType">
-                                                <option value="">Select Type</option>
+                                        <div class="col-md-2">
+                                            <label for="AddCompanyType">Company Type</label>
+                                            <select class="form-select" id="AddCompanyType">
+                                                <option value="" disabled selected>Select Type:</option>
                                                 <option value="Manufacturer">Manufacturer</option>
                                                 <option value="Distributor">Distributor</option>
                                                 <option value="Retailer">Retailer</option>
                                             </select>
                                         </div>
 
-                                        <div class="col-md-4">
-                                            <label>Location</label>
-                                            <input type="text" class="form-control" name="Location">
+                                        <div class="col-md-3">
+                                            <label for="AddCompanyName">Name:</label>
+                                            <input type="text" class="form-control" id="AddCompanyName">
+                                        </div>
+
+                                        <div class="col-4" style="height:140px;">
+                                            <label for="AddLocation">Location:</label>
+                                            <select class="form-control mb-1" id="AddLocation">
+                                                <option value="" disabled selected>Select A Location:</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <label for="AddTier">Update Tier:</label>
+                                            <select class="form-select" id="AddTier">
+                                                <option value="" disabled selected>Select A Tier:</option>
+                                                <option>1</option>
+                                                <option>2</option>
+                                                <option>3</option>
+                                            </select>
                                         </div>
 
                                     </div>
@@ -312,35 +322,24 @@ $user_FullName = $_SESSION['FullName'];
                                     <!-- ROW 2 -->
                                     <div class="row mb-4">
 
-                                        <div class="col-md-4">
-                                            <label>Shipping</label>
-                                            <input type="text" class="form-control" name="Shipping">
+                                        <!-- ADD BUTTON -->
+                                        <div class="col-12 mt-3 d-flex justify-content-center">
+                                            <button type="button" onclick="AddCompanyAJAX()" class="btn btn-primary">
+                                                Add Company
+                                            </button>
                                         </div>
-
-                                        <div class="col-md-4">
-                                            <label>Receiving</label>
-                                            <input type="text" class="form-control" name="Receiving">
-                                        </div>
-
-                                        <div class="col-md-4">
-                                            <label>Inventory</label>
-                                            <input type="text" class="form-control" name="Inventory">
-                                        </div>
-
-                                    </div>
-
-                                    <!-- ADD BUTTON -->
-                                    <div class="col-12 mt-3 d-flex justify-content-center">
-                                        <button type="submit" class="btn btn-primary px-4">
-                                            Add
-                                        </button>
-                                    </div>
+                                    </div>    
 
                                 </form>
 
                             </div>
                         </div>
 
+                        <div class="card" style="background-color: #ececec; height: 75px; text-align: center;">
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <div class="card-title" style="font-family: Cambria; font-size: 15px;" id="add-company-result"></div>
+                            </div>
+                        </div>
                     </div> <!-- END TAB 3 -->
 
                 </div> <!-- END tab-content -->
@@ -354,7 +353,8 @@ $user_FullName = $_SESSION['FullName'];
         //Load Company Names when page loads
         document.addEventListener('DOMContentLoaded', function() {
             LoadTypeHealth('2019-09-09', '2025-09-09', '');
-            LoadRegionFinancials('Continent', '')
+            LoadRegionFinancials('Continent', '');
+            LoadLocations();
         });
 
         function LoadRegionList(region) {
@@ -694,94 +694,195 @@ $user_FullName = $_SESSION['FullName'];
             xhtpp.send();
         } // END CompanyInformationAJAX
 
-        function LoadRegionFinancials(regionType, region) {
+function LoadRegionFinancials(regionType, region) {
 
-            const input = regionType + "|" + region;
+    const input = regionType + "|" + region;
 
-            xhtpp = new XMLHttpRequest();
+    xhtpp = new XMLHttpRequest();
 
-            xhtpp.onload = function () {
+    xhtpp.onload = function () {
 
-                if (this.readyState == 4 && this.status == 200) {
+        if (this.readyState == 4 && this.status == 200) {
 
-                    data = JSON.parse(this.responseText);
-                    console.log(JSON.stringify(data));
+            data = JSON.parse(this.responseText);
+            console.log(JSON.stringify(data));
 
-                    const finHealthDiv = document.getElementById("regionHealthList");
-                    finHealthDiv.innerHTML = "";
+            const finHealthDiv = document.getElementById("regionHealthList");
+            finHealthDiv.innerHTML = "";
 
-                    if (data.length > 0) {
-                        data.forEach(item => {
-                            const div = document.createElement("div");
-                            div.className = "list-item";
-                            div.innerHTML = `
-                                <strong>Company Name:</strong> ${item.CompanyName}<br>
-                                <strong>Average Health Score:</strong> ${item.avgHealth}<br>
-                                <strong>Country:</strong> ${item.CountryName}<br>
-                                <strong>Continent:</strong> ${item.ContinentName}
-                            `;
+            if (data.length > 0) {
+                data.forEach(item => {
+                    const div = document.createElement("div");
+                    div.className = "list-item";
+                    div.innerHTML = `
+                        <strong>Company Name:</strong> ${item.CompanyName}<br>
+                        <strong>Average Health Score:</strong> ${item.avgHealth}<br>
+                        <strong>Country:</strong> ${item.CountryName}<br>
+                        <strong>Continent:</strong> ${item.ContinentName}
+                    `;
 
-                            div.addEventListener('click', function() {
-                                document.querySelectorAll('.list-item').forEach(el => el.style.backgroundColor = '#f8f9fa');
-                                this.style.backgroundColor = '#e3f2fd';
-                                CompanyInformationAJAX(item.CompanyName);
-                            });
+                    div.addEventListener('click', function() {
+                        document.querySelectorAll('.list-item').forEach(el => el.style.backgroundColor = '#f8f9fa');
+                        this.style.backgroundColor = '#e3f2fd';
+                        CompanyInformationAJAX(item.CompanyName);
+                    });
 
-                            finHealthDiv.appendChild(div);
-                        });
-                    } else {
-                        finHealthDiv.innerHTML = '<p class="text-muted">No health data found</p>';
-                    }
-
-                }
-            };
-
-            console.log("Sending: seniorRegionalFinancesQueries.php?q=" + input);
-            xhtpp.open("GET", "seniorRegionalFinancesQueries.php?q=" + input, true);
-            xhtpp.send();
-        }
-
-
-        function CompanyInformationAJAX(company_name) {
-            input = company_name;
-            xhtpp = new XMLHttpRequest();
-            xhtpp.onload = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                my_JSON_object = JSON.parse(this.responseText);
-                console.log(JSON.stringify(my_JSON_object));
-
-                //Company Information - Important Info
-                const companyInfoDiv = document.getElementById("companyInfo");
-                companyInfoDiv.innerHTML = ""; //Clear out placeholder
-                address = String(my_JSON_object.companyInfo[0].City) + ", " + String(my_JSON_object.companyInfo[0].CountryName);
-
-                var div1 = document.createElement("div");
-                div1.className = "list-item";
-                div1.innerHTML = `<strong>Company Name:</strong> ${my_JSON_object.companyInfo[0].CompanyName}`;
-                companyInfoDiv.appendChild(div1);
-                var li5 = document.createElement("div");
-                li5.className = "list-item";
-                li5.innerHTML = `<strong>CompanyID:</strong> ${my_JSON_object.companyInfo[0].CompanyID}`;
-                companyInfoDiv.appendChild(li5);
-                var li2 = document.createElement("div");
-                li2.className = "list-item";
-                li2.innerHTML = `<strong>Company Address:</strong> ${address}`;
-                companyInfoDiv.appendChild(li2);
-                var li3 = document.createElement("div");
-                li3.className = "list-item";
-                li3.innerHTML = `<strong>Company Type:</strong> ${my_JSON_object.companyInfo[0].Type}`;
-                companyInfoDiv.appendChild(li3);
-                var li4 = document.createElement("div");
-                li4.className = "list-item";
-                li4.innerHTML = `<strong>Company Tier:</strong> ${my_JSON_object.companyInfo[0].TierLevel}`;
-                companyInfoDiv.appendChild(li3);    
+                    finHealthDiv.appendChild(div);
+                });
+            } else {
+                finHealthDiv.innerHTML = '<p class="text-muted">No health data found</p>';
             }
-            };
-            xhtpp.open("GET", "SCMHomepage_queries.php?q=" + input, true);
-            console.log("Sending request with q=" + input);
-            xhtpp.send();
+
+        }
+    };
+
+    console.log("Sending: seniorRegionalFinancesQueries.php?q=" + input);
+    xhtpp.open("GET", "seniorRegionalFinancesQueries.php?q=" + input, true);
+    xhtpp.send();
 }
-    </script>
+
+function LoadLocations() {
+    fetch('SM_load_locations.php')
+    .then(response => response.json())
+    .then(data => {
+        const location_dropdown = document.getElementById('AddLocation');
+        location_dropdown.innerHTML = '';
+        
+        const default_location = document.createElement('option');
+        default_location.value = '';
+        default_location.textContent = 'Select a location:';
+        location_dropdown.appendChild(default_location);
+        
+        data.Locations.forEach(location => {
+            const option = document.createElement('option');
+            option.value = `${location.City}, ${location.CountryName}`;
+            option.textContent = `${location.City}, ${location.CountryName}`;
+            location_dropdown.appendChild(option);
+        });
+    })
+}
+
+function CompanyInformationAJAX(company_name) {
+    input = company_name;
+    xhtpp = new XMLHttpRequest();
+    xhtpp.onload = function () {
+    if (this.readyState == 4 && this.status == 200) {
+        my_JSON_object = JSON.parse(this.responseText);
+        console.log(JSON.stringify(my_JSON_object));
+
+        //Company Information - Important Info
+        const companyInfoDiv = document.getElementById("companyInfo");
+        companyInfoDiv.innerHTML = ""; //Clear out placeholder
+        address = String(my_JSON_object.companyInfo[0].City) + ", " + String(my_JSON_object.companyInfo[0].CountryName);
+
+        var div1 = document.createElement("div");
+        div1.className = "list-item";
+        div1.innerHTML = `<strong>Company Name:</strong> ${my_JSON_object.companyInfo[0].CompanyName}`;
+        companyInfoDiv.appendChild(div1);
+        var li5 = document.createElement("div");
+        li5.className = "list-item";
+        li5.innerHTML = `<strong>CompanyID:</strong> ${my_JSON_object.companyInfo[0].CompanyID}`;
+        companyInfoDiv.appendChild(li5);
+        var li2 = document.createElement("div");
+        li2.className = "list-item";
+        li2.innerHTML = `<strong>Company Address:</strong> ${address}`;
+        companyInfoDiv.appendChild(li2);
+        var li3 = document.createElement("div");
+        li3.className = "list-item";
+        li3.innerHTML = `<strong>Company Type:</strong> ${my_JSON_object.companyInfo[0].Type}`;
+        companyInfoDiv.appendChild(li3);
+        var li4 = document.createElement("div");
+        li4.className = "list-item";
+        li4.innerHTML = `<strong>Company Tier:</strong> ${my_JSON_object.companyInfo[0].TierLevel}`;
+        companyInfoDiv.appendChild(li3);    
+    }
+    };
+    xhtpp.open("GET", "SCMhomepage_queries.php?q=" + input, true);
+    console.log("Sending request with q=" + input);
+    xhtpp.send();
+}
+
+function AddCompanyAJAX() {
+    const form = document.getElementsByName('AddCompanyForm')[0];
+    let add_company_name = form.querySelector('input[id="AddCompanyName"]').value;
+    const add_company_tier = form.querySelector('select[id="AddTier"]').value;
+    const add_company_location = form.querySelector('select[id="AddLocation"]').value;
+    const add_company_type = form.querySelector('select[id="AddCompanyType"]').value;
+
+    //Check if the user inputted all requirements (type, name, tier, & location)
+    if (add_company_type == "" && add_company_name == "" && add_company_tier == "" && add_company_location == ""){
+        alert('All company information must be specified to add a new company!');
+        return false;
+    }
+
+    else if (add_company_type == ""){
+        alert('Please specify the company type!');
+        return false;
+    }
+    
+    else if (add_company_name == ""){
+        alert('Please specify the company name!');
+        return false;
+    }
+
+    else if (add_company_tier == ""){
+        alert('Please specify the tier level!');
+        return false;
+    }
+
+    else if (add_company_location == ""){
+        alert('Please specify the location!');
+        return false;
+    }
+
+    //Ensure valid inputs have been selected
+    if (add_company_type != "" && add_company_name != "" && add_company_tier != "" && add_company_location != ""){
+        split_location = add_company_location.split(",");
+
+        //Input city seperately from the country
+        add_company_city = split_location[0].trim();
+        add_company_country = split_location[1].trim();
+        
+        //Handle case where typing an apostrophe (') could break the database
+        let result = "";
+        for (const character of add_company_name) {
+            if (character == "'"){
+                result += "''";
+            }
+            else{
+                result += character;
+            }
+        }
+        add_company_name = result;
+        q_input = add_company_name + "|" + add_company_type + "|" + add_company_tier + "|" + add_company_city + "|" + add_company_country;
+    }
+    else{
+        alert('Unexpected error');
+        return false;
+    }
+
+    console.log(q_input);
+
+    xhtpp = new XMLHttpRequest();
+    xhtpp.onload = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            put_text = document.getElementById('add-company-result');
+            result = this.responseText;
+            if(result == "Company already exists"){
+                put_text.innerHTML = "Company already exists in the database"
+            }
+
+            else if(result == "Company was successfully inserted into the database"){
+                put_text.innerHTML = "Company was successfully added to the database!"
+            }
+        };
+    }
+    const url = "SM_add_query.php?q=" + encodeURIComponent(q_input);
+    xhtpp.open("GET", url, true);
+    xhtpp.send();
+} 
+
+</script>
 
 </body>
 </html>
