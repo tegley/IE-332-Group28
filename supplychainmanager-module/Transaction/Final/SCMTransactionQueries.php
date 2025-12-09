@@ -55,6 +55,29 @@ $havingState = "";
          }
 
     //Transaction Queries
+    $transactionShipSelect = "SELECT t.TransactionID, t.Type, c.CompanyName, l.City, l.CountryName, l.ContinentName FROM InventoryTransaction t JOIN Shipping s ON t.TransactionID = s.TransactionID JOIN Company c ON s.SourceCompanyID = c.CompanyID LEFT JOIN Location l ON l.LocationID = c.LocationID";
+    $transactionShipQuery = "{$transactionShipSelect} {$whereStateShip} GROUP BY t.TransactionID, t.Type {$havingState} {$orderByState};";
+    // echo $transactionShipQuery;
+    //Execute the SQL query
+    $resulttransactionShip = mysqli_query($conn, $transactionShipQuery);
+    // Convert the table into individual rows and reformat.
+    $transactionShip = []; //Creating shipping Array
+    while ($row = mysqli_fetch_array($resulttransactionShip, MYSQLI_ASSOC)) {
+    $transactionShip[] = $row;
+    }
+    // echo json_encode($transactionShip);
+
+    $transactionRecSelect = "SELECT t.TransactionID, t.Type, c.CompanyName, l.City, l.CountryName, l.ContinentName FROM InventoryTransaction t JOIN Receiving r ON t.TransactionID = r.TransactionID JOIN Company c ON r.ReceiverCompanyID = c.CompanyID LEFT JOIN Location l ON l.LocationID = c.LocationID";
+    $transactionRecQuery = "{$transactionRecSelect} {$whereStateRec} GROUP BY t.TransactionID, t.Type, c.CompanyName, l.City, l.CountryName, l.ContinentName {$havingState} {$orderByState};";
+    // echo $transactionRecQuery;
+    //Execute the SQL query
+    $resulttransactionRec = mysqli_query($conn, $transactionRecQuery);
+    // Convert the table into individual rows and reformat.
+    $transactionRec = []; //Creating shipping Array
+    while ($row = mysqli_fetch_array($resulttransactionRec, MYSQLI_ASSOC)) {
+    $transactionRec[] = $row;
+    }
+    // echo json_encode($transactionRec);
 
     $adjustmentsSelect = "SELECT a.AdjustmentID, a.AdjustmentDate, p.ProductID, a.QuantityChange, a.Reason, c.CompanyName, l.City, l.CountryName, l.ContinentName
         FROM InventoryAdjustment a JOIN Company c ON a.CompanyID = c.CompanyID JOIN Product p ON a.ProductID = p.ProductID LEFT JOIN Location l ON l.LocationID = c.LocationID";
@@ -108,6 +131,8 @@ $havingState = "";
         
         //Making JSON Object
     $SCMTransactionResults = [
+        "transactionShip" => $transactionShip,
+        "transactionRec" => $transactionRec,
         "adjustments" => $adjustments,
         "leavingCompany" => $leavingCompany,
         "arrivingCompany" => $arrivingCompany
