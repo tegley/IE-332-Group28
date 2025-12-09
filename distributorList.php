@@ -57,14 +57,19 @@ while ($row = mysqli_fetch_array($result_disruption, MYSQLI_ASSOC)) {
     $disruptionIDs[] = $row;
 }
 
-// echo json_encode($city);
+$productIDsQuery = "SELECT DISTINCT ProductID FROM Product";
+$result_products = mysqli_query($conn, $productIDsQuery);
+while ($row = mysqli_fetch_array($result_products, MYSQLI_ASSOC)) {
+    $productIDs[] = $row;
+}
 
 $SCMDistributorResults = [
         "distributors"=> $distributorName,
         "company"=> $companyName,
         "country" => $country,
         "city"=> $city,
-        "disruptionID" => $disruptionIDs
+        "disruptionID" => $disruptionIDs,
+        "productID" => $productIDs
     ];
 
 echo json_encode($SCMDistributorResults);
