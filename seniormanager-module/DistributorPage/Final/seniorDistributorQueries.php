@@ -88,7 +88,6 @@ $DistributorResults = [
     "TD_AVGShipment" => $TD_AVGShipment,
     "productsHandled" => $productsHandled,
     "shipping"=> $shipping
-
 ];
 
 echo json_encode($DistributorResults);
