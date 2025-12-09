@@ -64,7 +64,7 @@ $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp
     }
     // echo json_encode($otr); 
 
-    //Products Handled Query Does this need extra filters?
+    //Products Handled Query
     $productsHandledSelect = "SELECT d.CompanyID, c.CompanyName, p.ProductName, p.ProductID, x.ProductCount FROM Distributor d JOIN Company c ON d.CompanyID = c.CompanyID JOIN Shipping s ON s.DistributorID = d.CompanyID 
     JOIN Product p ON p.ProductID = s.ProductID JOIN (SELECT d.CompanyID, COUNT(DISTINCT p.productID) AS ProductCount FROM Shipping s JOIN Distributor d ON s.DistributorID = d.CompanyID JOIN Product p ON p.ProductID = s.ProductID 
     GROUP BY d.CompanyID) x ON x.CompanyID = d.CompanyID";
@@ -87,7 +87,7 @@ $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp
     $resultshipmentsOutstanding = mysqli_query($conn, $shipmentsOutstandingQuery);
     // Convert the table into individual rows and reformat.
     while ($row = mysqli_fetch_array($resultshipmentsOutstanding, MYSQLI_ASSOC)) {
-    $shipmentsOutstanding[] = $row; //Note, this is null due to a data base flaw
+    $shipmentsOutstanding[] = $row; 
     }
     // echo json_encode($shipmentsOutstanding);
 
@@ -115,12 +115,12 @@ $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp
     $resultdisruptionEvent = mysqli_query($conn, $disruptionEventQuery);
     // Convert the table into individual rows and reformat.
     while ($row = mysqli_fetch_array($resultdisruptionEvent, MYSQLI_ASSOC)) {
-    $disruptionEvent[] = $row; //Note, this is null due to a data base flaw
+    $disruptionEvent[] = $row; 
     }
     // echo json_encode($disruptionEvent);
 
     //Query that explores disruption event exposure 
-    $disruptionEXPOSUREEventSelect = "SELECT COUNT(e.EventID) + 2 * SUM(CASE WHEN i.ImpactLevel = 'High' THEN 1 ELSE 0 END) AS disruptionExposure, SUM(CASE WHEN i.ImpactLevel = 'High' THEN 1 ELSE 0 END) AS NumHighImpact, SUM(CASE WHEN i.ImpactLevel = 'Medium' THEN 1 ELSE 0 END) AS NumMedImpact, SUM(CASE WHEN i.ImpactLevel = 'Low' THEN 1 ELSE 0 END) AS NumLowImpact
+    $disruptionEXPOSUREEventSelect = "SELECT COUNT(e.EventID) AS disruptionExposure, SUM(CASE WHEN i.ImpactLevel = 'High' THEN 1 ELSE 0 END) AS NumHighImpact, SUM(CASE WHEN i.ImpactLevel = 'Medium' THEN 1 ELSE 0 END) AS NumMedImpact, SUM(CASE WHEN i.ImpactLevel = 'Low' THEN 1 ELSE 0 END) AS NumLowImpact
     FROM Distributor d JOIN Company c ON d.CompanyID = c.CompanyID
     JOIN ImpactsCompany i ON i.AffectedCompanyID = d.CompanyID JOIN DisruptionEvent e ON e.EventID = i.EventID";
     $disruptionEXPOSUREEventQuery = "{$disruptionEXPOSUREEventSelect} {$whereStateEvents} AND c.CompanyName =  '" . $quer[0] . "'; "; //Will have same time range filters as user specified
@@ -129,11 +129,9 @@ $whereStateEvents = "WHERE ((e.EventDate BETWEEN '" . $tmp[0] . "' AND '" . $tmp
     $resultdisruptionEXPOSUREEvent = mysqli_query($conn, $disruptionEXPOSUREEventQuery);
     // Convert the table into individual rows and reformat.
     while ($row = mysqli_fetch_array($resultdisruptionEXPOSUREEvent, MYSQLI_ASSOC)) {
-    $disruptionEXPOSUREEvent[] = $row; //Note, this is null due to a data base flaw
+    $disruptionEXPOSUREEvent[] = $row; 
     }
     // echo json_encode($disruptionEXPOSUREEvent);
-        
-    //Are the group bys adding value for the disruption exposure queries?
         
         //Making JSON Object
     $SCMDistributorResults = [
