@@ -235,17 +235,17 @@ $user_FullName = $_SESSION['FullName'];
                                     <div class="card">
                                         <div class="card-header">Important Information</div>
 
-                                        <div class="card-body" id="important-info-id">
+                                        <div class="card-body" id="important-info-id" style="max-height:150px;">
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Other Info -->
                                 <div class="col-md-6">
-                                    <div class="card" style="height: 300px;">
+                                    <div class="card" style="height: 150px;">
                                         <div class="card-header" id="otherInfoHeader">Other Information</div>
                                         <div class="card-body">
-                                            <ul class="list-group list-group-flush" id="otherInfo" style="max-height:400px;">
+                                            <ul class="list-group list-group-flush" id="otherInfo" style="max-height:300px;">
                                                 <p class="text-muted">Submit query to see results...</p>
                                             </ul>
                                         </div>
