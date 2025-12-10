@@ -19,18 +19,23 @@ if ($conn->connect_error) {
 
 //Temporary variables
 $user_updates = $_GET['q'];
-$user_updates = explode('|', $user_updates);
-$case = $GET_['g'];
+$case = $_GET['g'];
 
-if($case == 'Update Company Info'){
+$user_updates = explode('|', $user_updates);
+$case = explode('|', $case);
+echo $case[0];
+echo $user_updates[0];
+if($case[0] == 'Update Company Info'){
     if($user_updates[0] == "Manufacturer") { //Case where initially selected company is a manufacuturer - user_updates[4] = FactoryCapacity
+        echo "\n \n";
         //Update the name and tier
         $update_info = "UPDATE Company SET CompanyName = '{$user_updates[2]}', TierLevel = '{$user_updates[3]}' WHERE CompanyID = {$user_updates[1]}";
         $update_info_result = mysqli_query($conn, $update_info);
-
+        echo $update_info;
         //Update the manufacturing capacity
         $update_capacity = "UPDATE Manufacturer SET FactoryCapacity = '{$user_updates[4]}' WHERE CompanyID = {$user_updates[1]}";
         $update_capacity_result = mysqli_query($conn, $update_capacity);
+        echo $update_capacity;
     }
 
     if($user_updates[0] == "DistributorMaintainRoutes" || $user_updates[0] == "Retailer") { //Case where initially selected company is a retailer or distributor with no route updates
@@ -52,25 +57,28 @@ if($case == 'Update Company Info'){
         $update_info = "UPDATE Company SET CompanyName = '{$user_updates[2]}', TierLevel = '{$user_updates[3]}' WHERE CompanyID = {$user_updates[1]}";
         $update_info_result = mysqli_query($conn, $update_info);
     }
+    echo "Successful company update!";
     $conn->close();
     exit();
 }
 
-if($case == 'Update Transactions'){
+if($case[0] == 'Update Transactions'){
     if($user_updates[0] == "Shipping") { //Case where the user wants to update a shipping transaction
-        $update_transactions = "UPDATE Shipping SET ProductID = {$user_updates[2]}, Quantity = {$user_updates[3]}, PromisedDate = '{$user_updates[4]}', ActualDate = '{$user_updates[5]}', WHERE TransactionID = {$user_updates[1]}";
+        $update_transactions = "UPDATE Shipping SET ProductID = {$user_updates[2]}, Quantity = {$user_updates[3]}, PromisedDate = '{$user_updates[4]}', ActualDate = '{$user_updates[5]}' WHERE TransactionID = {$user_updates[1]}";
         $update_transactions_result = mysqli_query($conn, $update_transactions);
     }
 
     if($user_updates[0] == "Receiving") { //Case where the user wants to update a receiving transaction
-        $update_transactions = "UPDATE Receiving SET QuantityReceived = {$user_updates[2]}, ReceivedDate = '{$user_updates[3]}', WHERE TransactionID = {$user_updates[1]}";
+        $update_transactions = "UPDATE Receiving SET QuantityReceived = {$user_updates[2]}, ReceivedDate = '{$user_updates[3]}' WHERE TransactionID = {$user_updates[1]}";
         $update_transactions_result = mysqli_query($conn, $update_transactions);
     }
 
     if($user_updates[0] == "Adjustment") { //Case where the user wants to update an adjustment
-        $update_transactions = "UPDATE InventoryAdjustment SET ProductID = {$user_updates[2]}, QuantityChange = {$user_updates[3]}, AdjustmentDate = '{$user_updates[4]}', Reason = '{$user_updates[5]}', WHERE TransactionID = {$user_updates[1]}";
+        $update_transactions = "UPDATE InventoryAdjustment SET ProductID = {$user_updates[2]}, QuantityChange = {$user_updates[3]}, AdjustmentDate = '{$user_updates[4]}', Reason = '{$user_updates[5]}' WHERE TransactionID = {$user_updates[1]}";
         $update_transactions_result = mysqli_query($conn, $update_transactions);
     }
+    echo $update_transactions;
+    echo "Successful transactions update!";
     $conn->close();
     exit();
 }
