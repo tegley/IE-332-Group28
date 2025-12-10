@@ -48,7 +48,7 @@ $TD_ART_chart_query = "SELECT DATEDIFF(e.EventRecoveryDate, e.EventDate) AS Down
 $TD_statistic_query = "SELECT SUM(MyTable.Downtime) AS TD FROM (SELECT DISTINCT(e.EventID), DATEDIFF(e.EventRecoveryDate, e.EventDate) AS Downtime"; 
 $ART_statistic_query = "SELECT SUM(MyTable.Downtime) * 1.0 / COUNT(*) AS ART FROM (SELECT DISTINCT(e.EventID), DATEDIFF(e.EventRecoveryDate, e.EventDate) AS Downtime"; 
 
-$RRC_setup = "COUNT(DISTINCT(e.EventID)) / (SELECT COUNT(DISTINCT(e.EventID)) FROM DisruptionEvent e WHERE e.EventDate <= '2025-12-31' AND e.EventRecoveryDate >= '2019-01-01') AS RRC
+$RRC_setup = "COUNT(DISTINCT(e.EventID)) / (SELECT COUNT(DISTINCT(e2.EventID)) FROM DisruptionEvent e2 {$where_2}) AS RRC
 FROM DisruptionEvent e JOIN DisruptionCategory x ON e.CategoryID = x.CategoryID JOIN ImpactsCompany i ON e.EventID = i.EventID JOIN Company c ON i.AffectedCompanyID = c.CompanyID JOIN Location l ON l.LocationID = c.LocationID
 {$where}";
 
@@ -57,7 +57,7 @@ $HDR_overall_query_setup = "(SELECT SUM(CASE WHEN i2.ImpactLevel = 'High' THEN 1
 
 $HDR_companies_query = "SELECT c.CompanyName AS HDRCompanyName, (SELECT SUM(CASE WHEN i2.ImpactLevel = 'High' THEN 1 ELSE 0 END) 
                         FROM Company c2 JOIN ImpactsCompany i2 ON i2.AffectedCompanyID = c2.CompanyID JOIN DisruptionEvent e2 ON e2.EventID = i2.EventID JOIN Location l2 ON l2.LocationID = c2.LocationID 
-                        {$where_2} AND c2.CompanyName = HDRCompanyName GROUP BY c2.CompanyName) / COUNT(e.EventID) AS HDR";
+                        {$where_2} AND c2.CompanyName = HDRCompanyName GROUP BY c2.CompanyName) * 100 / COUNT(e.EventID) AS HDR";
 
 //Option 1 - Country
 if($filter_option[0] == 'country'){
@@ -93,7 +93,7 @@ if($filter_option[0] == 'country'){
 
     //Country - HDR overall
     $HDR_overall_select = "SELECT l.CountryName As HDROverall,";
-    $HDR_overall_subquery = "GROUP BY l2.CountryName HAVING l2.CountryName = HDROverall) / COUNT(e.EventID) AS HDRStatistic";
+    $HDR_overall_subquery = "GROUP BY l2.CountryName HAVING l2.CountryName = HDROverall) * 100 / COUNT(e.EventID) AS HDRStatistic";
     $HDR_overall_endgroupby = "GROUP BY l.CountryName HAVING l.CountryName = '{$user_input[0]}'";
 
     //Country - RRC query modifications
@@ -135,7 +135,7 @@ if($filter_option[0] == 'continent'){
 
     //Continent - HDR overall
     $HDR_overall_select = "SELECT l.ContinentName As HDROverall,";
-    $HDR_overall_subquery = "GROUP BY l2.ContinentName HAVING l2.ContinentName = HDROverall) / COUNT(e.EventID) AS HDRStatistic";
+    $HDR_overall_subquery = "GROUP BY l2.ContinentName HAVING l2.ContinentName = HDROverall) * 100 / COUNT(e.EventID) AS HDRStatistic";
     $HDR_overall_endgroupby = "GROUP BY l.ContinentName HAVING l.ContinentName = '{$user_input[0]}'";
 
     //Continent - RRC query modifications
@@ -154,7 +154,7 @@ if($filter_option[0] == 'company'){
         $conn->close();
         exit();
     }
-
+    
     //Company - GROUP BY and HAVING statements
     $group_by = "GROUP BY c.CompanyName";
     $having = "HAVING c.CompanyName = '{$user_input[0]}'";
@@ -164,7 +164,7 @@ if($filter_option[0] == 'company'){
 
     //Company - HDR overall
     $HDR_overall_select = "SELECT c.CompanyName As HDROverall,";
-    $HDR_overall_subquery = "GROUP BY c2.CompanyName HAVING c2.CompanyName = HDROverall) / COUNT(e.EventID) AS HDRStatistic";
+    $HDR_overall_subquery = "GROUP BY c2.CompanyName HAVING c2.CompanyName = HDROverall) * 100 / COUNT(e.EventID) AS HDRStatistic";
     $HDR_overall_endgroupby = "GROUP BY c.CompanyName HAVING c.CompanyName = '{$user_input[0]}'";
 
     //Company - overall ART & TD statistic statement
@@ -192,7 +192,7 @@ if($filter_option[0] == 'tier'){
 
     //Tier - HDR overall
     $HDR_overall_select = "SELECT c.TierLevel As HDROverall,";
-    $HDR_overall_subquery = "GROUP BY c2.TierLevel HAVING c2.TierLevel = HDROverall) / COUNT(e.EventID) AS HDRStatistic";
+    $HDR_overall_subquery = "GROUP BY c2.TierLevel HAVING c2.TierLevel = HDROverall) * 100 / COUNT(e.EventID) AS HDRStatistic";
     $HDR_overall_endgroupby = "GROUP BY c.TierLevel HAVING c.TierLevel = '{$user_input[0]}'";
 
     //Tier - overall ART & TD statistic statement
@@ -240,7 +240,7 @@ if($filter_option[0] == 'country-tier'){
 
     //Country & tier - HDR overall
     $HDR_overall_select = "SELECT c.TierLevel As HDROverall,";
-    $HDR_overall_subquery = "GROUP BY c2.TierLevel, l2.CountryName HAVING c2.TierLevel = '{$user_input[1]}' AND l2.CountryName = '{$user_input[0]}') / COUNT(e.EventID) AS HDRStatistic";
+    $HDR_overall_subquery = "GROUP BY c2.TierLevel, l2.CountryName HAVING c2.TierLevel = '{$user_input[1]}' AND l2.CountryName = '{$user_input[0]}') * 100 / COUNT(e.EventID) AS HDRStatistic";
     $HDR_overall_endgroupby = "GROUP BY c.TierLevel, l.CountryName HAVING c.TierLevel = '{$user_input[1]}' AND l.CountryName = '{$user_input[0]}'";
 
     //Country & tier - overall ART & TD statistic statement
@@ -285,7 +285,7 @@ if($filter_option[0] == 'continent-tier'){
 
     //Country & tier - HDR overall
     $HDR_overall_select = "SELECT c.TierLevel As HDROverall,";
-    $HDR_overall_subquery = "GROUP BY c2.TierLevel, l2.ContinentName HAVING c2.TierLevel = '{$user_input[1]}' AND l2.ContinentName = '{$user_input[0]}') / COUNT(e.EventID) AS HDRStatistic";
+    $HDR_overall_subquery = "GROUP BY c2.TierLevel, l2.ContinentName HAVING c2.TierLevel = '{$user_input[1]}' AND l2.ContinentName = '{$user_input[0]}') * 100 / COUNT(e.EventID) AS HDRStatistic";
     $HDR_overall_endgroupby = "GROUP BY c.TierLevel, l.ContinentName HAVING c.TierLevel = '{$user_input[1]}' AND l.ContinentName = '{$user_input[0]}'";
 
     //Contient & tier - HDR for companies
