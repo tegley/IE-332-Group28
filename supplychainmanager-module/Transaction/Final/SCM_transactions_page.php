@@ -152,8 +152,7 @@ $user_FullName = $_SESSION['FullName'];
             <script>
                 fetch('supplychainmanager_sidebar.html')
                     .then(r => r.text())
-                    .then(html => document.getElementById('supplychainmanager_sidebar').innerHTML = html)
-                    .catch(err => console.log('Sidebar not loaded'));
+                    .then(html => document.getElementById('supplychainmanager_sidebar').innerHTML = html);
             </script>
         </div>
 
@@ -162,7 +161,7 @@ $user_FullName = $_SESSION['FullName'];
 
             <!-- Dashboard Header -->
             <div class="card" id="dashboard-header">
-                SCM Dashboard
+                <?php echo "{$user_FullName}'s SCM Dashboard" ?>
             </div>
 
             <!-- --------------------- COMPANY TRANSACTIONS --------------------- -->
