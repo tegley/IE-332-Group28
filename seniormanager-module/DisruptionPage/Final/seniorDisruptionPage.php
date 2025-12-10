@@ -802,6 +802,27 @@ function ValidateFrequencyTab() {
                                 dates.push(datum.YearMonth);
                                 eventCounts.push(parseInt(datum.DisruptionFrequency));
                             });
+
+                            //Pull initial dates for final query output filtration & error handling - necessary due to use of GROUP BY DATE_FORMAT(e.EventDate, '%Y-%m')
+                            const submitted_start = document.getElementById("freqStartDate").value;
+                            const submitted_end = document.getElementById("freqEndDate").value;
+
+                            if (dates[0] < submitted_start) {
+                                console.log("Shift",dates[0]);
+                                dates.shift();
+                                eventCounts.shift();
+                                avgDurations.shift();
+                                maxDurations.shift();
+                            };
+                            
+                            if (dates[dates.length - 1] > submitted_end) {
+                                console.log("Pop", dates[dates.length - 1]);
+                                dates.pop();
+                                eventCounts.pop();
+                                avgDurations.pop();
+                                maxDurations.pop();
+                            }
+                            
                             console.log(eventCounts);
                             console.log(dates);
                             
@@ -877,6 +898,7 @@ function ValidateFrequencyTab() {
                                 },
                                 xaxis: {
                                     title: 'Adjust Slide Bar to Explore Date Ranges',
+                                    tickformat: "%b %Y",
                                     rangeselector: selectorOptions,
                                     rangeslider: {}
                                 },
