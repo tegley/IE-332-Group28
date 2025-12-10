@@ -156,7 +156,7 @@ $user_FullName = $_SESSION['FullName']; */
                     <!-- TAB 1: TOP DISTRIBUTORS BY TOTAL TRANSACTION COUNT -->
                     <div class="tab-pane fade show active" id="count" role="tabpanel" aria-labelledby="count-tab">
 
-                        <div class="area-header">Top Distributors by Total Transaction Count</div>
+                        <div class="area-header">Distributor Shipment Frequency</div>
 
                         <!-- Search Bar for Tab 1 -->
                         <div class="card mb-3">
@@ -175,7 +175,7 @@ $user_FullName = $_SESSION['FullName']; */
                         <!-- TABLE CARD -->
                         <div class="col-md-12">
                             <div class="card d-flex flex-column mb-3" style="height: 550px; overflow: hidden;">
-                                <div class="card-header fw-bold text-center">Top Distributors By Shipment Volume</div>
+                                <div class="card-header fw-bold text-center">Shipment Quantity Over Time </div>
                                 <div id="DistributorTransactionVolumeChart" style="height: 550px;">
                                     <p class="text-muted">Submit query to see results...</p>
                                 </div>
