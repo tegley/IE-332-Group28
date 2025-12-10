@@ -216,6 +216,14 @@ $user_FullName = $_SESSION['FullName'];
                         </button>
                     </li>
 
+                    <!-- Tab for Updating Transactions -->
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="update-transactions-tab" data-bs-toggle="tab" data-bs-target="#update-transactions" type="button" role="tab">
+                            Update Transactions
+                        </button>
+                    </li>
+
+
                 </ul>
 
                 <!-- START TAB CONTENT WRAPPER -->
@@ -422,7 +430,7 @@ $user_FullName = $_SESSION['FullName'];
                     <div class="tab-pane fade" id="update-company" role="tabpanel" aria-labelledby="update-company-tab">
 
                         <div class="area-header">Update Company Information</div>
-                        <div class="card" style="height: 450px;">
+                        <div class="card mb-3" style="height: 450px;">
                             <div class="card-body"> 
                                 <div class="row d-flex justify-content-center">
                                     <div class="col-auto" style="height: 140px;">
@@ -453,13 +461,13 @@ $user_FullName = $_SESSION['FullName'];
                                     <form id="UpdateDistributor"> 
                                         <label> Update A Distributor Route: </label>
                                         <select class="form-control mb-1" id="Select_FromCompanyID_input">
-                                            <option value="">Select From Company</option>
+                                            <option value="" disabled selected>Select From Company</option>
                                         </select>
                                         <select class="form-control mb-1 mt-1" id="Select_ToCompanyID_input">
-                                            <option value="">Select Current To Company</option>
+                                            <option value="" disabled selected>Select Current To Company</option>
                                         </select>
                                         <select class="form-select form-select-sm mt-1" id="Update_ToCompanyID_input">
-                                            <option value="">Change To Company</option>
+                                            <option value="" disabled selected>Change To Company</option>
                                         </select>
                                     </form>
                                     </div>
@@ -485,6 +493,104 @@ $user_FullName = $_SESSION['FullName'];
                             </div>
                         </div>
                     </div> <!-- END TAB 6 -->
+
+                    <!-- TAB 7: Update Transaction Data -->
+                    <div class="tab-pane fade" id="update-transactions" role="tabpanel" aria-labelledby="update-transactions-tab">
+
+                        <div class="area-header">Update Transaction Data</div>
+                        <div class="card mb-3" style="height: 450px;">
+                            <div class="card-body"> 
+                                
+                                <div class="row d-flex justify-content-center align-items-end g-3"> 
+
+                                    <div class="col-auto">
+                                        <label for="UpdateTransactionType">Transaction Type:</label>
+                                        <select class="form-control" id="UpdateTransactionType" onchange="PopulateTransactionIDs(document.getElementById('UpdateTransactionType').value)">
+                                            <option value="" disabled selected>Choose Transaction Type:</option>
+                                            <option>Shipping</option>
+                                            <option>Receiving</option>
+                                            <option>Adjustment</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-auto">
+                                        <label style="font-size: 12px;" for="TransactionIDInput">Select TransactionID:</label>
+                                        <select class="form-control" id="TransactionIDInput" style="width: 125px;">
+                                            <option value="" disabled selected>ID</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-auto UpdateColumns_Shipping">
+                                        <label for="UpdateProductID">Product ID:</label>
+                                        <select class="form-control" id="UpdateProductID" style="max-width: 100px">
+                                            <option value="" disabled selected>Select Product</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-auto UpdateColumns_Shipping" style="max-width: 100px;">
+                                        <label for="QuantityUpdateID">Quantity</label>
+                                        <input type="number" class="form-control" id="QuantityUpdateID">
+                                    </div>
+
+                                    <div class="col-auto UpdateColumns_Shipping">
+                                        <label for="PromisedDate" class="form-label">Promised Date</label>
+                                        <input type="date" class="form-control text-center" id="PromisedDate">
+                                    </div>
+
+                                    <div class="col-auto UpdateColumns_Shipping">
+                                        <label for="ActualDate" class="form-label">Actual Date</label>
+                                        <input type="date" class="form-control text-center" id="ActualDate">
+                                    </div>
+
+
+                                    <div class="col-auto UpdateColumns_Receiving">
+                                        <label for="QuantityReceivedID">Quantity Received</label>
+                                        <input type="number" class="form-control" id="QuantityReceivedID">
+                                    </div>
+
+                                    <div class="col-auto UpdateColumns_Receiving">
+                                        <label for="ReceivedDate" class="form-label">Received Date</label>
+                                        <input type="date" class="form-control text-center" id="ReceivedDate">
+                                    </div>
+
+                                    <div class="col-auto UpdateColumns_Adjustments">
+                                        <label for="UpdateProductID_Adjustment">Product ID:</label>
+                                        <select class="form-control" id="UpdateProductID_Adjustment" style="max-width: 100px">
+                                            <option value="" disabled selected>Select Product</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-auto UpdateColumns_Adjustments">
+                                        <label for="QuantityChangeID">Quantity Change</label>
+                                        <input type="number" class="form-control" id="QuantityChangeID">
+                                    </div>
+
+                                    <div class="col-auto UpdateColumns_Adjustments">
+                                        <label for="AdjustmentDate" class="form-label">Adjustment Date</label>
+                                        <input type="date" class="form-control text-center" id="AdjustmentDate">
+                                    </div>
+
+                                    <div class="col-auto UpdateColumns_Adjustments">
+                                        <label for="ReasonUpdateID">Reason For Adjustment</label>
+                                        <input type="text" class="form-control" id="ReasonUpdateID">
+                                    </div>
+
+                                </div> <div class="row d-flex justify-content-center">
+                                    <div class="col-auto"> 
+                                        <div class="alert alert-success mt-4" id="verification-update-transactions"> Submit query to see results... </div>
+                                    </div>
+                                </div>
+
+                                <div class="row d-flex justify-content-center">
+                                    <div class="col-auto"> 
+                                        <button type="button" onclick="UpdateTransactionsAJAX(document.getElementById('UpdateTransactionType').value)" class="btn btn-primary disabled" id="update-transactions-button">
+                                        Update
+                                        </button>
+                                    </div>
+                                </div>                        
+                            </div>
+                        </div> <!-- END Card -->
+                    </div> <!-- END Tab 7 -->
 
                 </div> <!-- END overarching Tab Wrapper -->
             </div> <!-- END col-md-9 -->
@@ -529,6 +635,22 @@ tabElms.forEach(tabElm => {
     //Load Company Names when page loads
     document.addEventListener('DOMContentLoaded', function() {
         loadCompanies();
+
+        //We also want to initially hide all elements for receiving transactions
+        var receiving_column_elements = document.querySelectorAll('.UpdateColumns_Receiving');
+
+        //Use forEach to apply the style to every element
+        receiving_column_elements.forEach(function(element) {
+            element.style.display = 'none';
+        });
+
+        //All elements in adjustments should also be hidden
+        var adjustmens_column_elements = document.querySelectorAll('.UpdateColumns_Adjustments');
+
+        //Use forEach to apply the style to every element
+        adjustmens_column_elements.forEach(function(element) {
+            element.style.display = 'none';
+        });
     });
 
     function loadCompanies() {
@@ -549,6 +671,28 @@ tabElms.forEach(tabElm => {
                     option.textContent = company.CompanyName;
                     companyDropdown.appendChild(option);
                 });
+
+                const productDropdown = document.getElementById('UpdateProductID');
+                const adjustmentDropdown = document.getElementById('UpdateProductID_Adjustment');
+                productDropdown.innerHTML = '';
+                adjustmentDropdown.innerHTML = '';
+
+                const defaultProductOption = document.createElement('option');
+                defaultProductOption.value = '';
+                defaultProductOption.textContent = 'Select ProductID';
+                defaultProductOption.disabled = true;
+                defaultProductOption.selected = true;
+                productDropdown.appendChild(defaultProductOption);
+                adjustmentDropdown.appendChild(defaultProductOption.cloneNode(true));
+
+                data.productID.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.ProductID;
+                    option.textContent = product.ProductID;
+                    productDropdown.appendChild(option);
+                    adjustmentDropdown.appendChild(option.cloneNode(true));
+                });
+
             })
     }
 </script>
@@ -573,12 +717,12 @@ function CheckUserInput() {
 var my_JSON_object;
 var update_companyinfo_object;
 
-//Initiallly selected values
-var initally_selected_company_type;
-var initally_selected_company_name;
-var initally_selected_company_id;
-var initally_selected_company_tier;
-var initally_selected_factory_capacity;
+//Initially selected values
+var initially_selected_company_type;
+var initially_selected_company_name;
+var initially_selected_company_id;
+var initially_selected_company_tier;
+var initially_selected_factory_capacity;
 
 //AJAX to call company information queries
 function CompanyInformationAJAX(company_name, start_date, end_date) {
@@ -601,25 +745,37 @@ function CompanyInformationAJAX(company_name, start_date, end_date) {
             document.getElementById('UpdateDistributor').querySelector('select[id="Select_FromCompanyID_input"]').innerHTML = '';
             document.getElementById('UpdateDistributor').querySelector('select[id="Select_ToCompanyID_input"]').innerHTML = '';
             document.getElementById('UpdateDistributor').querySelector('select[id="Update_ToCompanyID_input"]').innerHTML = '';
-
             document.getElementById('UpdateDistributor').querySelector('select[id="Select_FromCompanyID_input"]').selectedIndex = 0;
             document.getElementById('UpdateDistributor').querySelector('select[id="Select_ToCompanyID_input"]').selectedIndex = 0;
             document.getElementById('UpdateDistributor').querySelector('select[id="Update_ToCompanyID_input"]').selectedIndex = 0;
             document.getElementById('UpdateCompanyName').querySelector('input[name="CompanyNameUpdate"]').value ='';
             document.getElementById('UpdateTier').selectedIndex = 0;
             document.getElementById('UpdateManufacturer').querySelector('input[name="ManufacturerUpdate"]').value = '';
+            
+            //Reset all Update Transaction Data dropdown forms
+            document.getElementById('UpdateProductID').selectedIndex = 0;
+            document.getElementById('QuantityUpdateID').value = '';
+            document.getElementById('PromisedDate').value = '';
+            document.getElementById('ActualDate').value = '';
+            document.getElementById('QuantityReceivedID').value = '';
+            document.getElementById('ReceivedDate').value = '';
+            document.getElementById('UpdateProductID_Adjustment').selectedIndex = 0;
+            document.getElementById('QuantityChangeID').value = '';
+            document.getElementById('AdjustmentDate').value = '';
+            document.getElementById('ReasonUpdateID').value = '';
 
             my_JSON_object = JSON.parse(this.responseText);
             console.log(JSON.stringify(my_JSON_object));
 
             //Enable user to update company info & transaction data
             document.getElementById('update-company-info-button').className = "btn btn-primary";
+            document.getElementById('update-transactions-button').className = "btn btn-primary";
 
             //Save information of initially selected company
-            initally_selected_company_type = my_JSON_object.companyInfo[0]["Type"];
-            initally_selected_company_name = my_JSON_object.companyInfo[0]["CompanyName"];
-            initally_selected_company_id = my_JSON_object.companyInfo[0]["CompanyID"];
-            initally_selected_company_tier = my_JSON_object.companyInfo[0]["TierLevel"];
+            initially_selected_company_type = my_JSON_object.companyInfo[0]["Type"];
+            initially_selected_company_name = my_JSON_object.companyInfo[0]["CompanyName"];
+            initially_selected_company_id = my_JSON_object.companyInfo[0]["CompanyID"];
+            initially_selected_company_tier = my_JSON_object.companyInfo[0]["TierLevel"];
             address_country = my_JSON_object.companyInfo[0]["CountryName"];
             address_city = my_JSON_object.companyInfo[0]["City"];
             financial_score = my_JSON_object.companyInfo[0]["HealthScore"];
@@ -629,30 +785,68 @@ function CompanyInformationAJAX(company_name, start_date, end_date) {
             const div = document.createElement("div");
                 div.className = "list-item";
                 div.innerHTML = `<strong>Address:</strong> ${address_city}, ${address_country}<br>
-                                    <strong>Company Type:</strong> ${initally_selected_company_type}<br>
-                                    <strong>Tier Level:</strong> ${initally_selected_company_tier}<br>
+                                    <strong>Company Type:</strong> ${initially_selected_company_type}<br>
+                                    <strong>Tier Level:</strong> ${initially_selected_company_tier}<br>
                                     <strong>Most Recent Financial Health Score:</strong> ${financial_score}`;
                 infoDiv.appendChild(div);
 
             //Depending on type, enable user to update the factory capacity, update the distributor routes, or see a retailer picture
-            if (initally_selected_company_type == "Manufacturer") {
-                initally_selected_factory_capacity = my_JSON_object.companyInfo[0]["FactoryCapacity"];
+            //In terms of transactions, retailers have no shipping transactions
+            const transaction_type_dropdown = document.getElementById('UpdateTransactionType');
+
+            //Shipping option
+            const shipping = document.createElement('option');
+            shipping.textContent="Shipping";
+            shipping.value="Shipping";
+
+            //Recieving option
+            const receiving = document.createElement('option');
+            receiving.textContent="Receiving";
+            receiving.value="Receiving";
+
+            //Adjustment option
+            const adjustment = document.createElement('option');
+            adjustment.textContent="Adjustment";
+            adjustment.value="Adjustment";
+
+            //Default option
+            const disabled_option = document.createElement('option');
+            disabled_option.value = "";
+            disabled_option.textContent = "Select Transaction Type:";
+            disabled_option.disabled = true;
+            disabled_option.selected = true;
+
+            transaction_type_dropdown.innerHTML = "";
+
+            if (initially_selected_company_type == "Manufacturer") {
+                initially_selected_factory_capacity = my_JSON_object.companyInfo[0]["FactoryCapacity"];
                 document.getElementById('far-right-option-manufacturer').style.display = "block";
                 document.getElementById('far-right-option-distributor').style.display = "none";
                 document.getElementById('far-right-option-retailer').style.display = "none";
+                transaction_type_dropdown.appendChild(disabled_option);
+                transaction_type_dropdown.appendChild(shipping);
+                transaction_type_dropdown.appendChild(receiving);
+                transaction_type_dropdown.appendChild(adjustment);
             }
 
-            if (initally_selected_company_type == "Distributor") {
+            if (initially_selected_company_type == "Distributor") {
                 document.getElementById('far-right-option-manufacturer').style.display = "none";
                 document.getElementById('far-right-option-distributor').style.display = "block";
                 document.getElementById('far-right-option-retailer').style.display = "none";
+                transaction_type_dropdown.appendChild(disabled_option);
+                transaction_type_dropdown.appendChild(shipping); //Distributors handle shipments
+                transaction_type_dropdown.appendChild(receiving);
+                transaction_type_dropdown.appendChild(adjustment);
                 LoadDistributorDropDownAJAX();
             }
 
-            if (initally_selected_company_type == "Retailer") {
+            if (initially_selected_company_type == "Retailer") { //Retailers don't have shipping transactions
                 document.getElementById('far-right-option-manufacturer').style.display = "none";
                 document.getElementById('far-right-option-distributor').style.display = "none";
                 document.getElementById('far-right-option-retailer').style.display = "block";
+                transaction_type_dropdown.appendChild(disabled_option);
+                transaction_type_dropdown.appendChild(receiving);
+                transaction_type_dropdown.appendChild(adjustment);
             }
 
             //Financial Health Line chart
@@ -834,37 +1028,37 @@ function UpdateCompanyInfoAJAX() {
 
     //Maintain the tier & name if they aren't selected
     if (update_tier == "Maintain Tier"){
-        update_tier = initally_selected_company_tier;
+        update_tier = initially_selected_company_tier;
     }
 
     if (update_name == ""){
-        update_name = initally_selected_company_name;
+        update_name = initially_selected_company_name;
     }
 
-    if (initally_selected_company_type == "Manufacturer") {
+    if (initially_selected_company_type == "Manufacturer") {
         update_factory_capacity = document.getElementById('UpdateManufacturer').querySelector('input[name="ManufacturerUpdate"]').value;
         if (update_factory_capacity == ""){
-            update_factory_capacity = initally_selected_factory_capacity;
+            update_factory_capacity = initially_selected_factory_capacity;
         }
 
-        q_input = initally_selected_company_type + "|" + initally_selected_company_id + "|" + update_name + "|" + update_tier + "|" + update_factory_capacity;
+        q_input = initially_selected_company_type + "|" + initially_selected_company_id + "|" + update_name + "|" + update_tier + "|" + update_factory_capacity;
     }
 
-    else if (initally_selected_company_type == "Distributor") {
+    else if (initially_selected_company_type == "Distributor") {
         same_from_company = document.getElementById('UpdateDistributor').querySelector('select[id="Select_FromCompanyID_input"]').value;
         prior_to_company = document.getElementById('UpdateDistributor').querySelector('select[id="Select_ToCompanyID_input"]').value;
         update_to_company = document.getElementById('UpdateDistributor').querySelector('select[id="Update_ToCompanyID_input"]').value;
 
         if (same_from_company == "Select From Company" || prior_to_company == "Select Current To Company" || update_to_company == "Change To Company") {
-            q_input = "DistributorMaintainRoutes" + "|" + initally_selected_company_id + "|" + update_name + "|" + update_tier;
+            q_input = "DistributorMaintainRoutes" + "|" + initially_selected_company_id + "|" + update_name + "|" + update_tier;
         }
         else{
-            q_input = "DistributorUpdateRoutes" + "|" + initally_selected_company_id + "|" + update_name + "|" + update_tier + "|" + same_from_company + "|" + prior_to_company + "|" + update_to_company;
+            q_input = "DistributorUpdateRoutes" + "|" + initially_selected_company_id + "|" + update_name + "|" + update_tier + "|" + same_from_company + "|" + prior_to_company + "|" + update_to_company;
         }
     }
 
-    else if (initally_selected_company_type == "Retailer") {
-        q_input = initally_selected_company_type + "|" + initally_selected_company_id + "|" + update_name + "|" + update_tier;
+    else if (initially_selected_company_type == "Retailer") {
+        q_input = initially_selected_company_type + "|" + initially_selected_company_id + "|" + update_name + "|" + update_tier;
     }
 
     console.log(q_input);
@@ -876,7 +1070,7 @@ function UpdateCompanyInfoAJAX() {
             document.getElementById('verification-update-company-info').innerText = 'Company Information Updated Successfully!'
         };
     }
-    const url = "SCM_update_queries.php?q=" + encodeURIComponent(q_input);
+    const url = "SCM_update_queries.php?q=" + encodeURIComponent(q_input) + "&g=" + encodeURIComponent('Update Company Info');
     xhtpp.open("GET", url, true);
     xhtpp.send(); 
 }
@@ -886,7 +1080,7 @@ function LoadDistributorDropDownAJAX() {
     const to_id_dropdown = document.getElementById('UpdateDistributor').querySelector('select[id="Select_ToCompanyID_input"]');
     const update_to_id_dropdown = document.getElementById('UpdateDistributor').querySelector('select[id="Update_ToCompanyID_input"]');
     
-    const distributor_id = initally_selected_company_id; //Pass DistributorID into the query
+    const distributor_id = initially_selected_company_id; //Pass DistributorID into the query
     q_input = distributor_id + '|' + "Distributor";
 
     xhtpp = new XMLHttpRequest();
@@ -954,6 +1148,164 @@ function LoadDistributorDropDownAJAX() {
     xhtpp.open("GET", url, true);
     xhtpp.send();
 }
+
+function PopulateTransactionIDs(transaction_type){
+    //Handle display of appropriate columns
+    if(transaction_type == 'Receiving'){ //If receiving, only display quantity recieved and recieved date
+        var shipping_column_elements = document.querySelectorAll('.UpdateColumns_Shipping');
+        shipping_column_elements.forEach(function(element) {
+            element.style.display = 'none';
+        });
+        
+        var receiving_column_elements = document.querySelectorAll('.UpdateColumns_Receiving');
+        receiving_column_elements.forEach(function(element) {
+            element.style.display = 'block';
+        });
+
+        var adjustmens_column_elements = document.querySelectorAll('.UpdateColumns_Adjustments');
+        adjustmens_column_elements.forEach(function(element) {
+            element.style.display = 'none';
+        });
+    }
+
+    else if(transaction_type == 'ShippingF'){ //If receiving, only display quantity recieved and recieved date
+        var shipping_column_elements = document.querySelectorAll('.UpdateColumns_Shipping');
+        shipping_column_elements.forEach(function(element) {
+            element.style.display = 'block';
+        });
+        
+        var receiving_column_elements = document.querySelectorAll('.UpdateColumns_Receiving');
+        receiving_column_elements.forEach(function(element) {
+            element.style.display = 'none';
+        });
+
+        var adjustmens_column_elements = document.querySelectorAll('.UpdateColumns_Adjustments');
+        adjustmens_column_elements.forEach(function(element) {
+            element.style.display = 'none';
+        });
+    }
+
+    else if(transaction_type == 'Adjustment'){ //If receiving, only display quantity recieved and recieved date
+        var shipping_column_elements = document.querySelectorAll('.UpdateColumns_Shipping');
+        shipping_column_elements.forEach(function(element) {
+            element.style.display = 'none';
+        });
+        
+        var receiving_column_elements = document.querySelectorAll('.UpdateColumns_Receiving');
+        receiving_column_elements.forEach(function(element) {
+            element.style.display = 'none';
+        });
+
+        var adjustmens_column_elements = document.querySelectorAll('.UpdateColumns_Adjustments');
+        adjustmens_column_elements.forEach(function(element) {
+            element.style.display = 'block';
+        });
+    }
+
+    const transaction_ids_dropdown = document.getElementById('TransactionIDInput');
+    transaction_ids_dropdown.innerHTML = '';
+    q_input = initially_selected_company_id + '|' + "Transactions" + "|" + transaction_type + "|" + initially_selected_company_type;
+
+    xhtpp = new XMLHttpRequest();
+    xhtpp.onload = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+            const data = JSON.parse(this.responseText);
+
+            //Create original element
+            const initial_select_transaction_id = document.createElement('option');
+            initial_select_transaction_id.textContent = "Select TransactionID";
+            initial_select_transaction_id.selected = true;
+            initial_select_transaction_id.disabled = true;
+            transaction_ids_dropdown.appendChild(initial_select_transaction_id);
+
+            if(data.TransactionIDs.length > 0){ //List all TransactionIDs for the specified company and corresponding type
+                data.TransactionIDs.forEach(TransactionID => {
+                    const id_option = document.createElement('option');
+                    id_option.value = TransactionID.TransactionID;
+                    id_option.textContent = TransactionID.TransactionID;
+                    transaction_ids_dropdown.appendChild(id_option);
+                });
+            } else{ //If the company has no transactions, state as such
+            const no_id_option = document.createElement('option');
+            no_id_option.value = '';
+            no_id_option.textContent = 'There are no TransactionIDs';
+            transaction_ids_dropdown.appendChild(no_id_option);
+            }
+        };
+    }
+    const url = "SCM_home_dropdown_queries.php?q=" + encodeURIComponent(q_input);
+    xhtpp.open("GET", url, true);
+    xhtpp.send();
+}
+
+function UpdateTransactionsAJAX(transaction_type){ //What gets sent to the update query by the AJAX varies based on the transaction type
+    if(transaction_type == ""){
+        alert("Please select a transaction type");
+        document.getElementById('UpdateTransactionType').focus();
+        return false;
+    }
+    
+    transaction_id = document.getElementById('TransactionIDInput').value;
+    if(transaction_type == 'Shipping'){ //Validate user input - shipping case
+        product_id = document.getElementById('UpdateProductID').value;
+        quantity_update = document.getElementById('QuantityUpdateID').value;
+        promised_date = document.getElementById('PromisedDate').value;
+        actual_date = document.getElementById('ActualDate').value;
+        if(product_id == "" || quantity_update == "" || promised_date == "" || actual_date == ""){
+            alert("All forms must have a valid input in order to update transaction");
+            document.getElementById('TransactionIDInput').focus();
+            return false;
+        }
+        if(promised_date > actual_date){
+            alert("Actual date must be on or after promised date");
+            document.getElementById('TransactionIDInput').focus();
+            return false;
+        }
+        q_input = transaction_type + "|" + transaction_id + "|" + product_id + "|" + quantity_update + "|" + promised_date + "|" + actual_date;
+        console.log(q_input);
+    }
+
+    else if(transaction_type == 'Receiving'){ //Validate user input - receiving case
+        quantity_received = document.getElementById('QuantityReceivedID').value;
+        received_date = document.getElementById('ReceivedDate').value;
+        if(quantity_received == "" || received_date == ""){
+            alert("All forms must have a valid input in order to update transaction");
+            document.getElementById('TransactionIDInput').focus();
+            return false;
+        }
+    
+        q_input = transaction_type + "|" + transaction_id + "|" + quantity_received + "|" + received_date;
+        console.log(q_input);
+    }
+
+    else if(transaction_type == 'Adjustment'){ //Validate user input - receiving case
+        product_id = document.getElementById('UpdateProductID_Adjustment').value;
+        quantity_change = document.getElementById('QuantityChangeID').value;
+        adjustment_date = document.getElementById('AdjustmentDate').value;
+        adjustment_reason = document.getElementById('ReasonUpdateID').value;
+        if(product_id == "" || quantity_change == "" || adjustment_date == "" || adjustment_reason == ""){
+            alert("All forms must have a valid input in order to update transaction");
+            document.getElementById('TransactionIDInput').focus();
+            return false;
+        }
+    
+        q_input = transaction_type + "|" + transaction_id + "|" + product_id + "|" + quantity_change + "|" + adjustment_date + "|" + adjustment_reason;
+        console.log(q_input);
+    }
+
+    xhtpp = new XMLHttpRequest();
+    xhtpp.onload = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+            document.getElementById('verification-update-transactions').innerText = 'Transaction Data Was Successfully Updated!'
+        };
+    }
+    const url = "SCM_update_queries.php?q=" + encodeURIComponent(q_input) + "&g=" + encodeURIComponent('Update Transactions');
+    xhtpp.open("GET", url, true);
+    xhtpp.send();
+}
+
 </script>
 
 </body>
