@@ -1040,6 +1040,11 @@ function UpdateCompanyInfoAJAX() {
         if (update_factory_capacity == ""){
             update_factory_capacity = initially_selected_factory_capacity;
         }
+        if (Number(update_factory_capacity) < 0){
+            alert("Factory capacity must be positive");
+            document.getElementById('UpdateManufacturer').querySelector('input[name="ManufacturerUpdate"]').focus();
+            return false;
+        }
 
         q_input = initially_selected_company_type + "|" + initially_selected_company_id + "|" + update_name + "|" + update_tier + "|" + update_factory_capacity;
     }
@@ -1070,7 +1075,9 @@ function UpdateCompanyInfoAJAX() {
             document.getElementById('verification-update-company-info').innerText = 'Company Information Updated Successfully!'
         };
     }
-    const url = "SCM_update_queries.php?q=" + encodeURIComponent(q_input) + "&g=" + encodeURIComponent('Update Company Info');
+    g_input = 'Update Company Info';
+    const url = "SCM_update_queries.php?q=" + encodeURIComponent(q_input) + "&g=" + encodeURIComponent(g_input);
+    console.log(url);
     xhtpp.open("GET", url, true);
     xhtpp.send(); 
 }
