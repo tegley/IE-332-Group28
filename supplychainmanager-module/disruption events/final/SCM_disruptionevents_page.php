@@ -760,7 +760,7 @@ function DisruptionEventsAJAX(DisruptionDropDown, user_input, start_date, end_da
                 const div = document.createElement("div");
                 div.className = "list-item";
                 div.innerHTML = `<strong>Company Name:</strong> ${item.HDRCompanyName} <br>
-                                 <strong>HDR:</strong> ${item.HDR}`;
+                                 <strong>HDR:</strong> ${item.HDR}%`;
                 HDR_by_company_Div.appendChild(div);
               });
 
@@ -770,7 +770,7 @@ function DisruptionEventsAJAX(DisruptionDropDown, user_input, start_date, end_da
               if (my_JSON_object.HDR_overall[0].HDRStatistic !== null) {
                     const li = document.createElement("li");
                     li.className = "list-group-item";
-                    li.innerHTML = `Overall Statistic: ${my_JSON_object.HDR_overall[0].HDRStatistic}`;
+                    li.innerHTML = `Overall Statistic: ${my_JSON_object.HDR_overall[0].HDRStatistic}%`;
                     HDR_overall_statistic_Div.appendChild(li);
               } else {
                   HDR_overall_statistic_Div.innerHTML = '<p class="text-muted">Invalid input</p>';
@@ -1149,7 +1149,7 @@ function CreateRRCHeatmap(RRC_values_object, DisruptionDropDown) {
       countries.forEach(c => {
         locations.push(c);
         values.push(rrc);
-        hoverTexts.push(`${region['Region']}: ${rrc}%`);
+        hoverTexts.push(`${region['Region']}: ${rrc}`);
       });
     }
     else if(DisruptionDropDown == "country") {
