@@ -22,6 +22,8 @@ $user_FullName = $_SESSION['FullName'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-3.3.0.min.js" charset="utf-8"></script> <!-- JavaScript for Plotly -->
     
+    <script src="SCM_display_alerts.js"></script>
+
     <style>
         @import "standardized_project_formatting.css";
         #form-box {
