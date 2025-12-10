@@ -23,19 +23,15 @@ $case = $_GET['g'];
 
 $user_updates = explode('|', $user_updates);
 $case = explode('|', $case);
-echo $case[0];
-echo $user_updates[0];
 if($case[0] == 'Update Company Info'){
     if($user_updates[0] == "Manufacturer") { //Case where initially selected company is a manufacuturer - user_updates[4] = FactoryCapacity
-        echo "\n \n";
         //Update the name and tier
         $update_info = "UPDATE Company SET CompanyName = '{$user_updates[2]}', TierLevel = '{$user_updates[3]}' WHERE CompanyID = {$user_updates[1]}";
         $update_info_result = mysqli_query($conn, $update_info);
-        echo $update_info;
+
         //Update the manufacturing capacity
         $update_capacity = "UPDATE Manufacturer SET FactoryCapacity = '{$user_updates[4]}' WHERE CompanyID = {$user_updates[1]}";
         $update_capacity_result = mysqli_query($conn, $update_capacity);
-        echo $update_capacity;
     }
 
     if($user_updates[0] == "DistributorMaintainRoutes" || $user_updates[0] == "Retailer") { //Case where initially selected company is a retailer or distributor with no route updates
@@ -45,7 +41,6 @@ if($case[0] == 'Update Company Info'){
     }
 
     if($user_updates[0] == "DistributorUpdateRoutes") { //Case where initially selected company distributor and the user wants to update a route
-        //user_updates[4] = FromCompanyName, user_updates[5] = (prior) ToCompanyName, user_updates[6] = (updated) ToCompanyName 
         //Update route
         $update_route = "UPDATE OperatesLogistics SET ToCompanyID = (SELECT CompanyID FROM Company WHERE CompanyName = '{$user_updates[6]}') 
                         WHERE DistributorID = {$user_updates[1]} 
@@ -77,7 +72,6 @@ if($case[0] == 'Update Transactions'){
         $update_transactions = "UPDATE InventoryAdjustment SET ProductID = {$user_updates[2]}, QuantityChange = {$user_updates[3]}, AdjustmentDate = '{$user_updates[4]}', Reason = '{$user_updates[5]}' WHERE TransactionID = {$user_updates[1]}";
         $update_transactions_result = mysqli_query($conn, $update_transactions);
     }
-    echo $update_transactions;
     echo "Successful transactions update!";
     $conn->close();
     exit();
