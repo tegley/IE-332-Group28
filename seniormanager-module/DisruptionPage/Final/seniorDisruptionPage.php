@@ -444,7 +444,7 @@ if (activePane) {
                     regionDropdown.innerHTML = '';
                     
                     const defaultRegionOption = document.createElement('option');
-                    defaultRegionOption.value = '';
+                    defaultRegionOption.value = 'false';
                     defaultRegionOption.textContent = 'Select a specific region:';
                     defaultRegionOption.disabled = true;
                     defaultRegionOption.selected = true;
@@ -604,7 +604,7 @@ function CheckUserInput() {
         return false;
     }
 
-    if (regionSelection === "") {
+    if (regionSelection == 'false') {
         alert("Please select a specific region!");
         return false;
     }
