@@ -1169,13 +1169,13 @@ function PopulateTransactionIDs(transaction_type){
             element.style.display = 'block';
         });
 
-        var adjustmens_column_elements = document.querySelectorAll('.UpdateColumns_Adjustments');
-        adjustmens_column_elements.forEach(function(element) {
+        var adjustments_column_elements = document.querySelectorAll('.UpdateColumns_Adjustments');
+        adjustments_column_elements.forEach(function(element) {
             element.style.display = 'none';
         });
     }
 
-    else if(transaction_type == 'ShippingF'){ //If receiving, only display quantity recieved and recieved date
+    else if(transaction_type == 'Shipping'){ //If receiving, only display quantity recieved and recieved date
         var shipping_column_elements = document.querySelectorAll('.UpdateColumns_Shipping');
         shipping_column_elements.forEach(function(element) {
             element.style.display = 'block';
@@ -1186,8 +1186,8 @@ function PopulateTransactionIDs(transaction_type){
             element.style.display = 'none';
         });
 
-        var adjustmens_column_elements = document.querySelectorAll('.UpdateColumns_Adjustments');
-        adjustmens_column_elements.forEach(function(element) {
+        var adjustments_column_elements = document.querySelectorAll('.UpdateColumns_Adjustments');
+        adjustments_column_elements.forEach(function(element) {
             element.style.display = 'none';
         });
     }
@@ -1203,8 +1203,8 @@ function PopulateTransactionIDs(transaction_type){
             element.style.display = 'none';
         });
 
-        var adjustmens_column_elements = document.querySelectorAll('.UpdateColumns_Adjustments');
-        adjustmens_column_elements.forEach(function(element) {
+        var adjustments_column_elements = document.querySelectorAll('.UpdateColumns_Adjustments');
+        adjustments_column_elements.forEach(function(element) {
             element.style.display = 'block';
         });
     }
